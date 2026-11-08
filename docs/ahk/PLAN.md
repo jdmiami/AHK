@@ -53,8 +53,13 @@ Every PR is opened as a draft on the `claude/*` branch, must pass `bun run ci`
   backed by `apps/web/src/app/api/host/route.ts`, which starts/stops a RunPod pod through RunPod REST v2. Server env:
   `RUNPOD_API_KEY`, `RUNPOD_POD_ID`, `AHK_HOST_PIN`; public flag `NEXT_PUBLIC_HOST_SWITCH=1`. Status is public; actions need
   the PIN (constant-time compare, wrong-PIN delay). "On" means the API `/health` answers, not just that the pod is RUNNING.
-- **API + Redis (RunPod plan):** pod `ahk-api`, `cpu3c` 2 vCPU / 4 GB, image `lehuygiang28/vkara-api-redis:sha-b2494a1`
-  (the fork's base commit), port 8000 over the RunPod HTTPS proxy. $0.06/h while on; stopped between nights. Not yet created. The web app needs `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` pointing at a
+- **API + Redis (RunPod, live since 2026-11-08):** pod `ahk-api` (`86349epe8bga1h`), `cpu3c` 2 vCPU / 4 GB in US-MD-1,
+  image `lehuygiang28/vkara-api-redis:sha-b2494a1` (the fork's base commit), port 8000 over the RunPod HTTPS proxy
+  `https://86349epe8bga1h-8000.proxy.runpod.net`. $0.06/h while on; stop it between nights. Vercel env `NEXT_PUBLIC_API_URL`,
+  `NEXT_PUBLIC_WS_URL`, `RUNPOD_POD_ID` point at it. Verified live: TV creates a room, a phone joins by link, searches, and
+  Add starts the song on the TV (screenshots `docs/ahk/screenshots/live-*.png`). Real-device YouTube playback still to confirm.
+- **Known YouTube limit:** some major karaoke channels (Sing King, KaraFun) disable embedding; those songs are refused with
+  "Cannot play this video". Option: set `VKARA_EMBED_PREFILTER_AT_LIST=1` on the pod to hide them from search (slower search). The web app needs `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` pointing at a
   running Bun API before rooms work. Planned: Fly.io app from `containers/api-redis/Dockerfile` (API + Redis in one
   container) or a VPS with `docker compose --profile api`. Set those two env vars on the Vercel project afterwards.
 - **Docker images:** publish workflow is opt-in via the `DOCKERHUB_OWNER` repo variable plus
