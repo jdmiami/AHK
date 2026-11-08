@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { useYouTubeStore } from '@/store/youtubeStore';
 import { useScopedI18n } from '@/locales/client';
@@ -14,8 +15,10 @@ import { usePlaybackPositionSync } from '@/hooks/use-playback-position-sync';
 import { useTikTokHiddenPlayGuard } from '@/hooks/use-tiktok-hidden-play-guard';
 import { useTikTokPhotoIndexSync } from '@/hooks/use-tiktok-photo-index-sync';
 import { useWebSocketStore } from '@/store/websocketStore';
+import { useUrlCommandStore } from '@/store/urlCommandStore';
 
 import { ConnectionStatusToast } from '@/components/connection-status-toast';
+import { DeviceIntro } from '@/components/pages/youtube/device-intro';
 import {
     PlayerColumnSkeleton,
     RemoteShellSkeleton,
@@ -54,6 +57,28 @@ export default function YoutubePlayerPage() {
         () => false,
     );
     const prevLayoutMode = useRef(effectiveLayoutMode);
+
+    // First visit on this device: ask "big screen or phone?" before anything else.
+    // Skipped when an invite link (?roomId=…) brought the visitor here: that is a phone joining.
+    const searchParams = useSearchParams();
+    const layoutModeSource = useYouTubeStore((s) => s.layoutModeSource);
+    const setLayoutMode = useYouTubeStore((s) => s.setLayoutMode);
+    const [mounted, setMounted] = useState(false);
+    const inviteSnapshotRoomId = useUrlCommandStore((s) => s.snapshot?.document.roomId);
+    const inRoom = useYouTubeStore((s) => Boolean(s.room));
+    // The room query is stripped from the address bar once applied, so also check the parsed snapshot.
+    const arrivedWithInvite = Boolean(
+        searchParams.get('roomId') || searchParams.get('joinToken') || inviteSnapshotRoomId,
+    );
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+    useEffect(() => {
+        if (mounted && arrivedWithInvite && layoutModeSource === 'auto') {
+            setLayoutMode('remote', 'user');
+        }
+    }, [mounted, arrivedWithInvite, layoutModeSource, setLayoutMode]);
+    const showDeviceIntro = mounted && layoutModeSource === 'auto' && !arrivedWithInvite && !inRoom;
 
     useStripRoomQueryFromUrl();
     useLayoutChunkPrefetch();
@@ -101,6 +126,10 @@ export default function YoutubePlayerPage() {
     const showsPlayer = effectiveLayoutMode === 'player' || effectiveLayoutMode === 'both';
     const isTvPlayerIdle = Boolean(isTvViewport && showsPlayer && !playingNow);
     const useTvIdleShell = needsLayoutBootstrap || isTvPlayerIdle;
+
+    if (showDeviceIntro) {
+        return <DeviceIntro />;
+    }
 
     if (needsLayoutBootstrap) {
         return (

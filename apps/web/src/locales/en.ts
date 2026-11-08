@@ -382,6 +382,15 @@ export default {
     'relativeTime.yearAgo': '1 year ago',
     'relativeTime.yearsAgo': '{count} years ago',
 
+    'deviceIntro.title': 'What is this device?',
+    'deviceIntro.subtitle': 'Pick once. AHK remembers it on this device.',
+    'deviceIntro.hostTitle': 'The big screen',
+    'deviceIntro.hostDescription':
+        'The laptop or TV on the projector. It plays the videos and shows the room code and QR.',
+    'deviceIntro.guestTitle': 'My phone',
+    'deviceIntro.guestDescription': 'Join the room, search songs, and control the party.',
+    'deviceIntro.footnote': 'Changed your mind? Switch any time at the bottom of the screen.',
+
     'joinLobby.title': 'Join a room',
     'joinLobby.subtitle': 'Enter the 4-digit code from the TV or scan the QR code.',
     'joinLobby.roomIdLabel': 'Room code',

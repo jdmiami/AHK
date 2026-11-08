@@ -390,6 +390,15 @@ export default {
     'relativeTime.yearAgo': 'hace 1 año',
     'relativeTime.yearsAgo': 'hace {count} años',
 
+    'deviceIntro.title': '¿Qué dispositivo es este?',
+    'deviceIntro.subtitle': 'Elige una vez. AHK lo recuerda en este dispositivo.',
+    'deviceIntro.hostTitle': 'La pantalla grande',
+    'deviceIntro.hostDescription':
+        'La laptop o TV conectada al proyector. Reproduce los videos y muestra el código y el QR de la sala.',
+    'deviceIntro.guestTitle': 'Mi teléfono',
+    'deviceIntro.guestDescription': 'Entra a la sala, busca canciones y controla la fiesta.',
+    'deviceIntro.footnote': '¿Cambiaste de idea? Cámbialo cuando quieras en la parte de abajo.',
+
     'joinLobby.title': 'Entrar a una sala',
     'joinLobby.subtitle': 'Ingresa el código de 4 dígitos de la TV o escanea el código QR.',
     'joinLobby.roomIdLabel': 'Código de sala',
