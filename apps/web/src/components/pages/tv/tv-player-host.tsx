@@ -390,7 +390,7 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
                     embedVariant="tv"
                 />
             ) : (
-                <div className="tv-fill bg-[#0f0f0f]" aria-hidden />
+                <div className="tv-fill bg-[#07060b]" aria-hidden />
             )}
 
             {isTvIdle && roomId ? (

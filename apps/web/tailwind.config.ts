@@ -41,6 +41,11 @@ export default {
                     DEFAULT: 'hsl(var(--destructive))',
                     foreground: 'hsl(var(--destructive-foreground))',
                 },
+                neon: {
+                    pink: 'hsl(var(--neon-pink))',
+                    cyan: 'hsl(var(--neon-cyan))',
+                    violet: 'hsl(var(--neon-violet))',
+                },
                 border: 'hsl(var(--border))',
                 input: 'hsl(var(--input))',
                 ring: 'hsl(var(--ring))',

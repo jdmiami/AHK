@@ -6,7 +6,7 @@ import type { CuratedCatalog } from '@vkara/curated-playlists';
 const labels = { karaoke: 'Karaoke', music: 'Music' };
 
 function catalog(id: string): CuratedCatalog {
-    return { id, suggestLocales: ['vi'], playlists: [] };
+    return { id, suggestLocales: ['es'], playlists: [] };
 }
 
 describe('getCuratedCatalogLabel', () => {

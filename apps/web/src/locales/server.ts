@@ -1,15 +1,15 @@
 import { createI18nServer, setStaticParamsLocale } from 'next-international/server';
-import vi from './vi';
+import en from './en';
 
 export { setStaticParamsLocale };
 
 export const { getI18n, getScopedI18n, getCurrentLocale, getStaticParams } = createI18nServer(
     {
-        vi: () => import('./vi'),
         en: () => import('./en'),
+        es: () => import('./es'),
     },
     {
         segmentName: 'locale',
-        fallbackLocale: vi,
+        fallbackLocale: en,
     },
 );

@@ -16,7 +16,7 @@ docker compose --profile aio up --build
 | File               | Role                                                             |
 | ------------------ | ---------------------------------------------------------------- |
 | `Dockerfile`       | Multi-stage build (Bun) + runtime (Bun + Caddy + Redis binaries) |
-| `Caddyfile`        | Edge proxy: `/api/vkara`, `/ws`, `/vi` redirects, Next.js        |
+| `Caddyfile`        | Edge proxy: `/api/vkara`, `/ws`, legacy `/en` and `/vi` redirects, Next.js        |
 | `supervisord.conf` | Process manager for redis, api, web, caddy                       |
 | `entrypoint.sh`    | Sets `PUBLIC_APP_URL`, starts supervisord                        |
 

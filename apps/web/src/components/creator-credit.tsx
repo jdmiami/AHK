@@ -1,6 +1,6 @@
 'use client';
 
-import { CREATOR_GITHUB_URL, CREATOR_HANDLE } from '@/lib/creator';
+import { BRAND } from '@/lib/brand';
 import { useScopedI18n } from '@/locales/client';
 import { cn } from '@/lib/utils';
 
@@ -13,18 +13,19 @@ type CreatorCreditProps = {
 
 export function CreatorCredit({ linked = true, tone = 'default', className }: CreatorCreditProps) {
     const t = useScopedI18n('credit');
+    const { basedOn } = BRAND;
 
-    const handle = linked ? (
+    const upstream = linked ? (
         <a
-            href={CREATOR_GITHUB_URL}
+            href={basedOn.authorUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="underline-offset-2 hover:underline"
         >
-            {CREATOR_HANDLE}
+            {basedOn.authorHandle}
         </a>
     ) : (
-        <span>{CREATOR_HANDLE}</span>
+        <span>{basedOn.authorHandle}</span>
     );
 
     return (
@@ -36,10 +37,11 @@ export function CreatorCredit({ linked = true, tone = 'default', className }: Cr
                 className,
             )}
         >
-            <p>
-                {t('bylinePrefix')} {handle}
-            </p>
+            <p className="font-semibold tracking-wide text-foreground/80">{BRAND.lockup}</p>
             <p>{t('tagline')}</p>
+            <p>
+                {t('bylinePrefix')} {upstream}
+            </p>
         </footer>
     );
 }

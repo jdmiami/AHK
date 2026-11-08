@@ -1,156 +1,101 @@
 <p align="center">
-  <img src="apps/web/public/icons/vkara-icon.svg" alt="vkara logo" width="72" height="72" />
+  <img src="apps/web/public/icons/icon-192.png" alt="AHK mark" width="96" height="96" />
 </p>
 
-<h1 align="center">vkara</h1>
+<h1 align="center">AHK · Artist House Karaoke</h1>
 
 <p align="center">
-  <strong>Turn your TV into a karaoke machine.</strong><br />
-  Friends pick songs from their phones - no typing on the TV remote.
+  <strong>Turn the TV into a karaoke machine. Everyone's phone is a remote.</strong><br />
+  Open a room on the big screen, friends scan the QR, pick songs, and sing together.<br />
+  No app install, no account.
 </p>
 
 <p align="center">
-  <img alt="No account required" src="https://img.shields.io/badge/no_account-required-brightgreen">
-  <img alt="Phone as remote" src="https://img.shields.io/badge/phone_as-remote-blue">
-  <img alt="YouTube-powered search" src="https://img.shields.io/badge/search-YouTube-red">
+  <img alt="No account required" src="https://img.shields.io/badge/no_account-required-FF2DAA">
+  <img alt="Phone as remote" src="https://img.shields.io/badge/phone_as-remote-22E6FF">
+  <img alt="YouTube karaoke" src="https://img.shields.io/badge/search-YouTube-red">
   <img alt="Self-hostable" src="https://img.shields.io/badge/self--hostable-Docker-2496ED">
 </p>
 
 <p align="center">
-  Open vkara on a TV or laptop. Everyone joins from their phone, searches YouTube karaoke videos, adds songs to the queue, and controls playback together - <strong>no app install, no account</strong>.
+  <a href="#how-a-night-works">How it works</a> ·
+  <a href="#hosting">Hosting</a> ·
+  <a href="#for-developers">Developers</a> ·
+  <a href="docs/ahk/PLAN.md">Roadmap</a> ·
+  <a href="docs/ahk/CREDITS.md">Credits</a> ·
+  <a href="#copyright-and-legal-notice">Legal</a>
 </p>
-
-<p align="center">
-  Made for house parties, family karaoke nights, dorm rooms, and small gatherings.
-</p>
-
-<p align="center">
-  <a href="https://vkara.vercel.app/en"><strong>Try it live → vkara.vercel.app/en</strong></a>
-</p>
-
-<p align="center">
-  <a href="README.md"><strong>English</strong></a>
-</p>
-
-<p align="center">
-  <a href="#why-vkara">Why vkara</a> ·
-  <a href="#usage">How to use</a> ·
-  <a href="#self-host">Self-host</a> ·
-  <a href="#copyright--legal-notice">Copyright</a> ·
-  <a href="#for-developers">Developers</a>
-</p>
-
-<p align="center">
-  <table>
-    <tr>
-      <td width="25%" align="center"><img src="assets/image/join.jpg" alt="Join a room with a code or QR" width="100%" /></td>
-      <td width="25%" align="center"><img src="assets/image/home.jpg" alt="Search YouTube on your phone" width="100%" /></td>
-      <td width="25%" align="center"><img src="assets/image/search.jpg" alt="Play, add, or queue a song" width="100%" /></td>
-      <td width="25%" align="center"><img src="assets/image/control.jpg" alt="Control playback from your phone" width="100%" /></td>
-    </tr>
-    <tr>
-      <td align="center"><sub><strong>Join</strong></sub></td>
-      <td align="center"><sub><strong>Search</strong></sub></td>
-      <td align="center"><sub><strong>Add songs</strong></sub></td>
-      <td align="center"><sub><strong>Remote</strong></sub></td>
-    </tr>
-  </table>
-</p>
-
-<p align="center"><em>One shared player on the big screen. Everyone else uses their phone as the remote.</em></p>
 
 ---
 
-## Why vkara?
+## What is AHK?
 
-- **No one types on a TV remote** - search and queue from a phone keyboard.
-- **Everyone can add songs** - not just whoever holds the remote.
-- **One shared player screen** - the TV stays on the video; phones handle control.
-- **Browser only** - no install, no sign-up, no app store.
-- **Self-host if you want** - one Docker image runs the full stack at home.
+AHK is a browser-based group karaoke app for houses, studios, and friend groups. One screen plays the video;
+everyone else controls it from their phone. It is a fork of [vkara](https://github.com/lehuygiang28/vkara)
+with its own look, English and Spanish UI, and (coming next) curated **Song Packs**.
 
-## How it works
+- **Nobody types on a TV remote.** Search and queue from a phone keyboard.
+- **Everyone adds songs.** The queue is shared and live.
+- **One player screen.** The TV stays on the video; phones handle control.
+- **Browser only.** Works on any TV browser, laptop, or phone. Nothing to install.
+- **Self-host if you want.** One Docker image runs the full stack.
 
-1. **TV or laptop** - open vkara. A room appears with a **4-digit code** and **QR**.
-2. **Phones** - open the same site, enter the code or scan the QR.
-3. **Sing together** - search YouTube, build the queue, skip, pause. Everyone stays in sync.
+## How a night works
 
-## Usage
+1. **TV or laptop:** open AHK and tap *Create new room*. A **4-digit code** and **QR** appear.
+2. **Phones:** open the same site and scan the QR or type the code.
+3. **Sing:** search YouTube karaoke, build the queue, skip, pause. Everyone stays in sync.
 
-### Host (TV / laptop)
-
-1. Open [vkara](https://vkara.vercel.app/en) in Chrome or Edge on the big screen.
-2. Share the **code** or **QR** with friends.
-3. Hit fullscreen and let the queue run.
-
-### Guest (phone)
-
-1. Open vkara, scan the QR or type the room code.
-2. Search, add songs, control playback from your phone.
-3. Enter the room password if the host set one.
-
-### Tips
-
-| Situation              | What to do                                |
-| ---------------------- | ----------------------------------------- |
-| Old or slow TV browser | Plug in a laptop via HDMI                 |
-| Want karaoke versions  | Turn on the karaoke filter when searching |
-| App UI · English       | Open [/en](https://vkara.vercel.app/en)   |
-| App UI · Vietnamese    | Open [`/`](https://vkara.vercel.app/)     |
+| Situation | What to do |
+| --- | --- |
+| Old or slow TV browser | Plug in a laptop over HDMI and open `/tv` |
+| Want karaoke versions only | Keep the **Karaoke** filter on when searching |
+| UI in Spanish | Open `/es` or switch in Appearance |
+| Family night | Set a room password; lock the room once everyone is in |
 
 ## FAQ
 
-**Do I need an account?**  
-No. Join with a room code or QR. Hosts can optionally set a room password.
+**Do I need an account?** No. Join with a room code or QR. Hosts can set an optional room password.
 
-**Where do the songs come from?**  
-YouTube. Some videos cannot be embedded; vkara skips those. Use of YouTube content is subject to [YouTube’s Terms of Service](https://www.youtube.com/t/terms).
+**Where do the songs come from?** YouTube, played inside YouTube's embedded player. Some videos cannot be embedded; AHK skips those.
 
-**Is vkara affiliated with YouTube?**  
-No. vkara uses YouTube search and embedded playback, but is not affiliated with or endorsed by YouTube.
+**Is AHK affiliated with YouTube?** No. AHK uses YouTube search and embedded playback but is not affiliated with or endorsed by YouTube.
 
-**Why two layouts (TV vs phone)?**  
-The player screen is for watching. Phones are for searching and controlling - so nobody hunts for letters on a TV remote.
-
-**Can I host my own copy?**  
-Yes. See [Self-host](#self-host) below or the full guide in [containers/README.md](containers/README.md).
+**Why two layouts (TV vs phone)?** The player screen is for watching; phones are for searching and controlling.
 
 ## Copyright and legal notice
 
-vkara is open-source software under the MIT License, intended for personal, non-commercial karaoke via YouTube's embedded player. It does not store, download, or distribute music or video files on its servers. The project does not commercialize content or provide music licensing.
+AHK is open-source software under the MIT License, intended for personal, non-commercial karaoke via YouTube's
+embedded player. It does not store, download, or distribute music or video files. The project has no music
+licensing agreements and does not commercialize content.
 
-- vkara is not affiliated with YouTube and has no music licensing agreements.
-- Playback runs inside YouTube's iframe; the project does not re-stream content independently.
-- YouTube allows personal, non-commercial viewing and embeddable playback; public commercial use is the responsibility of users and deployers under applicable law and [YouTube's Terms of Service](https://www.youtube.com/t/terms).
-- The project disclaims responsibility when third parties use vkara for commercial purposes without proper authorization.
-
-Self-hosting deployers are responsible for how they configure and operate their instance. End users must comply with YouTube's Terms and copyright law where they live.
+- Playback runs inside YouTube's iframe; AHK does not re-stream content.
+- Public or commercial use is the responsibility of the deployer under applicable law and
+  [YouTube's Terms of Service](https://www.youtube.com/t/terms).
+- Self-hosting deployers are responsible for how they configure and operate their instance.
 
 Full disclaimer: [docs/DISCLAIMER.md](docs/DISCLAIMER.md).
-
-Copyright complaints, takedown requests, and support: open an issue at [github.com/jdmiami/AHK/issues](https://github.com/jdmiami/AHK/issues).
+Copyright complaints, takedown requests, and support: open an issue at
+[github.com/jdmiami/AHK/issues](https://github.com/jdmiami/AHK/issues).
 
 ---
 
-## Self-host
+## Hosting
 
-The easiest way to run vkara yourself is the **all-in-one Docker image** (`vkara-aio`). It runs the web app and backend together on **port 3000**, with the default setup handled for you.
+AHK is two services: the **web app** (Next.js) and the **API** (Bun + Elysia, needs Redis).
 
-```bash
-cp containers/aio/.env.example containers/aio/.env
-docker compose --profile aio up --build
-```
+| Part | Recommended host | Notes |
+| --- | --- | --- |
+| Web | [Vercel](https://vercel.com) | Root directory `apps/web`; `apps/web/vercel.json` carries the build command. Preview deploys on every PR. |
+| API + Redis | Fly.io, a VPS, or any Docker host | `containers/api-redis/Dockerfile` bundles API and Redis in one container. |
+| Everything in one box | Any Docker host | `docker compose --profile aio up --build` serves web and API on port 3000. |
 
-Open http://localhost:3000
+Point the web app at the API with `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL`. Full guide, env tables, and
+compose profiles: **[containers/README.md](containers/README.md)**.
 
-Pre-built images are published under the Docker Hub owner set in the repo variable `DOCKERHUB_OWNER` (see `.github/workflows/build-push-docker.yml`):
-
-```bash
-docker pull ${DOCKERHUB_OWNER}/vkara-aio:latest
-docker run --rm -p 3000:3000 ${DOCKERHUB_OWNER}/vkara-aio:latest
-```
-
-Split web/API, production env, and other profiles: **[containers/README.md](containers/README.md)**.
+Pre-built images are published under the Docker Hub owner set in the repo variable `DOCKERHUB_OWNER`
+(see `.github/workflows/build-push-docker.yml`); publishing is off until that variable and the Docker Hub
+secrets exist.
 
 ---
 
@@ -175,7 +120,7 @@ Copy env files:
 Start Redis (example):
 
 ```bash
-docker run -d --name vkara-redis -p 6379:6379 redis:7-alpine \
+docker run -d --name ahk-redis -p 6379:6379 redis:7-alpine \
   redis-server --requirepass giang
 ```
 
@@ -190,28 +135,14 @@ bun run dev:api
 </details>
 
 <details>
-<summary><strong>Docker images</strong></summary>
-
-| Image                          | Port | Notes                                                |
-| ------------------------------ | ---- | ---------------------------------------------------- |
-| `${DOCKERHUB_OWNER}/vkara-aio`       | 3000 | Full stack (recommended)                             |
-| `${DOCKERHUB_OWNER}/vkara-web`       | 3000 | Frontend only                                        |
-| `${DOCKERHUB_OWNER}/vkara-api`       | 8000 | API only (bring your own Redis)                      |
-| `${DOCKERHUB_OWNER}/vkara-api-redis` | 8000 | API + Redis in one container; Redis is internal only |
-
-Compose profiles: `aio`, `web`, `api`, `bundle`, `whisper`. See [containers/README.md](containers/README.md).
-
-</details>
-
-<details>
 <summary><strong>Tech stack</strong></summary>
 
-| Layer    | Stack                          |
-| -------- | ------------------------------ |
-| Frontend | Next.js 15, React 19, Tailwind |
-| Backend  | Bun, Elysia                    |
-| State    | Redis                          |
-| Repo     | Bun workspaces, Turborepo      |
+| Layer | Stack |
+| --- | --- |
+| Frontend | Next.js 15, React 19, Tailwind, zustand |
+| Backend | Bun, Elysia, WebSockets |
+| State | Redis (rooms are ephemeral; no database, no accounts) |
+| Repo | Bun workspaces, Turborepo, Vitest, OpenSpec |
 
 Optional voice search: [Whisper STT](containers/whisper-stt/README.md).
 
@@ -221,58 +152,55 @@ Optional voice search: [Whisper STT](containers/whisper-stt/README.md).
 <summary><strong>Repository layout</strong></summary>
 
 ```text
-vkara/
+AHK/
 ├── apps/
-│   ├── web/                 frontend
-│   └── api/                 backend
+│   ├── web/                 frontend (Next.js)
+│   └── api/                 backend (Bun + Elysia)
 ├── packages/
 │   ├── env/                 t3-env + feature flags
 │   ├── validators/          zod WS + HTTP schemas
 │   ├── youtube/             YouTube types + utils
 │   ├── room/                room / WS server types
 │   ├── personalization/     browse ranking profile
+│   ├── curated-playlists/   starter playlists (superseded by Song Packs)
 │   ├── redis/               Redis options factory
 │   └── cache-redis/         Redis cache helpers
 ├── containers/
 │   ├── aio/                 all-in-one Docker image
 │   ├── api-redis/           API + Redis bundle
 │   └── whisper-stt/         optional voice search
+├── docs/ahk/                roadmap, credits
+├── openspec/                spec-driven change proposals
 └── docker-compose.yml
 ```
 
-Realtime message shapes live in `packages/validators` (zod); room/YouTube domain types in `packages/room` and `packages/youtube`. Update validators first when changing WS or HTTP contracts.
+Realtime message shapes live in `packages/validators` (zod); room/YouTube domain types in `packages/room` and
+`packages/youtube`. Update validators first when changing WS or HTTP contracts. Internal package names keep the
+upstream `@vkara/*` scope on purpose so upstream fixes stay easy to port.
+
+**Brand assets:** SVG sources in `apps/web/brand/`; `bun run generate:pwa-icons` (in `apps/web`) regenerates
+icons, favicon, and the OG image.
 
 **Scripts:** `bun run dev` · `bun run test` · `bun run typecheck` · `bun run lint` · `bun run build` · `bun run format`
 
-**Docs:** [Monorepo architecture](docs/monorepo-architecture.md) · [URL commands / agents](docs/agents/url-commands.md)
+**Docs:** [Roadmap](docs/ahk/PLAN.md) · [Monorepo architecture](docs/monorepo-architecture.md) · [URL commands / agents](docs/agents/url-commands.md)
 
 </details>
 
 ## Contributing
 
-Issues and pull requests welcome. Change `packages/validators` (and related domain packages) when altering API or realtime message shapes.
+Issues and pull requests welcome. Change `packages/validators` (and related domain packages) when altering API
+or realtime message shapes. Changes are proposed as OpenSpec folders under `openspec/changes/`.
 
-## Thanks
+## Credits
 
-YouTube search and playback in vkara depend on open-source libraries and their authors:
-
-| Library                                                      | Author                                                           | Used for                                         |
-| ------------------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------ |
-| [youtubei](https://github.com/SuspiciousLookingOwl/youtubei) | [@SuspiciousLookingOwl](https://github.com/SuspiciousLookingOwl) | Search, video metadata, playlists, Innertube API |
-| [youtube-sr](https://github.com/twlite/youtube-sr)           | [@twlite](https://github.com/twlite)                             | Search suggestions                               |
-| [react-youtube](https://github.com/tjallingt/react-youtube)  | [@tjallingt](https://github.com/tjallingt)                       | YouTube player embed in the web app              |
-
-Thank you to the maintainers and contributors of these projects.
+AHK is based on [vkara](https://github.com/lehuygiang28/vkara) by
+[@lehuygiang28](https://github.com/lehuygiang28) (MIT). Library thanks and what changed in the fork:
+[docs/ahk/CREDITS.md](docs/ahk/CREDITS.md).
 
 ## License
 
 MIT - see [LICENSE](LICENSE).
-
----
-
-<p align="center">
-  Based on <a href="https://github.com/lehuygiang28/vkara">vkara</a> by <a href="https://github.com/lehuygiang28">@lehuygiang28</a> · see <a href="docs/ahk/CREDITS.md">credits</a>
-</p>
 
 <p align="center">
   <a href="https://github.com/jdmiami/AHK">github.com/jdmiami/AHK</a>

@@ -5,6 +5,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 
 import { generateShareableUrl } from '@/lib/room-share';
 import { resolveRoomPasswordForShare } from '@vkara/room';
+import type { AppLocale } from '@/lib/locale-path';
+import { BrandLockup } from '@/components/brand/ahk-mark';
 import { useScopedI18n } from '@/locales/client';
 import { cn } from '@/lib/utils';
 import { TvFocusable } from '@/components/pages/tv/tv-focusable';
@@ -18,7 +20,7 @@ const CORNER_QR_SIZE = 72;
 type TvPlayerQrZoneProps = {
     roomId: string;
     roomPassword?: string | null;
-    locale: 'vi' | 'en';
+    locale: AppLocale;
     showQR: boolean;
     isIdle: boolean;
     /** Side-by-side “this device” layout: smaller QR, no phone-only steps. */
@@ -146,7 +148,7 @@ export function TvPlayerQrZone({
             {...shellMotionProps}
             {...(staticLayout ? {} : { layoutId: 'tv-player-room-label' })}
             className={cn(
-                'mt-4 text-center font-semibold tabular-nums text-white',
+                'mt-4 text-center font-semibold tabular-nums text-white [text-shadow:var(--ahk-glow-text)]',
                 !staticLayout && 'drop-shadow-sm',
                 compact ? 'text-2xl' : 'text-3xl sm:text-4xl',
             )}
@@ -282,6 +284,7 @@ export function TvPlayerQrZone({
                             compact ? 'mb-4 sm:mb-5' : 'mb-5 sm:mb-8',
                         )}
                     >
+                        <BrandLockup size={compact ? 'default' : 'tv'} className="mb-1" />
                         <h1
                             className={cn(
                                 'text-balance font-semibold leading-tight tracking-tight text-zinc-50',
@@ -313,6 +316,7 @@ export function TvPlayerQrZone({
                     {/* ── Right column (2-col only): title + instructions stacked ── */}
                     {twoColEnabled ? (
                         <div className="hidden flex-col items-start justify-center border-l border-white/10 pl-8 tv-wide-short:flex">
+                            <BrandLockup className="mb-4 justify-start" />
                             <h1
                                 className={cn(
                                     'text-balance font-semibold leading-tight tracking-tight text-zinc-50',

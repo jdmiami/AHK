@@ -16,6 +16,7 @@ import { useScopedI18n } from '@/locales/client';
 import { useJoinRoom } from '@/hooks/use-join-room';
 import { useRoomSettingsStore } from '@/store/roomSettingsStore';
 
+import { BrandLockup } from '@/components/brand/ahk-mark';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { LayoutModeSwitch, RECOVERY_MODE_CHOICES } from '@/components/layout-mode-switch';
 import { QRScanner } from '@/components/qr-scanner';
@@ -89,6 +90,7 @@ export function RemoteJoinLobby({ allowCreateRoom = false }: RemoteJoinLobbyProp
                 <div className="rounded-2xl border border-border/70 bg-card shadow-sm">
                     <div className="space-y-6 p-5 sm:p-6">
                         <header className="space-y-1.5 text-center">
+                            <BrandLockup className="mb-4" />
                             <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.65rem]">
                                 {t('title')}
                             </h1>

@@ -10,7 +10,8 @@ const buttonVariants = cva(
     {
         variants: {
             variant: {
-                default: 'bg-primary text-primary-foreground shadow hover:bg-primary/90',
+                default:
+                    'bg-primary text-primary-foreground shadow hover:bg-primary/90 hover:shadow-[var(--ahk-glow-primary)] focus-visible:shadow-[var(--ahk-glow-primary)]',
                 destructive:
                     'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
                 outline:
@@ -22,7 +23,7 @@ const buttonVariants = cva(
                 warning: 'bg-yellow-500 text-white shadow hover:bg-yellow-600',
                 info: 'bg-blue-500 text-white shadow hover:bg-blue-600',
                 glow: 'bg-primary text-primary-foreground shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)] hover:shadow-[0_0_25px_rgba(var(--primary-rgb),0.65)]',
-                scan: 'bg-gradient-to-r from-violet-500 to-indigo-500 text-white shadow-lg hover:from-violet-600 hover:to-indigo-600 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200',
+                scan: 'bg-gradient-to-r from-neon-pink via-neon-violet to-neon-cyan text-white shadow-lg hover:shadow-[var(--ahk-glow-primary)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-200',
             },
             size: {
                 default: 'h-9 px-4 py-2',

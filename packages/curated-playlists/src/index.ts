@@ -8,7 +8,7 @@ const playlistsFile = playlistsJson as CuratedPlaylistsFile;
 export type { CuratedCatalog, CuratedPlaylistsFile, UiLocale } from './schema';
 
 function isUiLocale(value: string): value is UiLocale {
-    return value === 'vi' || value === 'en';
+    return value === 'en' || value === 'es';
 }
 
 function assertCatalogShape(catalog: unknown, index: number): asserts catalog is CuratedCatalog {

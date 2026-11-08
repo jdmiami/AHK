@@ -1,6 +1,6 @@
 # Docker deployment
 
-Docker images and Compose profiles for vkara. For a product overview and local dev without Docker, see the [repository README](../README.md).
+Docker images and Compose profiles for AHK · Artist House Karaoke. For a product overview and local dev without Docker, see the [repository README](../README.md).
 
 **Fastest path:** `docker compose --profile aio up --build` → http://localhost:3000
 
@@ -138,7 +138,7 @@ Client :3000
   Caddy
     ├─ /api/vkara/*  → API :8000   (strip prefix)
     ├─ /ws*          → API :8000   (WebSocket)
-    ├─ /vi*          → 301 → /     (legacy locale URLs)
+    ├─ /en*, /vi*    → 301 → /     (legacy locale URLs; English is the root)
     └─ /*            → Next.js :3001
 ```
 
@@ -146,7 +146,7 @@ Build-time (in `containers/aio/Dockerfile`):
 
 - `NEXT_PUBLIC_API_URL=/api/vkara` - browser calls same-origin REST
 - `NEXT_PUBLIC_TIKTOK_API_URL` - optional; defaults to `NEXT_PUBLIC_API_URL` (same `/api/vkara` in AIO)
-- `VKARA_AIO=1` - middleware skips `/vi` redirect (Caddy handles it at the edge)
+- `VKARA_AIO=1` - middleware skips the legacy `/en` and `/vi` redirects (Caddy handles them at the edge)
 
 Runtime processes (supervisord): `redis` → `api` → `web` → `caddy`.
 
@@ -185,7 +185,7 @@ See `apps/api/.env.example`. Required for production:
 | ---------------------------------------------- | ---------------------------------------------------------------------- |
 | `PORT`                                         | Listen port (default `8000`)                                           |
 | `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` | Redis connection                                                       |
-| `PUBLIC_APP_URL`                               | Web origin for YouTube embed checks (e.g. `https://vkara.example.com`) |
+| `PUBLIC_APP_URL`                               | Web origin for YouTube embed checks (e.g. `https://ahk.example`)       |
 | `CORS_ORIGINS`                                 | Comma-separated browser origins for API CORS (unset = allow all)       |
 
 ### `apps/web` (standalone web)

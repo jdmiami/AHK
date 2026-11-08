@@ -2,6 +2,7 @@
 
 import { QRCode } from 'react-qrcode-logo';
 
+import type { AppLocale } from '@/lib/locale-path';
 import { useScopedI18n } from '@/locales/client';
 import { generateShareableUrl } from '@/lib/room-share';
 import { resolveRoomPasswordForShare } from '@vkara/room';
@@ -20,7 +21,7 @@ const QR_QUIET_ZONE = 3;
 type TvPlayerFixedQrProps = {
     roomId: string;
     roomPassword?: string | null;
-    locale: 'vi' | 'en';
+    locale: AppLocale;
     onOpenSettingsAction: () => void;
     /** Scales up via CSS when player chrome is visible. */
     expanded?: boolean;

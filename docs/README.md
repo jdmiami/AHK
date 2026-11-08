@@ -1,4 +1,4 @@
-# vkara documentation
+# AHK documentation
 
 | Language | README | Legal disclaimer |
 |----------|--------|------------------|

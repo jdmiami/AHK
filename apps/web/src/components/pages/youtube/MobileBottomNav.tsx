@@ -154,7 +154,9 @@ function NavItem({
             onFocus={onPrefetch}
             className={cn(
                 'flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
-                active ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
+                active
+                    ? 'text-primary [&>span>svg]:drop-shadow-[var(--ahk-glow-drop)]'
+                    : 'text-muted-foreground hover:text-foreground',
             )}
             aria-current={active ? 'page' : undefined}
             aria-label={ariaLabel ?? label}

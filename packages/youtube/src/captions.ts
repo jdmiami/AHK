@@ -17,7 +17,7 @@ export const CAPTION_LANGUAGE_CODES = [
 
 export type CaptionLanguageCode = (typeof CAPTION_LANGUAGE_CODES)[number];
 
-export const DEFAULT_CAPTION_LANGUAGE: CaptionLanguageCode = 'vi';
+export const DEFAULT_CAPTION_LANGUAGE: CaptionLanguageCode = 'en';
 
 const CAPTION_LANGUAGE_SET = new Set<string>(CAPTION_LANGUAGE_CODES);
 

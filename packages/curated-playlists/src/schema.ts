@@ -9,4 +9,4 @@ export type CuratedPlaylistsFile = {
 
 export type CuratedCatalog = CuratedPlaylistsFile['catalogs'][number];
 
-export type UiLocale = 'vi' | 'en';
+export type UiLocale = 'en' | 'es';

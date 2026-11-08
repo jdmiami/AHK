@@ -6,8 +6,12 @@
 :3000 {
 	encode gzip zstd
 
-	# Legacy /vi URLs → / (browser only; internal Next rewrites to /vi stay in-app)
+	# Legacy /en and /vi URLs → / (browser only; English is the root locale now)
 	redir /vi / 301
+	redir /en / 301
+	handle_path /en/* {
+		redir * / 301
+	}
 	handle_path /vi/* {
 		redir {path} 301
 	}

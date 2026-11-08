@@ -1,7 +1,9 @@
+import type { AppLocale } from '@/lib/locale-path';
+
 export type AgentInviteInstructionsInput = {
     llmsTxtUrl: string;
     roomId: string;
-    locale: 'vi' | 'en';
+    locale: AppLocale;
     /** When the host knows the room password (same source as share URL). */
     password?: string;
     /** Capability for passwordless rooms (HTTP session). Not used on QR. */
@@ -15,15 +17,15 @@ export function buildAgentInviteInstructions(input: AgentInviteInstructionsInput
 
     const secret =
         trimmedPassword != null && trimmedPassword.length > 0
-            ? locale === 'vi'
-                ? ` (mật khẩu: ${trimmedPassword})`
+            ? locale === 'es'
+                ? ` (contraseña: ${trimmedPassword})`
                 : ` (password: ${trimmedPassword})`
             : trimmedToken
               ? ` (joinToken: ${trimmedToken})`
               : '';
 
-    if (locale === 'vi') {
-        return `Đọc ${llmsTxtUrl} và vào phòng ${roomId}${secret} để giúp tôi điều khiển phòng.`;
+    if (locale === 'es') {
+        return `Lee ${llmsTxtUrl} y entra a la sala ${roomId}${secret} para ayudarme a controlar la sala.`;
     }
 
     return `Read ${llmsTxtUrl} and join room ${roomId}${secret} to help me control the room.`;

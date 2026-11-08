@@ -14,7 +14,7 @@ describe('llms.txt route content', () => {
             apiOrigin: 'https://api.test',
         });
 
-        expect(text.startsWith('# vkara')).toBe(true);
+        expect(text.startsWith('# AHK')).toBe(true);
         expect(text).toContain('**App origin:** https://app.test');
         expect(text).toContain('**API origin:** https://api.test');
         expect(text).toContain('**Factory base:** https://api.test/url-commands');
@@ -28,7 +28,7 @@ describe('llms.txt route content', () => {
         expect(text).toContain('Case A — invite only');
         expect(text).toContain('Case B — invite + task');
         expect(text).toContain('What you can do (tell the user');
-        expect(text).toContain('Thêm bài vào hàng đợi');
+        expect(text).toContain('Agregar canciones a la cola');
         expect(text).toContain('POST https://api.test/search');
         expect(text).toContain('POST https://api.test/url-commands/session');
         expect(text).toContain('POST https://api.test/url-commands/queue');
@@ -37,12 +37,12 @@ describe('llms.txt route content', () => {
     it('resolves request origin from forwarded headers', () => {
         const request = new Request('http://internal/llms.txt', {
             headers: {
-                'x-forwarded-host': 'vkara-local.giang.io.vn',
+                'x-forwarded-host': 'ahk-local.example',
                 'x-forwarded-proto': 'https',
             },
         });
 
-        expect(getRequestAppOrigin(request)).toBe('https://vkara-local.giang.io.vn');
+        expect(getRequestAppOrigin(request)).toBe('https://ahk-local.example');
     });
 
     it('defaults API to localhost:8000 when app is localhost:3000', () => {

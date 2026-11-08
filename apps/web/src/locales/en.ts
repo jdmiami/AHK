@@ -11,7 +11,7 @@ export default {
     'appearance.system': 'System',
     'appearance.language': 'Language',
     'appearance.languageEnglish': 'English',
-    'appearance.languageVietnamese': 'Tiếng Việt',
+    'appearance.languageSpanish': 'Español',
 
     'settingsSections.pageTitle': 'Settings',
     'settingsSections.pageDescription':
@@ -82,7 +82,7 @@ export default {
     'youtubePage.queueBadgeLabel': 'Queue, {count} songs',
     'youtubePage.nowPlaying': 'Now playing',
     'youtubePage.layout': 'Device mode',
-    'youtubePage.selectLayoutMode': 'Using vkara on',
+    'youtubePage.selectLayoutMode': 'Using AHK on',
     'youtubePage.layoutAuto': 'Automatic',
     'youtubePage.layoutAutoDesc': 'Phone → remote. Large screen → TV (full-screen video).',
     'youtubePage.layoutRemote': 'Mobile · Remote',
@@ -147,7 +147,7 @@ export default {
         'Your browser does not support built-in voice search. Whisper is used automatically when available.',
     'voiceSearchSettings.useWhisper': 'Use Whisper (AI)',
     'voiceSearchSettings.useWhisperHint':
-        'Better for Vietnamese; may take a few seconds after you stop speaking.',
+        'Better for Spanish and noisy rooms; may take a few seconds after you stop speaking.',
 
     'experimentsSettings.sectionTitle': 'Experiments',
     'experimentsSettings.sectionHint': 'Unstable features for testing only',
@@ -294,7 +294,7 @@ export default {
     'videoSearch.voiceSearch': 'Voice search',
     'videoSearch.voiceSpeakNow': 'Speak now',
     'videoSearch.voiceTrySaying': 'Try saying',
-    'videoSearch.voiceExampleQuery': '“Sơn Tùng karaoke”',
+    'videoSearch.voiceExampleQuery': '“Bohemian Rhapsody karaoke”',
     'videoSearch.voiceClose': 'Close voice search',
     'videoSearch.voiceTapToStop': 'Tap the mic when you’re done',
     'videoSearch.voiceTapToStopAndSearch': 'Tap stop to search with what you said',
@@ -433,14 +433,14 @@ export default {
     'error.boundary.retrying': 'Recovering automatically…',
     'error.boundary.redirecting': 'Taking you back…',
 
-    'credit.bylinePrefix': 'Made by',
-    'credit.tagline': 'From Vietnam with love ❤️',
+    'credit.bylinePrefix': 'Based on vkara by',
+    'credit.tagline': 'Sing together. Your phone is the remote.',
 
-    'seo.title': 'vkara - Sing karaoke together online',
+    'seo.title': 'AHK · Artist House Karaoke — sing together, phones as remotes',
     'seo.description':
-        'vkara is a free online karaoke app. Create a room, invite friends, and sing together anytime with YouTube videos.',
+        'AHK (Artist House Karaoke) turns any TV or laptop into a karaoke machine. Open a room, friends join from their phones, pick songs, and sing together. No app, no account.',
     'seo.keywords':
-        'online karaoke,sing together,karaoke app,YouTube karaoke,karaoke room,group karaoke,vkara',
-    'seo.siteName': 'vkara',
-    'seo.ogImageAlt': 'VKara — karaoke room in the browser',
+        'karaoke,online karaoke,karaoke app,YouTube karaoke,karaoke room,group karaoke,house party karaoke,AHK,Artist House Karaoke',
+    'seo.siteName': 'AHK',
+    'seo.ogImageAlt': 'AHK · Artist House Karaoke — sing together, your phone is the remote',
 } as const;

@@ -2,16 +2,16 @@
 
 **Version:** 1.0
 **Last updated:** June 2026
-**Issuing entity:** vkara open-source project
-**Contact for complaints, takedown requests, and support:** [lehuygiang28@gmail.com](mailto:lehuygiang28@gmail.com)
+**Issuing entity:** AHK · Artist House Karaoke open-source project (a fork of vkara)
+**Contact for complaints, takedown requests, and support:** [github.com/jdmiami/AHK/issues](https://github.com/jdmiami/AHK/issues)
 
 ---
 
 ## 1. Purpose
 
-This document describes the functional scope of the vkara software, how the Project distributes it, how responsibility is allocated among the parties involved, and procedures for handling complaints about copyright, related rights, and third-party service terms.
+This document describes the functional scope of the AHK software, how the Project distributes it, how responsibility is allocated among the parties involved, and procedures for handling complaints about copyright, related rights, and third-party service terms.
 
-The vkara Project is open-source software used worldwide. Users and deployers must comply with the laws of the country or region where they use or operate the Software.
+The AHK Project is open-source software used worldwide. Users and deployers must comply with the laws of the country or region where they use or operate the Software.
 
 ## 2. Not legal advice
 
@@ -19,18 +19,18 @@ The text below is for information only. It does not replace legal advice. Users,
 
 ## 3. Definitions
 
-1. **vkara Project** or **Software**: the open-source program distributed under the [MIT License](../LICENSE).
+1. **AHK Project** or **Software**: the open-source program distributed under the [MIT License](../LICENSE).
 2. **End User**: any person or organization using the Software through its application interface.
 3. **Deployer** or **Operator**: any person or organization that installs, runs, or provides the Software to third parties.
 4. **Rights Holder**: an author, copyright owner, related-rights owner, or their authorized representative.
-5. **Third-Party Content**: videos, audio, images, playlists, and related data supplied by YouTube or its users. The vkara Project does not own this content.
+5. **Third-Party Content**: videos, audio, images, playlists, and related data supplied by YouTube or its users. The AHK Project does not own this content.
 6. **Commercial use**: any use of the Software or of content played through it for business, profit, paid public events, commercial promotion, or as a substitute for licensed karaoke or music services.
 
 ---
 
 ## 4. Functional scope of the Software
 
-The vkara software lets multiple users search YouTube video metadata, manage a temporary playback queue, and play content through the **YouTube IFrame Player** (YouTube's embeddable player) in a web browser.
+The AHK software lets multiple users search YouTube video metadata, manage a temporary playback queue, and play content through the **YouTube IFrame Player** (YouTube's embeddable player) in a web browser.
 
 The Software is intended for **personal, non-commercial karaoke** within the scope allowed by YouTube's embedded player. The Project **does not** commercialize music or video content and **does not** provide music licensing services.
 
@@ -59,7 +59,7 @@ Under the [YouTube Terms of Service](https://www.youtube.com/t/terms), within th
 
 The same terms prohibit public screening or streaming outside personal, non-commercial use, and prohibit use of the Service or Content in ways not permitted by YouTube or Rights Holders.
 
-The vkara Project is **designed for** use of the YouTube embedded player for personal, non-commercial purposes: playback via iframe, no separate media stream outside YouTube, no sale or re-licensing of content. This document does not assert that every deployment or every dependency is compliant with YouTube's terms. Any **commercial use** (commercial karaoke venues, ticketed events, profit-seeking live streams, etc.) is outside the Project's intended scope and is the responsibility of the user or operator.
+The AHK Project is **designed for** use of the YouTube embedded player for personal, non-commercial purposes: playback via iframe, no separate media stream outside YouTube, no sale or re-licensing of content. This document does not assert that every deployment or every dependency is compliant with YouTube's terms. Any **commercial use** (commercial karaoke venues, ticketed events, profit-seeking live streams, etc.) is outside the Project's intended scope and is the responsibility of the user or operator.
 
 ### 5.1. YouTube Player/API compliance
 
@@ -79,9 +79,9 @@ The YouTube embed must meet YouTube's minimum display size (for example 200×200
 
 Copyright and related rights in musical works and videos belong to authors, performers, producers, and other rights holders protected by law. Public performance, broadcast, communication, or commercial exploitation of such works (including via YouTube) at business premises, ticketed events, or profit-seeking live streams often requires **permission and/or royalty payment** under the law that applies where the activity takes place. Rules differ by country.
 
-Some karaoke or music videos on YouTube may be uploaded, edited, or re-published by users in ways the vkara Project **cannot verify** on a per-item basis. End Users and Operators remain responsible for choosing and using content.
+Some karaoke or music videos on YouTube may be uploaded, edited, or re-published by users in ways the AHK Project **cannot verify** on a per-item basis. End Users and Operators remain responsible for choosing and using content.
 
-Licensed streaming platforms, subscription music services, and commercial karaoke systems operate under licensing and royalty arrangements. The vkara Project has no music licensing agreements and does not replace those services.
+Licensed streaming platforms, subscription music services, and commercial karaoke systems operate under licensing and royalty arrangements. The AHK Project has no music licensing agreements and does not replace those services.
 
 ---
 
@@ -103,16 +103,16 @@ Deployers may change or remove suggested playlists in `packages/curated-playlist
 
 ### 7.3. Authors and maintainers
 
-Authors and maintainers of the vkara Project:
+Authors and maintainers of the AHK Project:
 
 1. Distribute the Software on an *as-is* basis under the MIT License;
 2. Do not commercialize music or video content or sell rights to third-party content;
 3. Do not warrant that all YouTube content is lawful for every use;
-4. Accept rights-holder complaints at the email address above and handle valid complaints within a reasonable time for project-controlled parts (suggested playlist catalog, documentation, public demo instances if any).
+4. Accept rights-holder complaints through the contact above and handle valid complaints within a reasonable time for project-controlled parts (suggested playlist catalog, documentation, public demo instances if any).
 
 ### 7.4. Disclaimer for third-party commercial use
 
-The vkara Project **disclaims responsibility** when third parties (End Users, deployers, their customers, or any other person or organization) use the Software to:
+The AHK Project **disclaims responsibility** when third parties (End Users, deployers, their customers, or any other person or organization) use the Software to:
 
 1. Commercialize, profit from, or offer paid karaoke or content services;
 2. Perform publicly at commercial premises, ticketed events, or profit-seeking live streams without appropriate legal grounds;
@@ -132,9 +132,9 @@ Disclaimers do not remove mandatory legal duties under applicable law, including
 
 ## 8. Complaints and takedown requests
 
-Rights Holders, authorized representatives, or parties authorized by YouTube/Google may submit complaints if they believe the vkara Project infringes their intellectual property rights or other lawful interests.
+Rights Holders, authorized representatives, or parties authorized by YouTube/Google may submit complaints if they believe the AHK Project infringes their intellectual property rights or other lawful interests.
 
-**Email:** [lehuygiang28@gmail.com](mailto:lehuygiang28@gmail.com)
+**Contact:** open an issue at [github.com/jdmiami/AHK/issues](https://github.com/jdmiami/AHK/issues)
 
 A complaint should include:
 
@@ -160,7 +160,7 @@ The MIT License does not grant permission to infringe third-party copyrights, do
 ## 10. Recommendations
 
 1. Private, non-profit personal use: follow YouTube's Terms and the law where you use the Software.
-2. Commercial venues, ticketed events, or profit-seeking live streams: obtain permission, licenses, and/or pay royalties under applicable law, or use properly licensed services. The vkara Software does not replace those services.
+2. Commercial venues, ticketed events, or profit-seeking live streams: obtain permission, licenses, and/or pay royalties under applicable law, or use properly licensed services. The AHK Software does not replace those services.
 3. Self-hosted deployment: review third-party search/metadata libraries and suggested playlist catalogs; disable or replace them when needed.
 4. Marketing: do not promote the Software for unlawful commercial use.
 

@@ -28,7 +28,7 @@ vkara ships a neutral slate shadcn theme, a PNG-sheet-derived icon set, Vietname
 
 ### D2 — Palette as HSL tokens in `globals.css`
 
-Keep the shadcn token names (`--background`, `--primary`, …) so every existing component picks up the new look without edits. Values:
+Keep the shadcn token names (`--background`, `--primary`, …) so every existing component picks up the new look without edits. **Implementation note:** `--secondary` and `--accent` are *surface* tokens in shadcn (secondary buttons, hover backgrounds), so making them cyan would light up every ghost hover. Cyan therefore lives in `--ring` (focus) and the `--neon-cyan` utility (`text-neon-cyan`, gradients); `--secondary`/`--accent` stay dark violet-grey surfaces. Values:
 
 | Token | Dark | Light |
 |---|---|---|

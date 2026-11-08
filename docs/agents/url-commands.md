@@ -8,7 +8,7 @@ Optional query keys so humans and AI agents can join and act without extra UI. M
 
 `name` → stash secrets → join → `provider` → `karaoke` → `q` → `tab` → `layoutMode` → wait session → `queue` / `play` / `next` → strip.
 
-On `/tv` or `/en/tv`: join and `name` still apply; `layoutMode`, `q`, and `tab` are ignored. No focus steal, no success toast.
+On `/tv` or `/es/tv`: join and `name` still apply; `layoutMode`, `q`, and `tab` are ignored. No focus steal, no success toast.
 
 ## Catalog
 
@@ -36,20 +36,20 @@ Human share/QR URLs stay `roomId` + optional `password` only.
 
 ```text
 # Join
-https://vkara.example/?roomId=4821
+https://ahk.example/?roomId=4821
 
 # Agent label
-https://vkara.example/en?roomId=4821&password=<room-password>&name=Claude
+https://ahk.example/es?roomId=4821&password=<room-password>&name=Claude
 
 # Search karaoke (no queue mutation)
-https://vkara.example/?roomId=4821&q=tinh+yeu+xanh&karaoke=1&provider=youtube
+https://ahk.example/?roomId=4821&q=bohemian+rhapsody&karaoke=1&provider=youtube
 
 # One-shot queue add
-https://vkara.example/?roomId=4821&queue=xxxxxxxxxxx&once=a1b2c3d4&name=Claude
+https://ahk.example/?roomId=4821&queue=xxxxxxxxxxx&once=a1b2c3d4&name=Claude
 
 # TV player (path is the layout command)
-https://vkara.example/tv?roomId=4821
-https://vkara.example/en/tv?roomId=4821
+https://ahk.example/tv?roomId=4821
+https://ahk.example/es/tv?roomId=4821
 ```
 
 MCP connect: [mcp.md](./mcp.md).

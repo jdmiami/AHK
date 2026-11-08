@@ -48,10 +48,10 @@ Sentry.init({
     ignoreErrors: SENTRY_IGNORE_ERRORS,
     denyUrls: SENTRY_DENY_URLS,
     beforeSend: scrubSentryEvent,
-    // Propagate traces to the vkara API (distributed tracing web → api).
+    // Propagate traces to the AHK API (distributed tracing web → api).
     tracePropagationTargets: [
         'localhost',
-        /^https?:\/\/[^/]*vkara/i,
+        /^https?:\/\/[^/]*(?:vkara|ahk)/i,
         process.env.NEXT_PUBLIC_API_URL,
         process.env.NEXT_PUBLIC_APP_URL,
     ].filter((value): value is string | RegExp => Boolean(value)),

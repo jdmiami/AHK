@@ -42,8 +42,8 @@ export function NowPlayingBar({ className, onOpenControls }: NowPlayingBarProps)
     return (
         <div
             className={cn(
-                'flex items-center gap-1.5 border-t px-page-gutter py-2',
-                'bg-background',
+                'flex items-center gap-1.5 border-t border-primary/30 px-page-gutter py-2',
+                'bg-background shadow-[var(--ahk-glow-primary)]',
                 className,
             )}
         >
