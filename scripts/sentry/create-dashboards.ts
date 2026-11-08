@@ -48,9 +48,7 @@ Then:
     process.exit(1);
 }
 
-const manifest = JSON.parse(
-    readFileSync(join(__dir, 'dashboards.json'), 'utf8'),
-) as Manifest;
+const manifest = JSON.parse(readFileSync(join(__dir, 'dashboards.json'), 'utf8')) as Manifest;
 
 const base = `${manifest.regionApi}/organizations/${manifest.org}/dashboards/`;
 
@@ -123,10 +121,7 @@ for (const template of manifest.dashboards) {
                 environment: [env],
                 // Favorite production overview only — avoid cluttering the star list.
                 isFavorited: Boolean(template.isFavorited) && env === 'production',
-                description: [
-                    template.description,
-                    `Filtered to Sentry environment=${env}.`,
-                ]
+                description: [template.description, `Filtered to Sentry environment=${env}.`]
                     .filter(Boolean)
                     .join(' '),
             },
@@ -135,7 +130,7 @@ for (const template of manifest.dashboards) {
         results.push({
             title: saved.title,
             id: saved.id,
-            url: `https://vkara.sentry.io/dashboard/${saved.id}/?environment=${env}`,
+            url: `https://${org}.sentry.io/dashboard/${saved.id}/?environment=${env}`,
             action,
         });
     }

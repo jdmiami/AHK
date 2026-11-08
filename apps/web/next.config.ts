@@ -79,8 +79,8 @@ const nextConfig: NextConfig = {
 };
 
 export default withSentryConfig(withBundleAnalyzer(nextConfig), {
-    org: process.env.SENTRY_ORG ?? 'vkara',
-    project: process.env.SENTRY_PROJECT ?? 'vkara-web',
+    org: process.env.SENTRY_ORG,
+    project: process.env.SENTRY_PROJECT,
     authToken: process.env.SENTRY_AUTH_TOKEN,
     widenClientFileUpload: true,
     // Proxy browser events through Next to reduce ad-blocker drops.

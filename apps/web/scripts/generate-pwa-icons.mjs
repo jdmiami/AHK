@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { copyFile, mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -212,15 +212,5 @@ await writeFile(
     await fitOnCanvas(wordmarkBuf, 320, 180, { maxW: 0.9, maxH: 0.72 }),
 );
 
-const copies = [
-    [join(OUT_DIR, 'icon-512.png'), join(repoRoot, 'apps/tizen/src/icon.png')],
-    [join(OUT_DIR, 'icon-512.png'), join(repoRoot, 'apps/android-tv/assets/icon.png')],
-    [join(OUT_DIR, 'tv-banner-320x180.png'), join(repoRoot, 'apps/android-tv/assets/tv-banner.png')],
-];
-for (const [from, to] of copies) {
-    await copyFile(from, to);
-}
-
 console.log(`VKara assets from brand masters → ${OUT_DIR}/`);
 console.log(`OG ${OG_OUT}`);
-console.log('Synced Tizen icon + Android TV icon/banner');

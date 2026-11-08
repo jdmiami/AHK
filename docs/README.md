@@ -3,12 +3,11 @@
 | Language | README | Legal disclaimer |
 |----------|--------|------------------|
 | English | [README](../README.md) | [DISCLAIMER.md](DISCLAIMER.md) |
-| Tiếng Việt | [README](vi/README.md) | [DISCLAIMER.md](vi/DISCLAIMER.md) |
 
 <!-- Add a row here when a new translation lands in docs/<locale>/README.md -->
 
 Technical deployment (English): [containers/README.md](../containers/README.md)
 
-Agent / URL automation: [agents/url-commands.md](agents/url-commands.md) · [agents/mcp.md](agents/mcp.md) · [Tiếng Việt](vi/url-commands.md)
+Agent / URL automation: [agents/url-commands.md](agents/url-commands.md) · [agents/mcp.md](agents/mcp.md)
 
-Copyright complaints and takedown requests: [lehuygiang28@gmail.com](mailto:lehuygiang28@gmail.com)
+Copyright complaints and takedown requests: open an issue at [github.com/jdmiami/AHK/issues](https://github.com/jdmiami/AHK/issues).

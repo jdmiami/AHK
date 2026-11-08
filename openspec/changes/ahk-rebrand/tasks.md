@@ -1,12 +1,12 @@
 ## 0. Fork hygiene and pruning (PR 1)
 
-- [ ] 0.1 Delete `apps/tizen`, `apps/android-tv`; remove root scripts `build:tizen*`, `build:android-tv`, `check:android-tv`; drop their Turbo `globalEnv` entries
-- [ ] 0.2 Delete workflows `tizen-packaging.yml`, `release-tizen.yml`, `android-tv-packaging.yml`, `release-android.yml`
-- [ ] 0.3 Delete `.github/FUNDING.yml`, `docs/vi/`, `docs/standalone-tv-deployment.md`
-- [ ] 0.4 Scrub upstream Sentry DSNs/org/project from `.env.example`, `apps/api/.env.example`, `apps/web/.env.example`, `scripts/sentry/*`; leave Sentry optional and unset
-- [ ] 0.5 Re-point `build-push-docker.yml` to `${{ vars.DOCKERHUB_OWNER }}`; gate push on the variable
-- [ ] 0.6 Add `docs/ahk/CREDITS.md` (vkara MIT attribution, library thanks); add AHK copyright line to `LICENSE` keeping the original
-- [ ] 0.7 Archive `openspec/changes/android-tv-shell-sideload` as superseded
+- [x] 0.1 Delete `apps/tizen`, `apps/android-tv`; remove root scripts `build:tizen*`, `build:android-tv`, `check:android-tv`; drop their Turbo `globalEnv` entries
+- [x] 0.2 Delete workflows `tizen-packaging.yml`, `release-tizen.yml`, `android-tv-packaging.yml`, `release-android.yml`
+- [x] 0.3 Delete `.github/FUNDING.yml`, `docs/vi/`, `docs/standalone-tv-deployment.md`
+- [x] 0.4 Scrub upstream Sentry DSNs/org/project from `.env.example`, `apps/api/.env.example`, `apps/web/.env.example`, `scripts/sentry/*`; leave Sentry optional and unset
+- [x] 0.5 Re-point `build-push-docker.yml` to `${{ vars.DOCKERHUB_OWNER }}`; gate push on the variable
+- [x] 0.6 Add `docs/ahk/CREDITS.md` (vkara MIT attribution, library thanks); add AHK copyright line to `LICENSE` keeping the original
+- [x] 0.7 Archive `openspec/changes/android-tv-shell-sideload` as superseded
 - [ ] 0.8 `bun run ci` green; `bun.lock` updated after workspace removal
 
 ## 1. Brand module and strings (PR 2)

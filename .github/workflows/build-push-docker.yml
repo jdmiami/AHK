@@ -73,7 +73,9 @@ jobs:
 
     build:
         needs: [check-skip]
-        if: ${{ needs.check-skip.outputs.skip_docker != 'true' }}
+        # Publishing is opt-in for forks: set the repo variable DOCKERHUB_OWNER plus the
+        # DOCKERHUB_USERNAME / DOCKERHUB_TOKEN secrets to enable it.
+        if: ${{ needs.check-skip.outputs.skip_docker != 'true' && vars.DOCKERHUB_OWNER != '' }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
@@ -81,13 +83,13 @@ jobs:
             matrix:
                 app:
                     - name: api
-                      image: lehuygiang28/vkara-api
+                      image: ${{ vars.DOCKERHUB_OWNER }}/vkara-api
                       dockerfile: ./apps/api/Dockerfile
                     - name: api-redis
-                      image: lehuygiang28/vkara-api-redis
+                      image: ${{ vars.DOCKERHUB_OWNER }}/vkara-api-redis
                       dockerfile: ./containers/api-redis/Dockerfile
                     - name: aio
-                      image: lehuygiang28/vkara-aio
+                      image: ${{ vars.DOCKERHUB_OWNER }}/vkara-aio
                       dockerfile: ./containers/aio/Dockerfile
         steps:
             - name: Checkout code

@@ -1,6 +1,6 @@
 import { resolveUrl } from '@vkara/room';
 
-const GITHUB = 'https://github.com/lehuygiang28/vkara/blob/main';
+const GITHUB = 'https://github.com/jdmiami/AHK/blob/main';
 
 export type LlmsTxtOrigins = {
     appOrigin: string;
@@ -179,7 +179,7 @@ HTTP mutations use the Redis session room only. \`bind.roomId\` must match. Neve
 ## Guests (non-tech)
 
 - Phone: open the site (or scan the QR on the TV). Join with the 4-digit code. Password only if the host set one.
-- TV: open \`${app}/tv\` (or the Tizen app). Create a room. Show the QR. Play.
+- TV: open \`${app}/tv\` in the TV browser. Create a room. Show the QR. Play.
 - Human share/QR links are **only** \`roomId\` and optional \`password\`. Never add \`queue\`, \`play\`, \`next\`, \`layoutMode\`, or \`name\` to a guest invite.
 - Compact in-app payload: \`vkara:<roomId>\` or \`vkara:<roomId>:<password>\`.
 
@@ -249,6 +249,6 @@ Base: \`${factory}\`. v1 does **not** join WebSocket as a hidden participant.
 ## Optional
 
 - [Vietnamese README](${GITHUB}/docs/vi/README.md)
-- [OpenSpec specs](https://github.com/lehuygiang28/vkara/tree/main/openspec/specs/url-command-surface): design and security specs
+- [OpenSpec specs](https://github.com/jdmiami/AHK/tree/main/openspec/specs/url-command-surface): design and security specs
 `;
 }

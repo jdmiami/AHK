@@ -30,9 +30,6 @@
 
 <p align="center">
   <a href="README.md"><strong>English</strong></a>
-  ·
-  <a href="docs/vi/README.md">Tiếng Việt</a>
-  <!-- · <a href="docs/xx/README.md">Language</a> -->
 </p>
 
 <p align="center">
@@ -129,9 +126,9 @@ vkara is open-source software under the MIT License, intended for personal, non-
 
 Self-hosting deployers are responsible for how they configure and operate their instance. End users must comply with YouTube's Terms and copyright law where they live.
 
-Full disclaimer: [docs/DISCLAIMER.md](docs/DISCLAIMER.md) (English), [docs/vi/DISCLAIMER.md](docs/vi/DISCLAIMER.md) (Tiếng Việt).
+Full disclaimer: [docs/DISCLAIMER.md](docs/DISCLAIMER.md).
 
-Copyright complaints, takedown requests, and support: [lehuygiang28@gmail.com](mailto:lehuygiang28@gmail.com)
+Copyright complaints, takedown requests, and support: open an issue at [github.com/jdmiami/AHK/issues](https://github.com/jdmiami/AHK/issues).
 
 ---
 
@@ -146,11 +143,11 @@ docker compose --profile aio up --build
 
 Open http://localhost:3000
 
-Pre-built image from Docker Hub:
+Pre-built images are published under the Docker Hub owner set in the repo variable `DOCKERHUB_OWNER` (see `.github/workflows/build-push-docker.yml`):
 
 ```bash
-docker pull lehuygiang28/vkara-aio:latest
-docker run --rm -p 3000:3000 lehuygiang28/vkara-aio:latest
+docker pull ${DOCKERHUB_OWNER}/vkara-aio:latest
+docker run --rm -p 3000:3000 ${DOCKERHUB_OWNER}/vkara-aio:latest
 ```
 
 Split web/API, production env, and other profiles: **[containers/README.md](containers/README.md)**.
@@ -165,8 +162,8 @@ Split web/API, production env, and other profiles: **[containers/README.md](cont
 **Requirements:** [Bun](https://bun.sh) ≥ 1.4.4, Redis, Node.js 22.23.4 for production web builds (24.22.1 on Node 24, 26.12.1 on Node 26).
 
 ```bash
-git clone https://github.com/lehuygiang28/vkara.git
-cd vkara
+git clone https://github.com/jdmiami/AHK.git
+cd AHK
 bun install
 ```
 
@@ -197,10 +194,10 @@ bun run dev:api
 
 | Image                          | Port | Notes                                                |
 | ------------------------------ | ---- | ---------------------------------------------------- |
-| `lehuygiang28/vkara-aio`       | 3000 | Full stack (recommended)                             |
-| `lehuygiang28/vkara-web`       | 3000 | Frontend only                                        |
-| `lehuygiang28/vkara-api`       | 8000 | API only (bring your own Redis)                      |
-| `lehuygiang28/vkara-api-redis` | 8000 | API + Redis in one container; Redis is internal only |
+| `${DOCKERHUB_OWNER}/vkara-aio`       | 3000 | Full stack (recommended)                             |
+| `${DOCKERHUB_OWNER}/vkara-web`       | 3000 | Frontend only                                        |
+| `${DOCKERHUB_OWNER}/vkara-api`       | 8000 | API only (bring your own Redis)                      |
+| `${DOCKERHUB_OWNER}/vkara-api-redis` | 8000 | API + Redis in one container; Redis is internal only |
 
 Compose profiles: `aio`, `web`, `api`, `bundle`, `whisper`. See [containers/README.md](containers/README.md).
 
@@ -227,9 +224,7 @@ Optional voice search: [Whisper STT](containers/whisper-stt/README.md).
 vkara/
 ├── apps/
 │   ├── web/                 frontend
-│   ├── api/                 backend
-│   ├── tizen/               Samsung TV shell (WGT + TizenBrew)
-│   └── android-tv/          Android TV shell (Expo + EAS APK sideload)
+│   └── api/                 backend
 ├── packages/
 │   ├── env/                 t3-env + feature flags
 │   ├── validators/          zod WS + HTTP schemas
@@ -247,11 +242,7 @@ vkara/
 
 Realtime message shapes live in `packages/validators` (zod); room/YouTube domain types in `packages/room` and `packages/youtube`. Update validators first when changing WS or HTTP contracts.
 
-**Samsung TV packaging:** shared shell in `apps/tizen` builds an unsigned **WGT** (Apps2Samsung sideload) and a **TizenBrew** npm module (`@vkara/tv`). See [apps/tizen/README.md](apps/tizen/README.md). Shell releases use tags `tizen-v*` (not Docker `v*`).
-
-**Android TV packaging:** Expo + `react-native-tvos` shell in `apps/android-tv` builds a sideload **APK** via EAS (no Google Play for now; no local Gradle required). See [apps/android-tv/README.md](apps/android-tv/README.md) and [standalone TV deployment](docs/standalone-tv-deployment.md). Shell releases use tags `android-v*` (not Docker `v*` / `tizen-v*`).
-
-**Scripts:** `bun run dev` · `bun run test` · `bun run typecheck` · `bun run lint` · `bun run build` · `bun run build:tizen` · `bun run build:android-tv` · `bun run format`
+**Scripts:** `bun run dev` · `bun run test` · `bun run typecheck` · `bun run lint` · `bun run build` · `bun run format`
 
 **Docs:** [Monorepo architecture](docs/monorepo-architecture.md) · [URL commands / agents](docs/agents/url-commands.md)
 
@@ -271,9 +262,6 @@ YouTube search and playback in vkara depend on open-source libraries and their a
 | [youtube-sr](https://github.com/twlite/youtube-sr)           | [@twlite](https://github.com/twlite)                             | Search suggestions                               |
 | [react-youtube](https://github.com/tjallingt/react-youtube)  | [@tjallingt](https://github.com/tjallingt)                       | YouTube player embed in the web app              |
 
-The Samsung Tizen shell approach was inspired by [@alfrededison](https://github.com/alfrededison)’s
-work in [#5](https://github.com/lehuygiang28/vkara/pull/5) — thank you for sharing that path with the community.
-
 Thank you to the maintainers and contributors of these projects.
 
 ## License
@@ -283,10 +271,9 @@ MIT - see [LICENSE](LICENSE).
 ---
 
 <p align="center">
-  Made by <a href="https://github.com/lehuygiang28">@lehuygiang28</a><br />
-  From Vietnam with love ♥
+  Based on <a href="https://github.com/lehuygiang28/vkara">vkara</a> by <a href="https://github.com/lehuygiang28">@lehuygiang28</a> · see <a href="docs/ahk/CREDITS.md">credits</a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/lehuygiang28/vkara">github.com/lehuygiang28/vkara</a>
+  <a href="https://github.com/jdmiami/AHK">github.com/jdmiami/AHK</a>
 </p>

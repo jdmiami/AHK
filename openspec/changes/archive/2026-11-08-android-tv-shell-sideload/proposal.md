@@ -1,3 +1,5 @@
+> **Superseded (2026-11-08):** AHK is browser-first. The Android TV shell was removed in the `ahk-rebrand` change (Phase 0). Kept for history.
+
 ## Why
 
 Android TV operators need a home-row app that opens the hosted `/tv` karaoke experience without Google Play. The monorepo already ships a thin Samsung shell (`apps/tizen`) that bakes `VKARA_TV_URL` and hands off top-level to `/tv`; Android TV needs the same pattern as a sideloadable APK. Maintainers prefer not to maintain a local Gradle/Android Studio tree, so packaging uses **Expo + react-native-tvos** with a WebView handoff, built on **EAS** (Gradle stays cloud-side). Without a shared bake/release contract, forks and official builds will drift on URL, package id, and signing.

@@ -20,10 +20,10 @@ vkara/
 
 | Image                          | Dockerfile                          | Exposed ports | Use when                                                         |
 | ------------------------------ | ----------------------------------- | ------------- | ---------------------------------------------------------------- |
-| `lehuygiang28/vkara-api`       | `apps/api/Dockerfile`               | `8000`        | API behind your own Redis / reverse proxy                        |
-| `lehuygiang28/vkara-web`       | `apps/web/Dockerfile`               | `3000`        | Frontend only; point env at external API                         |
-| `lehuygiang28/vkara-api-redis` | `containers/api-redis/Dockerfile`   | `8000`        | Backend bundle without Next.js; Redis stays inside the container |
-| `lehuygiang28/vkara-aio`       | `containers/aio/Dockerfile`         | `3000`        | Single container, one public port                                |
+| `${DOCKERHUB_OWNER}/vkara-api`       | `apps/api/Dockerfile`               | `8000`        | API behind your own Redis / reverse proxy                        |
+| `${DOCKERHUB_OWNER}/vkara-web`       | `apps/web/Dockerfile`               | `3000`        | Frontend only; point env at external API                         |
+| `${DOCKERHUB_OWNER}/vkara-api-redis` | `containers/api-redis/Dockerfile`   | `8000`        | Backend bundle without Next.js; Redis stays inside the container |
+| `${DOCKERHUB_OWNER}/vkara-aio`       | `containers/aio/Dockerfile`         | `3000`        | Single container, one public port                                |
 | _(local / HF Space)_           | `containers/whisper-stt/Dockerfile` | `7860`        | Optional voice search STT (build context = that folder)          |
 
 Build context is the **repository root** (`.`) for vkara app/bundle images, including monorepo `packages/*`. **Exception:** `whisper-stt` builds from `containers/whisper-stt/` only.
@@ -119,8 +119,8 @@ docker build -t vkara-whisper-stt:local containers/whisper-stt
 Pull published images:
 
 ```bash
-docker pull lehuygiang28/vkara-aio:latest
-docker run --rm -p 3000:3000 lehuygiang28/vkara-aio:latest
+docker pull ${DOCKERHUB_OWNER}/vkara-aio:latest
+docker run --rm -p 3000:3000 ${DOCKERHUB_OWNER}/vkara-aio:latest
 ```
 
 CI builds and pushes **api**, **api-redis**, and **aio** on push to `main` / `dev` (see `.github/workflows/build-push-docker.yml`). **Web** is not pushed in CI — `NEXT_PUBLIC_*` must be baked in at `next build` per domain (use Vercel or a local `docker build` with `--build-arg`). Commit with `[skip docker]` to skip the workflow.
@@ -162,7 +162,7 @@ curl -I http://localhost:3000/
 ## FAQ
 
 **Which Docker image should I use?**  
-`lehuygiang28/vkara-aio` for single-container self-hosting. Split `vkara-api` and `vkara-web` when you run your own reverse proxy or scale components separately. Use `vkara-api-redis` for backend-only.
+`${DOCKERHUB_OWNER}/vkara-aio` for single-container self-hosting. Split `vkara-api` and `vkara-web` when you run your own reverse proxy or scale components separately. Use `vkara-api-redis` for backend-only.
 
 **Why set `PUBLIC_APP_URL`?**  
 The API checks YouTube embed permissions against your site origin. In production, set it to the exact URL users open in the browser (including `https://`).
