@@ -47,7 +47,14 @@ Every PR is opened as a draft on the `claude/*` branch, must pass `bun run ci`
   framework Next.js, build via `apps/web/vercel.json` (`bun install` at repo root, `bun run build:web`).
   Production branch `main`; every push to a PR branch builds a preview. Deployment protection is off so phones
   can open the `vercel.app` URL without a Vercel login.
-- **API + Redis:** not hosted yet. The web app needs `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` pointing at a
+- **Short domains:** `artisthousekaraoke.vercel.app` and `ahkaraoke-app.vercel.app` are attached to the project
+  (`ahkaraoke.vercel.app` is owned by another Vercel account).
+- **Host switch:** the phone lobby shows a "The house is off / on" panel (`apps/web/src/components/host/host-power-panel.tsx`)
+  backed by `apps/web/src/app/api/host/route.ts`, which starts/stops a RunPod pod through RunPod REST v2. Server env:
+  `RUNPOD_API_KEY`, `RUNPOD_POD_ID`, `AHK_HOST_PIN`; public flag `NEXT_PUBLIC_HOST_SWITCH=1`. Status is public; actions need
+  the PIN (constant-time compare, wrong-PIN delay). "On" means the API `/health` answers, not just that the pod is RUNNING.
+- **API + Redis (RunPod plan):** pod `ahk-api`, `cpu3c` 2 vCPU / 4 GB, image `lehuygiang28/vkara-api-redis:sha-b2494a1`
+  (the fork's base commit), port 8000 over the RunPod HTTPS proxy. $0.06/h while on; stopped between nights. Not yet created. The web app needs `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` pointing at a
   running Bun API before rooms work. Planned: Fly.io app from `containers/api-redis/Dockerfile` (API + Redis in one
   container) or a VPS with `docker compose --profile api`. Set those two env vars on the Vercel project afterwards.
 - **Docker images:** publish workflow is opt-in via the `DOCKERHUB_OWNER` repo variable plus

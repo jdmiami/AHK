@@ -17,6 +17,7 @@ import { useJoinRoom } from '@/hooks/use-join-room';
 import { useRoomSettingsStore } from '@/store/roomSettingsStore';
 
 import { BrandLockup } from '@/components/brand/ahk-mark';
+import { HostPowerPanel } from '@/components/host/host-power-panel';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { LayoutModeSwitch, RECOVERY_MODE_CHOICES } from '@/components/layout-mode-switch';
 import { QRScanner } from '@/components/qr-scanner';
@@ -208,6 +209,8 @@ export function RemoteJoinLobby({ allowCreateRoom = false }: RemoteJoinLobbyProp
                         ) : null}
                     </div>
                 </div>
+
+                <HostPowerPanel className="mt-4" />
 
                 <div className="mt-5 flex justify-center pb-1 sm:mt-6">
                     <LayoutModeSwitch tone="inline" choices={RECOVERY_MODE_CHOICES} />

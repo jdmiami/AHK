@@ -25,6 +25,10 @@ export function webServerEnv() {
             SENTRY_AUTH_TOKEN: z.string().optional(),
             SENTRY_ORG: z.string().optional(),
             SENTRY_PROJECT: z.string().optional(),
+            /** Host switch (optional): lets the lobby start/stop the RunPod pod that runs the API. */
+            RUNPOD_API_KEY: z.string().min(1).optional(),
+            RUNPOD_POD_ID: z.string().min(1).optional(),
+            AHK_HOST_PIN: z.string().min(4).optional(),
         },
         runtimeEnv: {
             WHISPER_URL: process.env.WHISPER_URL,
@@ -43,6 +47,9 @@ export function webServerEnv() {
             SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
             SENTRY_ORG: process.env.SENTRY_ORG,
             SENTRY_PROJECT: process.env.SENTRY_PROJECT,
+            RUNPOD_API_KEY: process.env.RUNPOD_API_KEY,
+            RUNPOD_POD_ID: process.env.RUNPOD_POD_ID,
+            AHK_HOST_PIN: process.env.AHK_HOST_PIN,
         },
         emptyStringAsUndefined: true,
         skipValidation: envSkipValidation(),

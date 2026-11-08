@@ -442,6 +442,21 @@ export default {
     'error.boundary.retrying': 'Recuperando automáticamente…',
     'error.boundary.redirecting': 'Llevándote de vuelta…',
 
+    'hostSwitch.stateOn': 'La casa está encendida',
+    'hostSwitch.stateStarting': 'Encendiendo la casa…',
+    'hostSwitch.stateOff': 'La casa está apagada',
+    'hostSwitch.hintOn': 'Las salas funcionan. Apágala después de la fiesta para detener el cobro.',
+    'hostSwitch.hintStarting': 'Suele tardar uno o dos minutos. Esta página se reconecta sola.',
+    'hostSwitch.hintOff': 'Ingresa el PIN de la casa para encender el servidor esta noche.',
+    'hostSwitch.hintMissing':
+        'El servidor fue eliminado. Pide a quien administra AHK que lo configure de nuevo.',
+    'hostSwitch.pinLabel': 'PIN de la casa',
+    'hostSwitch.pinPlaceholder': 'PIN',
+    'hostSwitch.turnOn': 'Encender',
+    'hostSwitch.turnOff': 'Apagar',
+    'hostSwitch.wrongPin': 'PIN incorrecto',
+    'hostSwitch.failed': 'No se pudo contactar al controlador. Intenta de nuevo en un momento.',
+
     'credit.bylinePrefix': 'Basado en vkara por',
     'credit.tagline': 'Canten juntos. Tu teléfono es el control.',
 

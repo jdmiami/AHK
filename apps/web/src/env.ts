@@ -20,6 +20,7 @@ export const env = createEnv({
         NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE:
             process.env.NEXT_PUBLIC_SENTRY_REPLAYS_ON_ERROR_SAMPLE_RATE,
         NEXT_PUBLIC_SENTRY_ENABLED: process.env.NEXT_PUBLIC_SENTRY_ENABLED,
+        NEXT_PUBLIC_HOST_SWITCH: process.env.NEXT_PUBLIC_HOST_SWITCH,
         VKARA_EXPERIMENTS: process.env.VKARA_EXPERIMENTS,
         WHISPER_URL: process.env.WHISPER_URL,
         HF_TOKEN: process.env.HF_TOKEN,
@@ -37,6 +38,9 @@ export const env = createEnv({
         SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN,
         SENTRY_ORG: process.env.SENTRY_ORG,
         SENTRY_PROJECT: process.env.SENTRY_PROJECT,
+        RUNPOD_API_KEY: process.env.RUNPOD_API_KEY,
+        RUNPOD_POD_ID: process.env.RUNPOD_POD_ID,
+        AHK_HOST_PIN: process.env.AHK_HOST_PIN,
     },
     emptyStringAsUndefined: true,
     skipValidation: envSkipValidation(),

@@ -433,6 +433,20 @@ export default {
     'error.boundary.retrying': 'Recovering automatically…',
     'error.boundary.redirecting': 'Taking you back…',
 
+    'hostSwitch.stateOn': 'The house is on',
+    'hostSwitch.stateStarting': 'Starting the house…',
+    'hostSwitch.stateOff': 'The house is off',
+    'hostSwitch.hintOn': 'Rooms work. Turn it off after the party to stop the meter.',
+    'hostSwitch.hintStarting': 'Usually one to two minutes. This page reconnects by itself.',
+    'hostSwitch.hintOff': 'Enter the house PIN to start the server for tonight.',
+    'hostSwitch.hintMissing': 'The server was removed. Ask whoever runs AHK to set it up again.',
+    'hostSwitch.pinLabel': 'House PIN',
+    'hostSwitch.pinPlaceholder': 'PIN',
+    'hostSwitch.turnOn': 'Turn on',
+    'hostSwitch.turnOff': 'Turn off',
+    'hostSwitch.wrongPin': 'Wrong PIN',
+    'hostSwitch.failed': 'Could not reach the host controller. Try again in a moment.',
+
     'credit.bylinePrefix': 'Based on vkara by',
     'credit.tagline': 'Sing together. Your phone is the remote.',
 
