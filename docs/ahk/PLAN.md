@@ -39,6 +39,20 @@ Answers collected from the owner. These are settled unless revisited here.
 Every PR is opened as a draft on the `claude/*` branch, must pass `bun run ci`
 (test → typecheck → lint → build), and follows `.github/pull_request_template.md`.
 
+**Status (2026-11-08):** plan + Phase 0 landed together in [PR #1](https://github.com/jdmiami/AHK/pull/1).
+
+### Hosting (set up 2026-11-08)
+
+- **Web:** Vercel project `ahk` in team `jdmiamis-projects`, linked to `jdmiami/AHK`, root directory `apps/web`,
+  framework Next.js, build via `apps/web/vercel.json` (`bun install` at repo root, `bun run build:web`).
+  Production branch `main`; every push to a PR branch builds a preview. Deployment protection is off so phones
+  can open the `vercel.app` URL without a Vercel login.
+- **API + Redis:** not hosted yet. The web app needs `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` pointing at a
+  running Bun API before rooms work. Planned: Fly.io app from `containers/api-redis/Dockerfile` (API + Redis in one
+  container) or a VPS with `docker compose --profile api`. Set those two env vars on the Vercel project afterwards.
+- **Docker images:** publish workflow is opt-in via the `DOCKERHUB_OWNER` repo variable plus
+  `DOCKERHUB_USERNAME` / `DOCKERHUB_TOKEN` secrets.
+
 ### PR 1 — Fork hygiene and pruning (Phase 0)
 
 Goal: a clean fork with nothing pointing at upstream infrastructure, and the parts we are not keeping removed.
