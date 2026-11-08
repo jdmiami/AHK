@@ -58,6 +58,13 @@ Every PR is opened as a draft on the `claude/*` branch, must pass `bun run ci`
   `https://86349epe8bga1h-8000.proxy.runpod.net`. $0.06/h while on; stop it between nights. Vercel env `NEXT_PUBLIC_API_URL`,
   `NEXT_PUBLIC_WS_URL`, `RUNPOD_POD_ID` point at it. Verified live: TV creates a room, a phone joins by link, searches, and
   Add starts the song on the TV (screenshots `docs/ahk/screenshots/live-*.png`). Real-device YouTube playback still to confirm.
+- **Idle auto-off:** `containers/api-redis/idle-watchdog.sh` runs inside the pod (pod-scoped `RUNPOD_API_KEY`, no extra key).
+  It stops the pod after `AHK_IDLE_STOP_MINUTES` (default 20) with zero WebSocket connections, or after
+  `AHK_MAX_SESSION_HOURS` (default 6). Baked into the api-redis image's entrypoint; on the current upstream image it is
+  injected through the pod's start command. RunPod itself also stops every pod when the balance reaches $0.
+- **Lobby status panel:** shows on/off, devices connected, uptime, this session's cost, hourly rate, the RunPod balance
+  (GraphQL `myself.clientBalance`, needs `RUNPOD_API_KEY` on Vercel) with a low-funds warning under $2, and the
+  auto-off rule. Without the Vercel key it shows read-only status from the API's `/health`.
 - **Known YouTube limit:** some major karaoke channels (Sing King, KaraFun) disable embedding; those songs are refused with
   "Cannot play this video". Option: set `VKARA_EMBED_PREFILTER_AT_LIST=1` on the pod to hide them from search (slower search). The web app needs `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` pointing at a
   running Bun API before rooms work. Planned: Fly.io app from `containers/api-redis/Dockerfile` (API + Redis in one

@@ -433,6 +433,16 @@ export default {
     'error.boundary.retrying': 'Recovering automatically…',
     'error.boundary.redirecting': 'Taking you back…',
 
+    'hostSwitch.panelLabel': 'House status',
+    'hostSwitch.statConnected': 'Connected now',
+    'hostSwitch.statUptime': 'On for',
+    'hostSwitch.statSession': 'This session',
+    'hostSwitch.statSessionAt': 'This session · {rate}/h',
+    'hostSwitch.statBalance': 'RunPod balance',
+    'hostSwitch.lowBalance':
+        'Funds are low. RunPod switches the house off when the balance reaches $0.',
+    'hostSwitch.autoOff':
+        'Turns itself off after {minutes} min with nobody connected, and after {hours} h at most.',
     'hostSwitch.stateOn': 'The house is on',
     'hostSwitch.stateStarting': 'Starting the house…',
     'hostSwitch.stateOff': 'The house is off',

@@ -442,6 +442,16 @@ export default {
     'error.boundary.retrying': 'Recuperando automáticamente…',
     'error.boundary.redirecting': 'Llevándote de vuelta…',
 
+    'hostSwitch.panelLabel': 'Estado de la casa',
+    'hostSwitch.statConnected': 'Conectados ahora',
+    'hostSwitch.statUptime': 'Encendida hace',
+    'hostSwitch.statSession': 'Esta sesión',
+    'hostSwitch.statSessionAt': 'Esta sesión · {rate}/h',
+    'hostSwitch.statBalance': 'Saldo en RunPod',
+    'hostSwitch.lowBalance':
+        'Quedan pocos fondos. RunPod apaga la casa cuando el saldo llega a $0.',
+    'hostSwitch.autoOff':
+        'Se apaga sola tras {minutes} min sin nadie conectado, y como máximo a las {hours} h.',
     'hostSwitch.stateOn': 'La casa está encendida',
     'hostSwitch.stateStarting': 'Encendiendo la casa…',
     'hostSwitch.stateOff': 'La casa está apagada',

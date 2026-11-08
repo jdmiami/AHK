@@ -2,11 +2,18 @@ import { NextResponse } from 'next/server';
 
 import { env } from '@/env';
 import {
+    BALANCE_QUERY,
+    DEFAULT_IDLE_STOP_MINUTES,
+    DEFAULT_MAX_SESSION_HOURS,
+    RUNPOD_GRAPHQL_URL,
     isHostAction,
     isPinValid,
     mapHostState,
+    parseHealth,
+    parsePositiveNumber,
     runpodPodActionUrl,
     runpodPodUrl,
+    sessionCostUsd,
     type HostStatusResponse,
     type PodStatus,
 } from '@/lib/host-switch';
@@ -18,11 +25,17 @@ const HEALTH_TIMEOUT_MS = 3000;
 const RUNPOD_TIMEOUT_MS = 8000;
 const WRONG_PIN_DELAY_MS = 600;
 
-function configured(): { apiKey: string; podId: string } | null {
+function runpodConfig(): { apiKey: string; podId: string } | null {
     const apiKey = env.RUNPOD_API_KEY?.trim();
     const podId = env.RUNPOD_POD_ID?.trim();
     if (!apiKey || !podId) return null;
     return { apiKey, podId };
+}
+
+function apiBase(): string | null {
+    const base = env.NEXT_PUBLIC_API_URL?.trim();
+    if (!base || base.startsWith('/')) return null;
+    return base.replace(/\/$/, '');
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: number) {
@@ -35,55 +48,131 @@ async function fetchWithTimeout(url: string, init: RequestInit, timeoutMs: numbe
     }
 }
 
-async function readPodStatus(apiKey: string, podId: string): Promise<PodStatus | null> {
+type PodRead = { status: PodStatus | null; costPerHour: number | null; uptime: number | null };
+
+async function readPod(apiKey: string, podId: string): Promise<PodRead> {
     const res = await fetchWithTimeout(
         runpodPodUrl(podId),
         { headers: { Authorization: `Bearer ${apiKey}` } },
         RUNPOD_TIMEOUT_MS,
     );
-    if (!res.ok) return null;
-    const body = (await res.json()) as { status?: string };
-    return (body.status as PodStatus | undefined) ?? null;
+    if (!res.ok) return { status: null, costPerHour: null, uptime: null };
+    const body = (await res.json()) as {
+        status?: string;
+        cost?: number;
+        runtime?: { uptime?: number } | null;
+    };
+    return {
+        status: (body.status as PodStatus | undefined) ?? null,
+        costPerHour: typeof body.cost === 'number' ? body.cost : null,
+        uptime: typeof body.runtime?.uptime === 'number' ? body.runtime.uptime : null,
+    };
 }
 
-async function probeApi(): Promise<boolean> {
-    const base = env.NEXT_PUBLIC_API_URL?.trim();
-    if (!base || base.startsWith('/')) return false;
+async function readBalance(
+    apiKey: string,
+): Promise<{ balance: number | null; spend: number | null }> {
     try {
         const res = await fetchWithTimeout(
-            `${base.replace(/\/$/, '')}/health`,
-            { method: 'GET' },
-            HEALTH_TIMEOUT_MS,
+            RUNPOD_GRAPHQL_URL,
+            {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ query: BALANCE_QUERY }),
+            },
+            RUNPOD_TIMEOUT_MS,
         );
-        return res.ok;
+        if (!res.ok) return { balance: null, spend: null };
+        const body = (await res.json()) as {
+            data?: { myself?: { clientBalance?: number; currentSpendPerHr?: number } };
+        };
+        const me = body.data?.myself;
+        return {
+            balance: typeof me?.clientBalance === 'number' ? me.clientBalance : null,
+            spend: typeof me?.currentSpendPerHr === 'number' ? me.currentSpendPerHr : null,
+        };
     } catch {
-        return false;
+        return { balance: null, spend: null };
+    }
+}
+
+async function probeApi(): Promise<{
+    ok: boolean;
+    connections: number | null;
+    uptime: number | null;
+}> {
+    const base = apiBase();
+    if (!base) return { ok: false, connections: null, uptime: null };
+    try {
+        const res = await fetchWithTimeout(`${base}/health`, { method: 'GET' }, HEALTH_TIMEOUT_MS);
+        if (!res.ok) return { ok: false, connections: null, uptime: null };
+        const parsed = parseHealth(await res.json().catch(() => null));
+        return { ok: true, ...parsed };
+    } catch {
+        return { ok: false, connections: null, uptime: null };
     }
 }
 
 async function buildStatus(): Promise<HostStatusResponse> {
-    const config = configured();
-    if (!config) {
+    const config = runpodConfig();
+    const autoOff = {
+        idleMinutes: parsePositiveNumber(env.AHK_IDLE_STOP_MINUTES, DEFAULT_IDLE_STOP_MINUTES),
+        maxHours: parsePositiveNumber(env.AHK_MAX_SESSION_HOURS, DEFAULT_MAX_SESSION_HOURS),
+    };
+    const checkedAt = new Date().toISOString();
+
+    if (!config && !apiBase()) {
         return {
             state: 'unconfigured',
             podStatus: null,
             apiReachable: false,
-            checkedAt: new Date().toISOString(),
+            readOnly: true,
+            usage: {
+                connectedDevices: null,
+                uptimeSeconds: null,
+                costPerHour: null,
+                sessionCost: null,
+                balance: null,
+                accountSpendPerHour: null,
+            },
+            autoOff,
+            checkedAt,
         };
     }
-    const [podStatus, apiReachable] = await Promise.all([
-        readPodStatus(config.apiKey, config.podId).catch(() => null),
+
+    const [pod, health, money] = await Promise.all([
+        config
+            ? readPod(config.apiKey, config.podId).catch(
+                  (): PodRead => ({ status: null, costPerHour: null, uptime: null }),
+              )
+            : Promise.resolve<PodRead>({ status: null, costPerHour: null, uptime: null }),
         probeApi(),
+        config ? readBalance(config.apiKey) : Promise.resolve({ balance: null, spend: null }),
     ]);
+
+    const uptimeSeconds = pod.uptime ?? health.uptime;
     return {
-        state: mapHostState(podStatus, apiReachable),
-        podStatus,
-        apiReachable,
-        checkedAt: new Date().toISOString(),
+        state: mapHostState(pod.status, health.ok),
+        podStatus: pod.status,
+        apiReachable: health.ok,
+        readOnly: !config,
+        usage: {
+            connectedDevices: health.ok ? health.connections : null,
+            uptimeSeconds: health.ok || pod.status === 'RUNNING' ? uptimeSeconds : null,
+            costPerHour: pod.costPerHour,
+            sessionCost: sessionCostUsd(health.ok ? uptimeSeconds : null, pod.costPerHour),
+            balance: money.balance,
+            accountSpendPerHour: money.spend,
+        },
+        autoOff,
+        checkedAt,
     };
 }
 
-/** Public, read-only: is the house on? */
+/** Public, read-only: is the house on, and what is it costing? */
 export async function GET() {
     const status = await buildStatus();
     return NextResponse.json(status, { headers: { 'Cache-Control': 'no-store' } });
@@ -91,7 +180,7 @@ export async function GET() {
 
 /** PIN-gated: start or stop the pod. */
 export async function POST(request: Request) {
-    const config = configured();
+    const config = runpodConfig();
     if (!config || !env.AHK_HOST_PIN) {
         return NextResponse.json({ error: 'unconfigured' }, { status: 503 });
     }

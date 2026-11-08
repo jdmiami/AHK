@@ -41,4 +41,9 @@ if [ -n "${CF_PROXY_TUNNEL_HOSTNAME:-}" ]; then
     fi
 fi
 
+# AHK: on RunPod, stop the pod after idle time (no-op elsewhere). See idle-watchdog.sh.
+if [ -n "${RUNPOD_POD_ID:-}" ] && [ -x /app/idle-watchdog.sh ]; then
+    /app/idle-watchdog.sh &
+fi
+
 exec /usr/bin/supervisord -c /app/supervisord.conf

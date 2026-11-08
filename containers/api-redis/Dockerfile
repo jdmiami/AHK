@@ -97,7 +97,8 @@ RUN ARCH="$(uname -m)" && \
 COPY --chown=bun:bun ./containers/api-redis/supervisord.conf ./supervisord.conf
 COPY --chown=bun:bun ./containers/api-redis/entrypoint.sh ./entrypoint.sh
 COPY --chown=bun:bun ./containers/api-redis/start-api.sh ./start-api.sh
-RUN chmod +x ./entrypoint.sh ./start-api.sh
+COPY --chown=bun:bun ./containers/api-redis/idle-watchdog.sh ./idle-watchdog.sh
+RUN chmod +x ./entrypoint.sh ./start-api.sh ./idle-watchdog.sh
 
 RUN touch /app/supervisord.pid && \
     chown bun:bun /app/supervisord.pid && \

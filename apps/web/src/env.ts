@@ -41,6 +41,8 @@ export const env = createEnv({
         RUNPOD_API_KEY: process.env.RUNPOD_API_KEY,
         RUNPOD_POD_ID: process.env.RUNPOD_POD_ID,
         AHK_HOST_PIN: process.env.AHK_HOST_PIN,
+        AHK_IDLE_STOP_MINUTES: process.env.AHK_IDLE_STOP_MINUTES,
+        AHK_MAX_SESSION_HOURS: process.env.AHK_MAX_SESSION_HOURS,
     },
     emptyStringAsUndefined: true,
     skipValidation: envSkipValidation(),
