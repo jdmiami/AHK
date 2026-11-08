@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { MonitorPlay, Smartphone } from 'lucide-react';
 
 import { BrandLockup } from '@/components/brand/ahk-mark';
+import { HostPowerPanel } from '@/components/host/host-power-panel';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useLayoutModeChange } from '@/hooks/use-layout-mode-change';
 import { buildTvPublicPath, type AppLocale } from '@/lib/locale-path';
@@ -107,6 +108,9 @@ export function DeviceIntro() {
                         onSelect={chooseGuest}
                     />
                 </div>
+
+                {/* The host sees whether the house (API) is on before heading to the big screen. */}
+                <HostPowerPanel className="mt-6" />
 
                 <p className="mt-6 text-center text-xs text-muted-foreground">{t('footnote')}</p>
             </div>
