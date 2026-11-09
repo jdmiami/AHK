@@ -97,6 +97,11 @@ export function DeviceIntro() {
                     <p className="text-sm leading-relaxed text-muted-foreground">{t('subtitle')}</p>
                 </header>
 
+                {/* House status first: nothing works while the server is off. */}
+                <div className="ahk-enter mb-4" style={stagger(4)}>
+                    <HostPowerPanel />
+                </div>
+
                 <div className="space-y-3">
                     <ChoiceCard
                         icon={<MonitorPlay className="h-7 w-7" />}
@@ -104,7 +109,7 @@ export function DeviceIntro() {
                         description={t('hostDescription')}
                         accent="primary"
                         onSelect={chooseHost}
-                        order={4}
+                        order={5}
                     />
                     <ChoiceCard
                         icon={<Smartphone className="h-7 w-7" />}
@@ -112,13 +117,8 @@ export function DeviceIntro() {
                         description={t('guestDescription')}
                         accent="cyan"
                         onSelect={chooseGuest}
-                        order={5}
+                        order={6}
                     />
-                </div>
-
-                {/* The host sees whether the house (API) is on before heading to the big screen. */}
-                <div className="ahk-enter" style={stagger(6)}>
-                    <HostPowerPanel className="mt-6" />
                 </div>
 
                 <p

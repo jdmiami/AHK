@@ -493,6 +493,9 @@ export default {
     'hostSwitch.hintOn': 'Rooms work. Turn it off after the party to stop the meter.',
     'hostSwitch.hintStarting': 'Usually one to two minutes. This page reconnects by itself.',
     'hostSwitch.hintOff': 'Enter the house PIN to start the server for tonight.',
+    'hostSwitch.hintOffManual':
+        'Host: open RunPod, find the pod “ahk-api” and press Start. Ready in about a minute; this page updates by itself.',
+    'hostSwitch.openRunpod': 'Open RunPod to turn it on',
     'hostSwitch.hintMissing': 'The server was removed. Ask whoever runs AHK to set it up again.',
     'hostSwitch.pinLabel': 'House PIN',
     'hostSwitch.pinPlaceholder': 'PIN',

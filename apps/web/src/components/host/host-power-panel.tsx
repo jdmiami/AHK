@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Loader2, Power, PowerOff, Timer, Users, Wallet } from 'lucide-react';
+import { ExternalLink, Loader2, Power, PowerOff, Timer, Users, Wallet } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import {
     formatUsd,
     type HostAction,
     type HostStatusResponse,
+    RUNPOD_CONSOLE_PODS_URL,
 } from '@/lib/host-switch';
 import { useScopedI18n } from '@/locales/client';
 import { cn } from '@/lib/utils';
@@ -170,7 +171,9 @@ export function HostPowerPanel({ className }: { className?: string }) {
                               ? t('hintStarting')
                               : state === 'missing'
                                 ? t('hintMissing')
-                                : t('hintOff')}
+                                : readOnly
+                                  ? t('hintOffManual')
+                                  : t('hintOff')}
                     </p>
                 </div>
             </div>
@@ -217,6 +220,18 @@ export function HostPowerPanel({ className }: { className?: string }) {
             <p className="mt-3 text-xs text-muted-foreground">
                 {t('autoOff', { minutes: autoOff.idleMinutes, hours: autoOff.maxHours })}
             </p>
+
+            {/* No RunPod key on the server yet: the app cannot start the pod, so link to the
+                RunPod console instead of asking for a PIN that would not work. */}
+            {readOnly && !isOn && !isStarting && state !== 'missing' ? (
+                <Button asChild className="mt-3 h-10 w-full">
+                    <a href={RUNPOD_CONSOLE_PODS_URL} target="_blank" rel="noopener noreferrer">
+                        <Power className="h-4 w-4" />
+                        {t('openRunpod')}
+                        <ExternalLink className="h-3.5 w-3.5 opacity-70" aria-hidden />
+                    </a>
+                </Button>
+            ) : null}
 
             {actions.length > 0 ? (
                 <div className="mt-3 flex items-center gap-2">

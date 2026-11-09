@@ -50,6 +50,9 @@ export const BALANCE_QUERY = 'query AhkBalance { myself { clientBalance currentS
 export const DEFAULT_IDLE_STOP_MINUTES = 20;
 export const DEFAULT_MAX_SESSION_HOURS = 6;
 /** Below this balance the panel warns that RunPod will soon stop the pod by itself. */
+/** Where the host starts the pod by hand while the app has no RunPod key. */
+export const RUNPOD_CONSOLE_PODS_URL = 'https://www.runpod.io/console/pods';
+
 export const LOW_BALANCE_USD = 2;
 
 export function runpodPodUrl(podId: string): string {

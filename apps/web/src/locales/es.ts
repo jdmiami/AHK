@@ -502,6 +502,9 @@ export default {
     'hostSwitch.stateOff': 'La casa está apagada',
     'hostSwitch.hintOn': 'Las salas funcionan. Apágala después de la fiesta para detener el cobro.',
     'hostSwitch.hintStarting': 'Suele tardar uno o dos minutos. Esta página se reconecta sola.',
+    'hostSwitch.hintOffManual':
+        'Anfitrión: abre RunPod, busca el pod “ahk-api” y pulsa Start. Lista en un minuto; esta página se actualiza sola.',
+    'hostSwitch.openRunpod': 'Abrir RunPod para encenderla',
     'hostSwitch.hintOff': 'Ingresa el PIN de la casa para encender el servidor esta noche.',
     'hostSwitch.hintMissing':
         'El servidor fue eliminado. Pide a quien administra AHK que lo configure de nuevo.',
