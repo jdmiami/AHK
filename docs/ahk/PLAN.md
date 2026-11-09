@@ -24,7 +24,7 @@ Answers collected from the owner. These are settled unless revisited here.
 | Languages | **English (default at `/`) + Spanish (`/es`). Vietnamese removed.** |
 | Extras | Keep **Whisper voice search**. Remove Samsung Tizen shell, Android TV shell, TikTok provider. Browser-first product. |
 | Build order | **Rebrand first, then packs.** One draft PR per phase. |
-| Hosting | **Vercel** for web, **VPS or Fly.io** for API + Redis. Keep AIO Docker image building as a fallback. |
+| Hosting | **Vercel** for web, **RunPod** (cheapest CPU pod, on/off switch + idle auto-off) for API + Redis. Keep AIO Docker image building as a fallback. |
 
 ### Still open (non-blocking, defaults in parentheses)
 
@@ -53,11 +53,13 @@ Every PR is opened as a draft on the `claude/*` branch, must pass `bun run ci`
   backed by `apps/web/src/app/api/host/route.ts`, which starts/stops a RunPod pod through RunPod REST v2. Server env:
   `RUNPOD_API_KEY`, `RUNPOD_POD_ID`, `AHK_HOST_PIN`; public flag `NEXT_PUBLIC_HOST_SWITCH=1`. Status is public; actions need
   the PIN (constant-time compare, wrong-PIN delay). "On" means the API `/health` answers, not just that the pod is RUNNING.
-- **API + Redis (RunPod, live since 2026-11-08):** pod `ahk-api` (`86349epe8bga1h`), `cpu3c` 2 vCPU / 4 GB in US-MD-1,
+- **API + Redis (RunPod, live since 2026-11-08):** pod `ahk-api` (`no3yyspbd1kjn9`), `cpu3c` 2 vCPU / 4 GB in US-MD-1,
   image `lehuygiang28/vkara-api-redis:sha-b2494a1` (the fork's base commit), port 8000 over the RunPod HTTPS proxy
-  `https://86349epe8bga1h-8000.proxy.runpod.net`. $0.06/h while on; stop it between nights. Vercel env `NEXT_PUBLIC_API_URL`,
+  `https://no3yyspbd1kjn9-8000.proxy.runpod.net`. $0.06/h while on; stop it between nights. Vercel env `NEXT_PUBLIC_API_URL`,
   `NEXT_PUBLIC_WS_URL`, `RUNPOD_POD_ID` point at it. Verified live: TV creates a room, a phone joins by link, searches, and
   Add starts the song on the TV (screenshots `docs/ahk/screenshots/live-*.png`). Real-device YouTube playback still to confirm.
+  Moved to pod `no3yyspbd1kjn9` on 2026-11-09: the first pod's host ran out of free vCPU and could not start
+  (RunPod pods are tied to one machine). It boots this repo's API source via `run-from-source.sh` (see TEMPO-AND-KEY.md).
 - **Idle auto-off:** `containers/api-redis/idle-watchdog.sh` runs inside the pod (pod-scoped `RUNPOD_API_KEY`, no extra key).
   It stops the pod after `AHK_IDLE_STOP_MINUTES` (default 20) with zero WebSocket connections, or after
   `AHK_MAX_SESSION_HOURS` (default 6). Baked into the api-redis image's entrypoint; on the current upstream image it is
@@ -67,8 +69,8 @@ Every PR is opened as a draft on the `claude/*` branch, must pass `bun run ci`
   auto-off rule. Without the Vercel key it shows read-only status from the API's `/health`.
 - **Known YouTube limit:** some major karaoke channels (Sing King, KaraFun) disable embedding; those songs are refused with
   "Cannot play this video". Option: set `VKARA_EMBED_PREFILTER_AT_LIST=1` on the pod to hide them from search (slower search). The web app needs `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL` pointing at a
-  running Bun API before rooms work. Planned: Fly.io app from `containers/api-redis/Dockerfile` (API + Redis in one
-  container) or a VPS with `docker compose --profile api`. Set those two env vars on the Vercel project afterwards.
+  running Bun API before rooms work. Hosted on RunPod (see above); a VPS with `docker compose --profile api` also works. Set those two env vars on
+  the Vercel project afterwards.
 - **Docker images:** publish workflow is opt-in via the `DOCKERHUB_OWNER` repo variable plus
   `DOCKERHUB_USERNAME` / `DOCKERHUB_TOKEN` secrets.
 

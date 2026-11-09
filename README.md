@@ -87,7 +87,7 @@ AHK is two services: the **web app** (Next.js) and the **API** (Bun + Elysia, ne
 | Part | Recommended host | Notes |
 | --- | --- | --- |
 | Web | [Vercel](https://vercel.com) | Root directory `apps/web`; `apps/web/vercel.json` carries the build command. Preview deploys on every PR. |
-| API + Redis | Fly.io, a VPS, or any Docker host | `containers/api-redis/Dockerfile` bundles API and Redis in one container. |
+| API + Redis | RunPod (what AHK uses), a VPS, or any Docker host | `containers/api-redis/Dockerfile` bundles API and Redis in one container. |
 | Everything in one box | Any Docker host | `docker compose --profile aio up --build` serves web and API on port 3000. |
 
 Point the web app at the API with `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_WS_URL`. Full guide, env tables, and
