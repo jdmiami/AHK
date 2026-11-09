@@ -4,11 +4,12 @@ import { usePlaybackDisplayTime } from '@/hooks/use-playback-display-time';
 import { usePlayerAction } from '@/hooks/use-player-action';
 import { useYouTubeStore } from '@/store/youtubeStore';
 import { cn } from '@/lib/utils';
-import { isTikTokPhotoPost, isVideoLive } from '@vkara/tiktok';
+import { isTikTokPhotoPost, isTikTokVideo, isVideoLive } from '@vkara/tiktok';
 import { useScopedI18n } from '@/locales/client';
 
 import { PlaybackScrubber } from '@/components/pages/youtube/PlaybackScrubber';
 import { PlayerControls } from '@/components/pages/youtube/PlayerControls';
+import { SongAdjustChips } from '@/components/pages/youtube/song-adjust-sheet';
 import {
     TikTokPhotoNavigationBar,
     useTikTokPhotoIndex,
@@ -82,6 +83,8 @@ export function ControlsThumbDeck({ className, tickEnabled = true }: ControlsThu
                 ) : null}
 
                 <PlayerControls variant="panel" className="gap-3 p-0" />
+
+                {!isTikTokVideo(playing) && !isLive ? <SongAdjustChips /> : null}
             </div>
         </section>
     );

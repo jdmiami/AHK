@@ -109,6 +109,20 @@ export const wsClientMessageSchema = z.discriminatedUnion('type', [
     withBase({ type: z.literal('play') }),
     withBase({ type: z.literal('pause') }),
     withBase({ type: z.literal('seek'), time: z.number() }),
+    /** Tempo for the playing song; `videoId` guards against stale taps after a song change. */
+    withBase({
+        type: z.literal('setTempo'),
+        videoId: z.string().min(1),
+        rate: z.number().finite(),
+    }),
+    /** Key in semitones for the playing song (audible when the laptop key engine is on). */
+    withBase({
+        type: z.literal('setKey'),
+        videoId: z.string().min(1),
+        semitones: z.number().finite(),
+    }),
+    /** Reported by the TV/laptop when its key engine starts or stops capturing audio. */
+    withBase({ type: z.literal('setKeyEngineActive'), active: z.boolean() }),
     withBase({
         type: z.literal('syncPlaybackPosition'),
         time: z.number(),

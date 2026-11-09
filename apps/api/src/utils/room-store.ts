@@ -1,4 +1,5 @@
 import { isValidRoomId } from '@vkara/room';
+import { withRoomLock } from './room-lock';
 import { ErrorCode, normalizePersistedRoom, RoomError, type Room } from '@vkara/room';
 
 function normalizeRoomCaptionFields(room: Room): void {
@@ -69,6 +70,14 @@ export async function writeRoom(roomId: string, room: Room): Promise<void> {
  * The mutator must stay synchronous — run async I/O (e.g. embeddable checks) before calling this.
  */
 export async function mutateRoom(
+    roomId: string,
+    mutator: (room: Room) => void,
+    options?: { isRejoin?: boolean },
+): Promise<Room> {
+    return withRoomLock(roomId, () => mutateRoomUnlocked(roomId, mutator, options));
+}
+
+async function mutateRoomUnlocked(
     roomId: string,
     mutator: (room: Room) => void,
     options?: { isRejoin?: boolean },

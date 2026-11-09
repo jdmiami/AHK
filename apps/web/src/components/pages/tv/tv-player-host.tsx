@@ -1,5 +1,7 @@
 'use client';
 
+import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
+import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
 import dynamic from 'next/dynamic';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -44,6 +46,7 @@ type TvPlayerHostProps = {
 };
 
 function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
+    useApplySongTempo();
     useTikTokHiddenPlayGuard();
     useTikTokPhotoIndexSync();
 
@@ -136,23 +139,20 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
         });
     }, [roomId, playingNowId, roomIsPlaying, isTikTokNow, playingNow]);
 
-    const syncCaptionTracksFromPlayer = useCallback(
-        (player: YT.Player) => {
-            const currentRoom = useYouTubeStore.getState().room;
-            const videoId = currentRoom?.playingNow?.id;
-            if (!currentRoom?.id || !videoId) {
-                return;
-            }
+    const syncCaptionTracksFromPlayer = useCallback((player: YT.Player) => {
+        const currentRoom = useYouTubeStore.getState().room;
+        const videoId = currentRoom?.playingNow?.id;
+        if (!currentRoom?.id || !videoId) {
+            return;
+        }
 
-            const tracks = listYoutubeCaptionTracks(player);
-            ensureConnectedAndSend({
-                type: 'syncCaptionTracks',
-                videoId,
-                tracks,
-            });
-        },
-        [],
-    );
+        const tracks = listYoutubeCaptionTracks(player);
+        ensureConnectedAndSend({
+            type: 'syncCaptionTracks',
+            videoId,
+            tracks,
+        });
+    }, []);
 
     const applyTrackToPlayer = useCallback(
         (player: YT.Player, videoId: string) => {
@@ -393,6 +393,8 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
                 <div className="tv-fill bg-[#07060b]" aria-hidden />
             )}
 
+            <KeyEngineLauncher />
+
             {isTvIdle && roomId ? (
                 <TvPlayerQrZone
                     roomId={roomId}
@@ -406,7 +408,6 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
                     onOpenSettingsAction={onOpenSettingsAction}
                 />
             ) : null}
-
         </div>
     );
 }

@@ -390,6 +390,42 @@ export default {
     'relativeTime.yearAgo': 'hace 1 año',
     'relativeTime.yearsAgo': 'hace {count} años',
 
+    'songAdjust.title': 'Tempo y tono',
+    'songAdjust.resetsNote':
+        'Aplica a esta canción. La siguiente empieza a velocidad normal y en su tono original.',
+    'songAdjust.tempo': 'Tempo',
+    'songAdjust.key': 'Tono',
+    'songAdjust.openTempo': 'Cambiar tempo',
+    'songAdjust.openKey': 'Cambiar tono',
+    'songAdjust.resetTempo': 'Volver a velocidad normal',
+    'songAdjust.slower': 'Más lento',
+    'songAdjust.normal': 'Normal',
+    'songAdjust.faster': 'Más rápido',
+    'songAdjust.tempoHint': 'Cambia la velocidad, el tono se mantiene.',
+    'songAdjust.keyDown': 'Bajar el tono un semitono',
+    'songAdjust.keyUp': 'Subir el tono un semitono',
+    'songAdjust.originalKey': 'Tono original',
+    'songAdjust.semitones': 'semitonos',
+    'songAdjust.engineOn':
+        'El cambiador de tono está activo: la pantalla grande suena en este tono.',
+    'songAdjust.engineOff':
+        'Para escuchar el cambio de tono, haz clic una vez en “Cambiar tono” en la pantalla grande (Chrome o Edge en la laptop). O busca abajo una versión en otro tono.',
+    'songAdjust.findTitle': 'Busca esta canción en otro tono',
+    'songAdjust.findHint':
+        'Muchos canales de karaoke suben versiones en tono más bajo, más alto, de mujer y de hombre. Toca una para cambiarla.',
+    'songAdjust.kind.lower': 'Más bajo',
+    'songAdjust.kind.higher': 'Más alto',
+    'songAdjust.kind.female': 'Mujer',
+    'songAdjust.kind.male': 'Hombre',
+    'songAdjust.searching': 'Buscando otros tonos…',
+    'songAdjust.searchError': 'La búsqueda falló. Revisa la conexión e inténtalo de nuevo.',
+    'songAdjust.noResults': 'No encontramos versiones en otro tono para esta canción.',
+    'songAdjust.swap': 'Cambiar',
+
+    'keyEngine.launchTitle': 'Cambiar tono: haz clic para activar',
+    'keyEngine.launchHint':
+        'Un teléfono cambió el tono. Abre una ventana pequeña; comparte el audio de esta pestaña una vez.',
+
     'deviceIntro.title': '¿Qué dispositivo es este?',
     'deviceIntro.subtitle': 'Elige una vez. AHK lo recuerda en este dispositivo.',
     'deviceIntro.hostTitle': 'La pantalla grande',

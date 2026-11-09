@@ -1,3 +1,4 @@
+import type { SongAdjust } from './song-adjust';
 import type { ClientMessage } from '@vkara/validators/ws/client-message';
 import type { CaptionTrack, YouTubeVideo } from '@vkara/youtube';
 
@@ -49,6 +50,10 @@ export interface Room {
     captionTracks: CaptionTrack[];
     captionTracksVideoId: string | null;
     playingNow: YouTubeVideo | null;
+    /** Tempo/key for the playing song (see `song-adjust.ts`); stale once the song changes. */
+    songAdjust?: SongAdjust;
+    /** Whether the projector laptop's key engine is capturing audio (key changes are audible). */
+    keyEngineActive?: boolean;
     lastActivity: number;
     /** Set when the last client leaves; used to release empty rooms after a grace period. */
     emptySince?: number;

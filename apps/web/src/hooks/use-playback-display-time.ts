@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { computeExtrapolatedPlaybackSeconds, type PlaybackDisplayAnchor } from '@vkara/room';
+import {
+    computeExtrapolatedPlaybackSeconds,
+    effectiveSongAdjust,
+    type PlaybackDisplayAnchor,
+} from '@vkara/room';
 import { useYouTubeStore } from '@/store/youtubeStore';
 
 const TICK_MS = 1_000;
@@ -19,6 +23,7 @@ function createPlaybackDisplayAnchorFromStore(): PlaybackDisplayAnchor {
         syncedAtMs: Date.now(),
         isPlaying: Boolean(room?.isPlaying),
         videoId: room?.playingNow?.id ?? null,
+        rate: effectiveSongAdjust(room).rate,
     };
 }
 
@@ -30,6 +35,7 @@ export function usePlaybackDisplayTime(options?: UsePlaybackDisplayTimeOptions):
     const videoId = useYouTubeStore((s) => s.room?.playingNow?.id ?? null);
     const serverTime = useYouTubeStore((s) => s.room?.currentTime ?? 0);
     const isPlaying = useYouTubeStore((s) => Boolean(s.room?.isPlaying));
+    const rate = useYouTubeStore((s) => effectiveSongAdjust(s.room).rate);
     const anchorRef = useRef<PlaybackDisplayAnchor | null>(null);
     if (anchorRef.current === null) {
         anchorRef.current = createPlaybackDisplayAnchorFromStore();
@@ -44,9 +50,10 @@ export function usePlaybackDisplayTime(options?: UsePlaybackDisplayTimeOptions):
             syncedAtMs: Date.now(),
             isPlaying,
             videoId,
+            rate,
         };
         setDisplayTime(computeExtrapolatedPlaybackSeconds(anchorRef.current));
-    }, [serverTime, isPlaying, videoId]);
+    }, [serverTime, isPlaying, videoId, rate]);
 
     useEffect(() => {
         if (!enabled || !isPlaying || !videoId) {

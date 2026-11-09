@@ -1,5 +1,7 @@
 'use client';
 
+import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
+import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Settings } from 'lucide-react';
@@ -107,6 +109,7 @@ function PlayerColumnInner({
         })),
     );
     const t = useScopedI18n('youtubePage');
+    useApplySongTempo();
     const locale = useCurrentLocale();
     const { shouldShowTimer, setShouldShowTimer, cancelCountdown, resetCountdown } =
         useCountdownStore(
@@ -477,6 +480,8 @@ function PlayerColumnInner({
                     </div>
                 </div>
             )}
+
+            <KeyEngineLauncher />
 
             {isTvIdle && roomId && (
                 <TvPlayerQrZone

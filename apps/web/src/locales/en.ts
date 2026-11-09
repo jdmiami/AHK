@@ -382,6 +382,41 @@ export default {
     'relativeTime.yearAgo': '1 year ago',
     'relativeTime.yearsAgo': '{count} years ago',
 
+    'songAdjust.title': 'Tempo & key',
+    'songAdjust.resetsNote':
+        'Applies to this song. The next song starts at normal speed in its original key.',
+    'songAdjust.tempo': 'Tempo',
+    'songAdjust.key': 'Key',
+    'songAdjust.openTempo': 'Change tempo',
+    'songAdjust.openKey': 'Change key',
+    'songAdjust.resetTempo': 'Back to normal speed',
+    'songAdjust.slower': 'Slower',
+    'songAdjust.normal': 'Normal',
+    'songAdjust.faster': 'Faster',
+    'songAdjust.tempoHint': 'Speed changes, pitch stays the same.',
+    'songAdjust.keyDown': 'Lower the key one semitone',
+    'songAdjust.keyUp': 'Raise the key one semitone',
+    'songAdjust.originalKey': 'Original key',
+    'songAdjust.semitones': 'semitones',
+    'songAdjust.engineOn': 'Key changer is on: the big screen plays this key.',
+    'songAdjust.engineOff':
+        'To hear key changes, click “Key changer” on the big screen once (Chrome or Edge on the laptop). Or find a version in another key below.',
+    'songAdjust.findTitle': 'Find this song in another key',
+    'songAdjust.findHint':
+        'Many karaoke channels upload lower, higher, female and male key versions. Tap one to swap it in.',
+    'songAdjust.kind.lower': 'Lower',
+    'songAdjust.kind.higher': 'Higher',
+    'songAdjust.kind.female': 'Female',
+    'songAdjust.kind.male': 'Male',
+    'songAdjust.searching': 'Looking for other keys…',
+    'songAdjust.searchError': 'Search failed. Check the connection and try again.',
+    'songAdjust.noResults': 'No other-key uploads found for this song.',
+    'songAdjust.swap': 'Swap in',
+
+    'keyEngine.launchTitle': 'Key changer: click to turn on',
+    'keyEngine.launchHint':
+        'A phone changed the key. Opens a small window; share this tab’s audio once.',
+
     'deviceIntro.title': 'What is this device?',
     'deviceIntro.subtitle': 'Pick once. AHK remembers it on this device.',
     'deviceIntro.hostTitle': 'The big screen',

@@ -14,7 +14,7 @@ import {
     type Room,
     type ServerMessage,
 } from '@vkara/room';
-import { isValidRoomId, ROOM_ID_LENGTH } from '@vkara/room';
+import { applySongAdjustChange, isValidRoomId, ROOM_ID_LENGTH } from '@vkara/room';
 import type { ClientMessage, TvRoomRestoreState } from '@vkara/validators/ws/client-message';
 import { applyTvRestoreToRoom } from '@/modules/room/apply-tv-restore';
 import { applyClaimHost, canJoinWhenLocked } from '@/modules/room/participant-policy';
@@ -114,12 +114,7 @@ function promoteNewHost(room: Room, excludingDeviceId?: string): Participant | u
     }
 
     const candidates = Object.values(room.participants)
-        .filter(
-            (p) =>
-                p.deviceId !== excludingDeviceId &&
-                p.connectionIds.length > 0 &&
-                !p.isAgent,
-        )
+        .filter((p) => p.deviceId !== excludingDeviceId && p.connectionIds.length > 0 && !p.isAgent)
         .sort((a, b) => a.joinedAt - b.joinedAt);
     const newHost = candidates[0];
     if (!newHost) return undefined;
@@ -979,6 +974,33 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
         publishToRoom(roomId, { type: 'volumeChanged', volume: room.volume });
     }
 
+    async function setSongAdjust(
+        ws: ElysiaWS,
+        videoId: string,
+        change: { rate?: number; semitones?: number },
+    ): Promise<void> {
+        const roomId = await validateClientInRoom(ws);
+        let changed = false;
+        const room = await mutateRoom(roomId, (room) => {
+            const next = applySongAdjustChange(room, videoId, change);
+            if (next) {
+                room.songAdjust = next;
+                changed = true;
+            }
+        });
+        if (changed) {
+            broadcastRoomState(roomId, room);
+        }
+    }
+
+    async function setKeyEngineActive(ws: ElysiaWS, active: boolean): Promise<void> {
+        const roomId = await validateClientInRoom(ws);
+        const room = await mutateRoom(roomId, (room) => {
+            room.keyEngineActive = active;
+        });
+        broadcastRoomState(roomId, room);
+    }
+
     async function setShowQRInPlayer(ws: ElysiaWS, show: boolean): Promise<void> {
         const roomId = await validateClientInRoom(ws);
 
@@ -1458,6 +1480,15 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
                     throw new RoomError(ErrorCode.INVALID_MESSAGE, 'Invalid volume value');
                 }
                 await setVolume(ws, message.volume);
+                break;
+            case 'setTempo':
+                await setSongAdjust(ws, message.videoId, { rate: message.rate });
+                break;
+            case 'setKey':
+                await setSongAdjust(ws, message.videoId, { semitones: message.semitones });
+                break;
+            case 'setKeyEngineActive':
+                await setKeyEngineActive(ws, message.active);
                 break;
             case 'setShowQRInPlayer':
                 if (typeof message.show !== 'boolean') {

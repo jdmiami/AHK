@@ -236,4 +236,14 @@ describe('wsClientMessageSchema', () => {
             }),
         ).toBe(false);
     });
+
+    it('accepts tempo/key messages and rejects malformed ones', () => {
+        expect(check({ ...base, type: 'setTempo', videoId: 'abc', rate: 0.85 })).toBe(true);
+        expect(check({ ...base, type: 'setKey', videoId: 'abc', semitones: -2 })).toBe(true);
+        expect(check({ ...base, type: 'setKeyEngineActive', active: true })).toBe(true);
+        expect(check({ ...base, type: 'setTempo', videoId: '', rate: 1 })).toBe(false);
+        expect(check({ ...base, type: 'setTempo', videoId: 'abc', rate: 'fast' })).toBe(false);
+        expect(check({ ...base, type: 'setKey', semitones: 2 })).toBe(false);
+        expect(check({ ...base, type: 'setKeyEngineActive', active: 'yes' })).toBe(false);
+    });
 });
