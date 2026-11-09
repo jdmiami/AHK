@@ -107,7 +107,7 @@ export function TvLobby() {
             >
                 <div className="tv-lobby-grid">
                     <header className="tv-lobby-grid__header">
-                        <BrandLockup size="tv" className="mb-6" />
+                        <BrandLockup size="tv" className="mb-6" animated />
                         <h1 className="tv-lobby-title">{t('title')}</h1>
                         {tvLobbyBanner ? (
                             <div

@@ -64,14 +64,20 @@ export default function YoutubePlayerPage() {
     const layoutModeSource = useYouTubeStore((s) => s.layoutModeSource);
     const setLayoutMode = useYouTubeStore((s) => s.setLayoutMode);
     const [mounted, setMounted] = useState(false);
-    const inviteSnapshotRoomId = useUrlCommandStore((s) => s.snapshot?.document.roomId);
     const inRoom = useYouTubeStore((s) => Boolean(s.room));
-    // The room query is stripped from the address bar once applied, so also check the parsed snapshot.
-    const arrivedWithInvite = Boolean(
-        searchParams.get('roomId') || searchParams.get('joinToken') || inviteSnapshotRoomId,
-    );
+    // Read once after mount (not subscribed): the provider fills the URL-command snapshot while
+    // rendering, and the room query is stripped from the address bar once applied.
+    const [arrivedWithInvite, setArrivedWithInvite] = useState(false);
     useEffect(() => {
+        setArrivedWithInvite(
+            Boolean(
+                searchParams.get('roomId') ||
+                searchParams.get('joinToken') ||
+                useUrlCommandStore.getState().snapshot?.document.roomId,
+            ),
+        );
         setMounted(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- first visit only
     }, []);
     useEffect(() => {
         if (mounted && arrivedWithInvite && layoutModeSource === 'auto') {
@@ -101,11 +107,9 @@ export default function YoutubePlayerPage() {
             if (!state.lastMessage) {
                 return;
             }
-            useYouTubeStore
-                .getState()
-                .handleServerMessage(state.lastMessage, t_Toast, {
-                    isTvLayout: isTvLayoutRef.current,
-                });
+            useYouTubeStore.getState().handleServerMessage(state.lastMessage, t_Toast, {
+                isTvLayout: isTvLayoutRef.current,
+            });
         });
     }, [t_Toast]);
 

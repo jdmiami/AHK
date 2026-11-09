@@ -267,7 +267,7 @@ export default {
         'Import a playlist from YouTube to the queue by providing the ID or URL',
     'videoQueue.importPlaylistPlaceholder': 'Playlist ID/URL',
 
-    'videoSearch.searchPlaceholder': 'Search YouTube videos...',
+    'videoSearch.searchPlaceholder': 'Search songs or artists…',
     'videoSearch.loadingSuggestions': 'Loading suggestions…',
     'videoSearch.browseTitle': 'Find a karaoke song',
     'videoSearch.browseHint': 'Type a song or artist name, then tap search or press Enter.',

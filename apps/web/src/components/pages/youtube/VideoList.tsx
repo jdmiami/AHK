@@ -187,12 +187,12 @@ export const VideoList = memo(function VideoList({
                                     key={virtualRow.key}
                                     ref={virtualizer.measureElement}
                                     data-index={virtualRow.index}
-                                    className={cn(
-                                        'absolute left-0 top-0 w-full',
-                                        isMenuOpen && 'z-10',
-                                    )}
+                                    className={cn('absolute left-0 w-full', isMenuOpen && 'z-10')}
                                     style={{
-                                        transform: `translate3d(0, ${virtualRow.start}px, 0)`,
+                                        // `top`, not a transform: rows only move when the list
+                                        // re-renders, and scroll-driven reveal (.ahk-reveal)
+                                        // measures layout position, which ignores transforms.
+                                        top: virtualRow.start,
                                         contentVisibility: 'auto',
                                         containIntrinsicSize: `${rowHeight}px`,
                                     }}

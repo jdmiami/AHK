@@ -72,7 +72,7 @@ export const VideoListItem = memo(function VideoListItem({
     return (
         <div
             className={cn(
-                'w-full overflow-hidden rounded-lg text-left text-sm transition-colors',
+                'ahk-reveal w-full overflow-hidden rounded-lg text-left text-sm transition-colors',
                 isActive && 'bg-primary/10 dark:bg-primary/15',
             )}
         >

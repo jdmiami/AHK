@@ -41,70 +41,81 @@ export const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(
             PRIMARY_TABS.includes(tab as PrimaryTab);
 
         const activePrimary = isPrimary(currentTab) ? currentTab : null;
+        const activeIndex = activePrimary ? PRIMARY_TABS.indexOf(activePrimary) : 3;
 
         return (
             <nav
                 ref={ref}
                 className={cn(
-                    'grid grid-cols-4 items-stretch border-t bg-background px-page-gutter pb-safe-offset pt-1',
+                    'border-t bg-background px-page-gutter pb-safe-offset pt-1',
                     className,
                 )}
                 aria-label={t('mainNavigation')}
             >
-                <NavItem
-                    active={activePrimary === 'search'}
-                    icon={<Search className="h-6 w-6" />}
-                    label={t('search')}
-                    onClick={() => setCurrentTab('search')}
-                />
-                <NavItem
-                    active={activePrimary === 'queue'}
-                    icon={<ListVideo className="h-6 w-6" />}
-                    label={t('queue')}
-                    badge={queueCount}
-                    ariaLabel={tGlobal('youtubePage.queueBadgeLabel', { count: queueCount })}
-                    onClick={() => setCurrentTab('queue')}
-                />
-                <NavItem
-                    active={activePrimary === 'controls'}
-                    icon={<SlidersVertical className="h-6 w-6" />}
-                    label={t('controls')}
-                    onClick={() => setCurrentTab('controls')}
-                    onPrefetch={prefetchPlayerControlsTabs}
-                />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button
-                            type="button"
-                            className={cn(
-                                'flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
-                                !isPrimary(currentTab)
-                                    ? 'text-primary'
-                                    : 'text-muted-foreground hover:text-foreground',
-                            )}
-                        >
-                            <MoreHorizontal className="h-6 w-6" />
-                            <span>{t('more')}</span>
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        side="top"
-                        align="center"
-                        sideOffset={REMOTE_NAV_POPOVER_SIDE_OFFSET}
-                        collisionPadding={REMOTE_NAV_POPOVER_SIDE_OFFSET}
-                        className="w-64"
-                        style={{ zIndex: REMOTE_CHROME_Z_INDEX.transientChrome }}
+                <div className="relative grid grid-cols-4 items-stretch">
+                    {/* One pill slides between tabs (transform only). */}
+                    <span
+                        aria-hidden
+                        className="ahk-nav-indicator pointer-events-none absolute inset-y-1 left-0 flex w-1/4 justify-center"
+                        style={{ transform: `translate3d(${activeIndex * 100}%, 0, 0)` }}
                     >
-                        <DropdownMenuItem onClick={() => setCurrentTab('history')}>
-                            <Clock3 className="mr-2 h-4 w-4" />
-                            {t('history')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCurrentTab('settings')}>
-                            <Settings className="mr-2 h-4 w-4" />
-                            {t('settings')}
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        <span className="h-full w-[72%] rounded-xl bg-primary/10 shadow-[var(--ahk-glow-primary)] dark:bg-primary/15" />
+                    </span>
+                    <NavItem
+                        active={activePrimary === 'search'}
+                        icon={<Search className="h-6 w-6" />}
+                        label={t('search')}
+                        onClick={() => setCurrentTab('search')}
+                    />
+                    <NavItem
+                        active={activePrimary === 'queue'}
+                        icon={<ListVideo className="h-6 w-6" />}
+                        label={t('queue')}
+                        badge={queueCount}
+                        ariaLabel={tGlobal('youtubePage.queueBadgeLabel', { count: queueCount })}
+                        onClick={() => setCurrentTab('queue')}
+                    />
+                    <NavItem
+                        active={activePrimary === 'controls'}
+                        icon={<SlidersVertical className="h-6 w-6" />}
+                        label={t('controls')}
+                        onClick={() => setCurrentTab('controls')}
+                        onPrefetch={prefetchPlayerControlsTabs}
+                    />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                                type="button"
+                                className={cn(
+                                    'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
+                                    !isPrimary(currentTab)
+                                        ? 'text-primary'
+                                        : 'text-muted-foreground hover:text-foreground',
+                                )}
+                            >
+                                <MoreHorizontal className="h-6 w-6" />
+                                <span>{t('more')}</span>
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            side="top"
+                            align="center"
+                            sideOffset={REMOTE_NAV_POPOVER_SIDE_OFFSET}
+                            collisionPadding={REMOTE_NAV_POPOVER_SIDE_OFFSET}
+                            className="w-64"
+                            style={{ zIndex: REMOTE_CHROME_Z_INDEX.transientChrome }}
+                        >
+                            <DropdownMenuItem onClick={() => setCurrentTab('history')}>
+                                <Clock3 className="mr-2 h-4 w-4" />
+                                {t('history')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setCurrentTab('settings')}>
+                                <Settings className="mr-2 h-4 w-4" />
+                                {t('settings')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </nav>
         );
     },
@@ -153,7 +164,7 @@ function NavItem({
             onPointerEnter={onPrefetch}
             onFocus={onPrefetch}
             className={cn(
-                'flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
+                'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
                 active
                     ? 'text-primary [&>span>svg]:drop-shadow-[var(--ahk-glow-drop)]'
                     : 'text-muted-foreground hover:text-foreground',
@@ -161,7 +172,7 @@ function NavItem({
             aria-current={active ? 'page' : undefined}
             aria-label={ariaLabel ?? label}
         >
-            <span className="relative inline-flex">
+            <span className={cn('relative inline-flex', active && 'ahk-nav-pop')}>
                 {icon}
                 {badge != null ? <NavIconBadge count={badge} /> : null}
             </span>

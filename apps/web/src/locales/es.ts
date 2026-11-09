@@ -273,7 +273,7 @@ export default {
         'Importa una playlist de YouTube a la cola con su ID o enlace',
     'videoQueue.importPlaylistPlaceholder': 'ID o enlace de la playlist',
 
-    'videoSearch.searchPlaceholder': 'Buscar videos en YouTube...',
+    'videoSearch.searchPlaceholder': 'Busca canciones o artistas…',
     'videoSearch.loadingSuggestions': 'Cargando sugerencias…',
     'videoSearch.browseTitle': 'Encuentra una canción de karaoke',
     'videoSearch.browseHint':

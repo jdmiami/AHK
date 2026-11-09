@@ -88,10 +88,10 @@ export function RemoteJoinLobby({ allowCreateRoom = false }: RemoteJoinLobbyProp
                     <LanguageSwitcher />
                 </div>
 
-                <div className="rounded-2xl border border-border/70 bg-card shadow-sm">
+                <div className="ahk-enter rounded-2xl border border-border/70 bg-card shadow-sm">
                     <div className="space-y-6 p-5 sm:p-6">
                         <header className="space-y-1.5 text-center">
-                            <BrandLockup className="mb-4" />
+                            <BrandLockup className="mb-4" animated />
                             <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.65rem]">
                                 {t('title')}
                             </h1>

@@ -100,8 +100,8 @@ export function CuratedPlaylistCard({
                 onClick={onOpen}
                 aria-label={ariaLabel}
                 className={cn(
-                    'flex w-[11.5rem] shrink-0 snap-start cursor-pointer flex-col overflow-hidden rounded-xl border border-border/70 bg-card text-left transition-colors',
-                    'touch-manipulation hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] active:bg-accent/60',
+                    'ahk-press flex w-[11.5rem] shrink-0 snap-start cursor-pointer flex-col overflow-hidden rounded-xl border border-border/70 bg-card text-left',
+                    'touch-manipulation hover:border-primary/50 hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:bg-accent/60',
                     className,
                 )}
             >
@@ -135,7 +135,12 @@ export function CuratedPlaylistCard({
     }
 
     return (
-        <div className={cn('w-full overflow-hidden rounded-lg text-left text-sm', className)}>
+        <div
+            className={cn(
+                'ahk-reveal w-full overflow-hidden rounded-lg text-left text-sm',
+                className,
+            )}
+        >
             <button
                 type="button"
                 onClick={onOpen}

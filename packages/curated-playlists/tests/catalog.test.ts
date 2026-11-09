@@ -51,11 +51,10 @@ const duplicateIdFile: CuratedPlaylistsFile = {
 describe('loadCatalogs', () => {
     it('loads shipped curated starters from playlists.json', () => {
         const catalogs = loadCatalogs();
-        const karaoke = catalogs.find((catalog) => catalog.id === 'karaoke');
-        const music = catalogs.find((catalog) => catalog.id === 'music');
-        expect(karaoke?.playlists).toHaveLength(3);
-        expect(music?.playlists).toHaveLength(1);
-        expect(music?.playlists[0]).toContain('PLRH1bes7ddmWZCJsf02s3WLhtMV2dXbWO');
+        // AHK ships one English-friendly starter until Song Packs replace them.
+        expect(catalogs.map((catalog) => catalog.id)).toEqual(['karaoke']);
+        expect(catalogs[0]?.playlists).toHaveLength(1);
+        expect(catalogs[0]?.playlists[0]).toContain('PLRH1bes7ddmWO-sNw14I-FxKKvxMujKoc');
     });
 
     it('rejects invalid playlist URLs', () => {
@@ -101,12 +100,12 @@ describe('filterCatalogsByLocale', () => {
         ]);
     });
 
-    it('merges shipped duplicate karaoke rows for each UI locale', () => {
+    it('shows the shipped karaoke starter on each UI locale', () => {
         for (const locale of ['es', 'en'] as const) {
             const catalogs = filterCatalogsByLocale(loadCatalogs(), locale);
             const karaoke = catalogs.find((catalog) => catalog.id === 'karaoke');
             expect(catalogs.filter((catalog) => catalog.id === 'karaoke')).toHaveLength(1);
-            expect(karaoke?.playlists).toHaveLength(4);
+            expect(karaoke?.playlists).toHaveLength(1);
         }
 
         const enKaraoke = getCuratedCatalogsForLocale('en').find(

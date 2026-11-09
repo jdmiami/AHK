@@ -360,3 +360,238 @@ body {
         overscroll-behavior: none;
     }
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * AHK motion
+ * Rules: animate only transform + opacity (compositor work, no layout or paint
+ * per frame), run once on mount or tie to scroll position, no JS timers.
+ * Everything here switches off under prefers-reduced-motion.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+    --ahk-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ahk-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+    --ahk-stagger: 70ms;
+}
+
+@keyframes ahk-rise {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes ahk-fade-up {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 8px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes ahk-draw {
+    from {
+        stroke-dashoffset: 1;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes ahk-halo {
+    0%,
+    100% {
+        opacity: 0.35;
+        transform: scale(0.92);
+    }
+    50% {
+        opacity: 0.75;
+        transform: scale(1.06);
+    }
+}
+
+@keyframes ahk-drift {
+    0%,
+    100% {
+        transform: translate3d(-6%, -4%, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(6%, 5%, 0) scale(1.12);
+    }
+}
+
+@keyframes ahk-pop {
+    0% {
+        transform: scale(1);
+    }
+    45% {
+        transform: scale(1.18);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Translate only (no scale): virtualized lists measure rows with getBoundingClientRect. */
+@keyframes ahk-reveal {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Entrances use fill-mode `backwards`: hold the start frame during the delay, then hand
+   transform back to the element so hover/press transitions keep working afterwards. */
+
+/* Staggered entrance: set --ahk-i (0, 1, 2…) inline for the cascade. */
+.ahk-enter {
+    animation: ahk-rise 0.55s var(--ahk-ease-out) backwards;
+    animation-delay: calc(var(--ahk-i, 0) * var(--ahk-stagger));
+}
+
+/* Tab content swap: short so switching tabs never feels slow. */
+.ahk-tab-enter {
+    animation: ahk-fade-up 0.24s var(--ahk-ease-out) backwards;
+}
+
+/* Logo letters draw in once (three tiny paths; runs ~0.9 s total). */
+.ahk-mark-draw path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: ahk-draw 0.7s var(--ahk-ease-out) forwards;
+}
+.ahk-mark-draw path:nth-child(2) {
+    animation-delay: 0.12s;
+}
+.ahk-mark-draw path:nth-child(3) {
+    animation-delay: 0.24s;
+}
+
+/* Soft breathing glow behind the logo: a gradient layer animated by opacity/scale only. */
+.ahk-mark-halo::before {
+    content: '';
+    position: absolute;
+    inset: -35%;
+    z-index: -1;
+    border-radius: 9999px;
+    background: radial-gradient(
+        circle,
+        hsl(var(--neon-pink) / 0.45),
+        hsl(var(--neon-violet) / 0.18) 45%,
+        transparent 70%
+    );
+    animation: ahk-halo 4.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Ambient neon backdrop: two big blurred-looking gradients that drift slowly.
+   No filter: blur (costly on TV engines); the softness comes from the gradient itself. */
+.ahk-ambient {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+.ahk-ambient::before,
+.ahk-ambient::after {
+    content: '';
+    position: absolute;
+    width: 70vmax;
+    height: 70vmax;
+    border-radius: 9999px;
+    opacity: 0.22;
+    will-change: transform;
+}
+.ahk-ambient::before {
+    top: -30vmax;
+    left: -25vmax;
+    background: radial-gradient(circle, hsl(var(--neon-pink)) 0%, transparent 62%);
+    animation: ahk-drift 22s ease-in-out infinite;
+}
+.ahk-ambient::after {
+    bottom: -32vmax;
+    right: -28vmax;
+    background: radial-gradient(circle, hsl(var(--neon-cyan)) 0%, transparent 62%);
+    animation: ahk-drift 26s ease-in-out infinite reverse;
+}
+:root:not(.dark) .ahk-ambient::before,
+:root:not(.dark) .ahk-ambient::after {
+    opacity: 0.12;
+}
+
+/* Pressable cards/buttons: lift on hover, settle on press. */
+.ahk-press {
+    transition:
+        transform 0.18s var(--ahk-ease-out),
+        box-shadow 0.25s var(--ahk-ease-out),
+        border-color 0.25s var(--ahk-ease-out);
+}
+@media (hover: hover) {
+    .ahk-press:hover {
+        transform: translate3d(0, -2px, 0);
+    }
+}
+.ahk-press:active {
+    transform: scale(0.98);
+}
+
+/* Bottom nav: sliding pill under the active tab + icon pop on selection. */
+.ahk-nav-indicator {
+    transition: transform 0.38s var(--ahk-ease-spring);
+    will-change: transform;
+}
+.ahk-nav-pop {
+    animation: ahk-pop 0.32s var(--ahk-ease-out);
+}
+
+/* Scroll reveal: list rows and cards ease in as they scroll into view.
+   Uses CSS scroll-driven animations (no JS, runs off the main thread). Browsers without
+   support (older TVs, older Safari) simply show the content as-is. */
+@supports (animation-timeline: view()) {
+    .ahk-reveal {
+        animation: ahk-reveal linear backwards;
+        animation-timeline: view();
+        animation-range: entry 0% entry 55%;
+    }
+}
+
+/* Old TV engines (Chrome < 104 lacks the `translate` property): skip the always-running
+   decoration so idle TVs stay cool; entrances and reveals still run once. */
+@supports not (translate: none) {
+    .ahk-ambient,
+    .ahk-mark-halo::before {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ahk-enter,
+    .ahk-tab-enter,
+    .ahk-nav-pop,
+    .ahk-reveal,
+    .ahk-mark-halo::before,
+    .ahk-ambient::before,
+    .ahk-ambient::after {
+        animation: none !important;
+    }
+    .ahk-mark-draw path {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+    .ahk-press,
+    .ahk-nav-indicator {
+        transition: none;
+    }
+}

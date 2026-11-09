@@ -203,9 +203,7 @@ export function TvPlayerQrZone({
                 focusOnMount={spatialFocusOnMount}
                 accessibilityLabel={t('tvEmptyQrAria')}
                 onEnterPress={onOpenSettings}
-                className={({ focused }) =>
-                    tvDefaultFocusLeaf(focused, 'mt-0 rounded-2xl p-2')
-                }
+                className={({ focused }) => tvDefaultFocusLeaf(focused, 'mt-0 rounded-2xl p-2')}
             >
                 {idleQrAnchor}
             </TvFocusable>
@@ -257,6 +255,8 @@ export function TvPlayerQrZone({
                     reserveFooterSpace && 'pb-28',
                 )}
             >
+                {/* CSS-only backdrop: off for reduced motion and on old TV engines (globals.css). */}
+                {!reduceMotion ? <div className="ahk-ambient" aria-hidden /> : null}
                 {!staticLayout ? (
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgb(39_39_42_/_0.55),transparent_65%)]" />
                 ) : null}
@@ -273,7 +273,9 @@ export function TvPlayerQrZone({
                         'relative z-[1] flex w-full flex-col items-center text-center',
                         twoColEnabled &&
                             'tv-wide-short:flex-row tv-wide-short:items-center tv-wide-short:justify-center tv-wide-short:text-left',
-                        compact ? 'max-w-sm py-2 sm:max-w-none lg:py-0' : 'max-w-xl py-2 sm:max-w-4xl sm:py-0',
+                        compact
+                            ? 'max-w-sm py-2 sm:max-w-none lg:py-0'
+                            : 'max-w-xl py-2 sm:max-w-4xl sm:py-0',
                     )}
                 >
                     {/* ── 1-col only: title + subtitle above QR ── */}
@@ -284,7 +286,11 @@ export function TvPlayerQrZone({
                             compact ? 'mb-4 sm:mb-5' : 'mb-5 sm:mb-8',
                         )}
                     >
-                        <BrandLockup size={compact ? 'default' : 'tv'} className="mb-1" />
+                        <BrandLockup
+                            size={compact ? 'default' : 'tv'}
+                            className="mb-1"
+                            animated={!reduceMotion}
+                        />
                         <h1
                             className={cn(
                                 'text-balance font-semibold leading-tight tracking-tight text-zinc-50',
@@ -316,7 +322,7 @@ export function TvPlayerQrZone({
                     {/* ── Right column (2-col only): title + instructions stacked ── */}
                     {twoColEnabled ? (
                         <div className="hidden flex-col items-start justify-center border-l border-white/10 pl-8 tv-wide-short:flex">
-                            <BrandLockup className="mb-4 justify-start" />
+                            <BrandLockup className="mb-4 justify-start" animated={!reduceMotion} />
                             <h1
                                 className={cn(
                                     'text-balance font-semibold leading-tight tracking-tight text-zinc-50',

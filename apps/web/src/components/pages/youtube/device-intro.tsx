@@ -17,15 +17,21 @@ type ChoiceCardProps = {
     description: string;
     accent: 'primary' | 'cyan';
     onSelect: () => void;
+    /** Position in the entrance cascade. */
+    order: number;
 };
 
-function ChoiceCard({ icon, title, description, accent, onSelect }: ChoiceCardProps) {
+/** Inline custom property for the staggered `.ahk-enter` cascade. */
+const stagger = (i: number) => ({ '--ahk-i': i }) as React.CSSProperties;
+
+function ChoiceCard({ icon, title, description, accent, onSelect, order }: ChoiceCardProps) {
     return (
         <button
             type="button"
             onClick={onSelect}
+            style={stagger(order)}
             className={cn(
-                'group flex w-full items-center gap-4 rounded-2xl border bg-card p-5 text-left shadow-sm transition-all duration-200',
+                'ahk-enter ahk-press group flex w-full items-center gap-4 rounded-2xl border bg-card/80 p-5 text-left shadow-sm backdrop-blur-sm',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                 accent === 'primary'
                     ? 'border-primary/40 hover:border-primary hover:shadow-[var(--ahk-glow-primary)]'
@@ -34,7 +40,7 @@ function ChoiceCard({ icon, title, description, accent, onSelect }: ChoiceCardPr
         >
             <span
                 className={cn(
-                    'inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl',
+                    'inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 group-active:scale-95',
                     accent === 'primary'
                         ? 'bg-primary/15 text-primary'
                         : 'bg-neon-cyan/15 text-neon-cyan',
@@ -75,21 +81,20 @@ export function DeviceIntro() {
     };
 
     return (
-        <div className="min-h-dvh-screen overflow-y-auto bg-background">
-            <div className="mx-auto flex w-full max-w-md flex-col px-4 pb-safe-offset pt-safe-offset sm:max-w-lg sm:px-6">
+        <div className="relative min-h-dvh-screen overflow-y-auto overflow-x-hidden bg-background">
+            <div className="ahk-ambient" aria-hidden />
+            <div className="relative z-[1] mx-auto flex w-full max-w-md flex-col px-4 pb-safe-offset pt-safe-offset sm:max-w-lg sm:px-6">
                 <div className="mb-6 flex justify-end">
                     <LanguageSwitcher />
                 </div>
 
-                <BrandLockup className="mb-8" />
+                <BrandLockup className="mb-8" animated />
 
-                <header className="mb-6 space-y-2 text-center">
+                <header className="ahk-enter mb-6 space-y-2 text-center" style={stagger(3)}>
                     <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
                         {t('title')}
                     </h1>
-                    <p className="text-sm leading-relaxed text-muted-foreground">
-                        {t('subtitle')}
-                    </p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{t('subtitle')}</p>
                 </header>
 
                 <div className="space-y-3">
@@ -99,6 +104,7 @@ export function DeviceIntro() {
                         description={t('hostDescription')}
                         accent="primary"
                         onSelect={chooseHost}
+                        order={4}
                     />
                     <ChoiceCard
                         icon={<Smartphone className="h-7 w-7" />}
@@ -106,13 +112,21 @@ export function DeviceIntro() {
                         description={t('guestDescription')}
                         accent="cyan"
                         onSelect={chooseGuest}
+                        order={5}
                     />
                 </div>
 
                 {/* The host sees whether the house (API) is on before heading to the big screen. */}
-                <HostPowerPanel className="mt-6" />
+                <div className="ahk-enter" style={stagger(6)}>
+                    <HostPowerPanel className="mt-6" />
+                </div>
 
-                <p className="mt-6 text-center text-xs text-muted-foreground">{t('footnote')}</p>
+                <p
+                    className="ahk-enter mt-6 text-center text-xs text-muted-foreground"
+                    style={stagger(7)}
+                >
+                    {t('footnote')}
+                </p>
             </div>
         </div>
     );

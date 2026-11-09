@@ -81,17 +81,25 @@ export function RemoteShell() {
                 <div className="flex h-full min-h-0 flex-col">
                     <RemotePanelOverlayProvider containOverlays>
                         <RemoteTabPanel>
-                            {currentTab === 'search' && <VideoSearch />}
-                            {currentTab === 'queue' && <VideoQueue />}
-                            {currentTab === 'history' && <VideoHistory />}
+                            {currentTab !== 'controls' ? (
+                                // Keyed by tab so each switch replays a short fade-up.
+                                <div
+                                    key={currentTab}
+                                    className="ahk-tab-enter flex min-h-0 flex-1 flex-col overflow-hidden"
+                                >
+                                    {currentTab === 'search' && <VideoSearch />}
+                                    {currentTab === 'queue' && <VideoQueue />}
+                                    {currentTab === 'history' && <VideoHistory />}
+                                    {currentTab === 'settings' && <RoomSettings />}
+                                </div>
+                            ) : null}
                             <RemoteTabKeepAlive
                                 active={currentTab === 'controls'}
                                 keepMounted={hasPlaying || currentTab === 'controls'}
-                                className="flex min-h-0 flex-1 flex-col overflow-hidden"
+                                className="ahk-tab-enter flex min-h-0 flex-1 flex-col overflow-hidden"
                             >
                                 <PlayerControlsTabs />
                             </RemoteTabKeepAlive>
-                            {currentTab === 'settings' && <RoomSettings />}
                         </RemoteTabPanel>
                         <CuratedRemoteOverlays />
                     </RemotePanelOverlayProvider>
