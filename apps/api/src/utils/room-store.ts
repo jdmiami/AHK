@@ -1,6 +1,35 @@
 import { isValidRoomId } from '@vkara/room';
 import { withRoomLock } from './room-lock';
-import { ErrorCode, normalizePersistedRoom, RoomError, type Room } from '@vkara/room';
+import {
+    applyRotation,
+    ensureSinger,
+    ErrorCode,
+    normalizePersistedRoom,
+    RoomError,
+    type Room,
+} from '@vkara/room';
+
+/**
+ * Singer rotation runs after every room change, whatever code path made it: create singers for
+ * songs that name one, mark a newly started song as sung, park/unpark paused singers' songs and
+ * re-order the queue by fairness.
+ */
+function applyRotationAfterMutation(room: Room, previousPlayingId: string | null): void {
+    const now = Date.now();
+    const owners = [room.playingNow, ...room.videoQueue]
+        .map((video) => video?.singerId)
+        .filter((id): id is string => Boolean(id));
+    for (const deviceId of owners) {
+        if (!room.singers?.[deviceId]) {
+            const participant = room.participants?.[deviceId];
+            ensureSinger(room, deviceId, now, {
+                stageName: participant?.displayName,
+                joinedAt: participant?.joinedAt,
+            });
+        }
+    }
+    applyRotation(room, now, previousPlayingId);
+}
 
 function normalizeRoomCaptionFields(room: Room): void {
     const normalized = normalizePersistedRoom(room);
@@ -109,8 +138,10 @@ async function mutateRoomUnlocked(
             }
 
             normalizeRoomCaptionFields(room);
+            const previousPlayingId = room.playingNow?.id ?? null;
             mutator(room);
             normalizeRoomCaptionFields(room);
+            applyRotationAfterMutation(room, previousPlayingId);
             room.lastActivity = Date.now();
 
             const execResult = await redis.multi().set(key, JSON.stringify(room)).exec();

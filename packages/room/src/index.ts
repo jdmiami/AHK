@@ -5,3 +5,4 @@ export * from './persisted-room';
 export * from './room';
 export * from './url';
 export * from './song-adjust';
+export * from './rotation';

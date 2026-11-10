@@ -14,7 +14,36 @@ import {
     type Room,
     type ServerMessage,
 } from '@vkara/room';
-import { applySongAdjustChange, isValidRoomId, ROOM_ID_LENGTH } from '@vkara/room';
+import {
+    applySongAdjustChange,
+    canControlPlayback,
+    canEditQueuedSong,
+    cleanStageName,
+    ensureSinger,
+    isRoomController,
+    isValidRoomId,
+    ROOM_ID_LENGTH,
+    skipSingerTurn,
+} from '@vkara/room';
+
+/** Playback controls: host or the person singing. */
+const PLAYBACK_MESSAGES = new Set([
+    'play',
+    'pause',
+    'seek',
+    'nextVideo',
+    'replay',
+    'setVolume',
+    'setTempo',
+    'setKey',
+    'tiktokNavigatePhoto',
+]);
+/** Change a queued song: its singer or the host. */
+const OWN_SONG_MESSAGES = new Set(['removeVideoFromQueue', 'moveToTop']);
+/** Whole-queue changes: host only. */
+const HOST_QUEUE_MESSAGES = new Set(['shuffleQueue', 'clearQueue', 'clearHistory']);
+/** Songs added from a phone belong to that singer. */
+const ADD_MESSAGES = new Set(['addVideo', 'addVideoAndMoveToTop', 'playNow', 'importPlaylist']);
 import type { ClientMessage, TvRoomRestoreState } from '@vkara/validators/ws/client-message';
 import { applyTvRestoreToRoom } from '@/modules/room/apply-tv-restore';
 import { applyClaimHost, canJoinWhenLocked } from '@/modules/room/participant-policy';
@@ -993,6 +1022,124 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
         }
     }
 
+    /** Phones (not TVs or agents) take part in the rotation and own the songs they add. */
+    function isSingerParticipant(room: Room, deviceId: string | null): deviceId is string {
+        if (!deviceId) return false;
+        const participant = room.participants?.[deviceId];
+        return Boolean(participant && !participant.isTvConnection && !participant.isAgent);
+    }
+
+    /**
+     * Rotation rules for each incoming message: tag songs with their singer, let only the host
+     * or the person singing control playback, let singers change only their own songs, and turn
+     * a non-host "Play now" into "next in my list" so nobody jumps the line.
+     */
+    async function applyRotationPolicy(
+        ws: ElysiaWS,
+        message: ClientMessage,
+    ): Promise<ClientMessage> {
+        const type = message.type;
+        const needsRoom =
+            PLAYBACK_MESSAGES.has(type) ||
+            OWN_SONG_MESSAGES.has(type) ||
+            HOST_QUEUE_MESSAGES.has(type) ||
+            ADD_MESSAGES.has(type);
+        if (!needsRoom) return message;
+
+        const roomId = await findRoomIdByClient(ws);
+        if (!roomId) return message;
+        const room = await loadRoom(roomId);
+        if (!room) return message;
+        const deviceId = await resolveDeviceIdForWs(ws);
+        const controller = isRoomController(room, deviceId);
+        const rotationOn = Object.keys(room.singers ?? {}).length > 0;
+
+        if (ADD_MESSAGES.has(type)) {
+            const singerId = isSingerParticipant(room, deviceId) ? deviceId : undefined;
+            if (message.type === 'playNow' && !controller && singerId) {
+                return {
+                    ...message,
+                    type: 'addVideoAndMoveToTop',
+                    // Server-side only: the schema has no singerId, so phones cannot claim one.
+                    video: { ...message.video, singerId } as typeof message.video,
+                };
+            }
+            if (
+                message.type === 'addVideo' ||
+                message.type === 'addVideoAndMoveToTop' ||
+                message.type === 'playNow'
+            ) {
+                return {
+                    ...message,
+                    video: { ...message.video, singerId } as typeof message.video,
+                };
+            }
+            return message;
+        }
+        if (!rotationOn || controller) return message;
+
+        if (PLAYBACK_MESSAGES.has(type) && !canControlPlayback(room, deviceId)) {
+            throw new RoomError(ErrorCode.NOT_YOUR_TURN);
+        }
+        if (
+            (message.type === 'removeVideoFromQueue' || message.type === 'moveToTop') &&
+            !canEditQueuedSong(room, deviceId, message.videoId)
+        ) {
+            throw new RoomError(ErrorCode.NOT_YOUR_SONG);
+        }
+        if (HOST_QUEUE_MESSAGES.has(type)) {
+            throw new RoomError(ErrorCode.NOT_HOST);
+        }
+        return message;
+    }
+
+    async function updateSinger(
+        ws: ElysiaWS,
+        patch: { stageName?: string; emoji?: string; color?: string; profileId?: string | null },
+    ): Promise<void> {
+        const roomId = await validateClientInRoom(ws);
+        const deviceId = await resolveDeviceIdForWs(ws);
+        if (!deviceId) throw new RoomError(ErrorCode.NOT_IN_ROOM);
+        const room = await mutateRoom(roomId, (room) => {
+            if (!isSingerParticipant(room, deviceId)) return;
+            const singer = ensureSinger(room, deviceId, Date.now(), {
+                stageName: patch.stageName || room.participants?.[deviceId]?.displayName,
+                joinedAt: room.participants?.[deviceId]?.joinedAt,
+            });
+            const name = cleanStageName(patch.stageName);
+            if (name) singer.stageName = name;
+            if (patch.emoji) singer.emoji = patch.emoji;
+            if (patch.color) singer.color = patch.color;
+            if (patch.profileId !== undefined) singer.profileId = patch.profileId;
+        });
+        broadcastRoomState(roomId, room);
+    }
+
+    async function setSingerPaused(ws: ElysiaWS, paused: boolean): Promise<void> {
+        const roomId = await validateClientInRoom(ws);
+        const deviceId = await resolveDeviceIdForWs(ws);
+        if (!deviceId) throw new RoomError(ErrorCode.NOT_IN_ROOM);
+        const room = await mutateRoom(roomId, (room) => {
+            if (!isSingerParticipant(room, deviceId)) return;
+            ensureSinger(room, deviceId, Date.now(), {
+                stageName: room.participants?.[deviceId]?.displayName,
+                joinedAt: room.participants?.[deviceId]?.joinedAt,
+            }).paused = paused;
+        });
+        broadcastRoomState(roomId, room);
+    }
+
+    async function skipMyTurn(ws: ElysiaWS): Promise<void> {
+        const roomId = await validateClientInRoom(ws);
+        const deviceId = await resolveDeviceIdForWs(ws);
+        if (!deviceId) throw new RoomError(ErrorCode.NOT_IN_ROOM);
+        const room = await mutateRoom(roomId, (room) => {
+            const singer = room.singers?.[deviceId];
+            if (singer) skipSingerTurn(singer, Date.now());
+        });
+        broadcastRoomState(roomId, room);
+    }
+
     async function setKeyEngineActive(ws: ElysiaWS, active: boolean): Promise<void> {
         const roomId = await validateClientInRoom(ws);
         const room = await mutateRoom(roomId, (room) => {
@@ -1291,6 +1438,7 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
     }
 
     async function importPlaylist(ws: ElysiaWS, playlistUrlOrId: string) {
+        const importerDeviceId = await resolveDeviceIdForWs(ws);
         const roomId = await validateClientInRoom(ws);
 
         let videos: YouTubeVideo[];
@@ -1333,7 +1481,12 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
                 ...room.videoQueue.map((v) => v.id),
                 ...(room.playingNow?.id ? [room.playingNow.id] : []),
             ]);
-            const newVideos = embeddableVideos.filter((video) => !existingIds.has(video.id));
+            const singerId = isSingerParticipant(room, importerDeviceId)
+                ? importerDeviceId
+                : undefined;
+            const newVideos = embeddableVideos
+                .filter((video) => !existingIds.has(video.id))
+                .map((video) => ({ ...video, singerId }));
 
             room.videoQueue = [...room.videoQueue, ...newVideos];
         });
@@ -1364,6 +1517,8 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
                 displayName: existing?.displayName,
             });
         }
+
+        message = await applyRotationPolicy(ws, message);
 
         switch (message.type) {
             case 'ping':
@@ -1489,6 +1644,15 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
                 break;
             case 'setKeyEngineActive':
                 await setKeyEngineActive(ws, message.active);
+                break;
+            case 'updateSinger':
+                await updateSinger(ws, message);
+                break;
+            case 'setSingerPaused':
+                await setSingerPaused(ws, message.paused);
+                break;
+            case 'skipMyTurn':
+                await skipMyTurn(ws);
                 break;
             case 'setShowQRInPlayer':
                 if (typeof message.show !== 'boolean') {

@@ -43,6 +43,7 @@ export function normalizePersistedRoom(
                   }
                 : undefined,
         keyEngineActive: Boolean(room.keyEngineActive),
+        singers: room.singers && typeof room.singers === 'object' ? room.singers : {},
         isPlaying: room.isPlaying ?? false,
         currentTime: typeof room.currentTime === 'number' ? room.currentTime : 0,
         tiktokPhotoIndex:

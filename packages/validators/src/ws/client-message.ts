@@ -121,6 +121,21 @@ export const wsClientMessageSchema = z.discriminatedUnion('type', [
         videoId: z.string().min(1),
         semitones: z.number().finite(),
     }),
+    /** Singer rotation: set this device's stage name / look / linked profile. */
+    withBase({
+        type: z.literal('updateSinger'),
+        stageName: z.string().max(64).optional(),
+        emoji: z.string().max(16).optional(),
+        color: z
+            .string()
+            .regex(/^#[0-9a-fA-F]{6}$/)
+            .optional(),
+        profileId: z.string().max(64).nullable().optional(),
+    }),
+    /** Sit out (songs kept aside) or come back. */
+    withBase({ type: z.literal('setSingerPaused'), paused: z.boolean() }),
+    /** Let everyone waiting go first this round. */
+    withBase({ type: z.literal('skipMyTurn') }),
     /** Reported by the TV/laptop when its key engine starts or stops capturing audio. */
     withBase({ type: z.literal('setKeyEngineActive'), active: z.boolean() }),
     withBase({

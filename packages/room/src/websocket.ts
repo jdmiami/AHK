@@ -1,3 +1,4 @@
+import type { Singer } from './rotation';
 import type { SongAdjust } from './song-adjust';
 import type { ClientMessage } from '@vkara/validators/ws/client-message';
 import type { CaptionTrack, YouTubeVideo } from '@vkara/youtube';
@@ -54,6 +55,8 @@ export interface Room {
     songAdjust?: SongAdjust;
     /** Whether the projector laptop's key engine is capturing audio (key changes are audible). */
     keyEngineActive?: boolean;
+    /** Singer rotation (see `rotation.ts`), keyed by device id. */
+    singers?: Record<string, Singer>;
     lastActivity: number;
     /** Set when the last client leaves; used to release empty rooms after a grace period. */
     emptySince?: number;
