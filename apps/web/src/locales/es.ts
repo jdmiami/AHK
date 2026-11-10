@@ -426,6 +426,12 @@ export default {
     'keyEngine.launchHint':
         'Un teléfono cambió el tono. Abre una ventana pequeña; comparte el audio de esta pestaña una vez.',
 
+    'tvUnlock.title': 'Haz clic para empezar la música',
+    'tvUnlock.hint':
+        'Tu navegador necesita un clic en esta pantalla antes de reproducir canciones con sonido. Después, las canciones empiezan solas.',
+    'tvUnlock.idleHint':
+        'Haz clic una vez en cualquier parte de esta pantalla para que las canciones suenen.',
+
     'deviceIntro.title': '¿Qué dispositivo es este?',
     'deviceIntro.subtitle': 'Elige una vez. AHK lo recuerda en este dispositivo.',
     'deviceIntro.hostTitle': 'La pantalla grande',

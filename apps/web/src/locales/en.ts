@@ -417,6 +417,11 @@ export default {
     'keyEngine.launchHint':
         'A phone changed the key. Opens a small window; share this tab’s audio once.',
 
+    'tvUnlock.title': 'Click to start the music',
+    'tvUnlock.hint':
+        'Your browser needs one click on this screen before it plays songs with sound. After this, songs start by themselves.',
+    'tvUnlock.idleHint': 'Click anywhere on this screen once so songs can play with sound.',
+
     'deviceIntro.title': 'What is this device?',
     'deviceIntro.subtitle': 'Pick once. AHK remembers it on this device.',
     'deviceIntro.hostTitle': 'The big screen',

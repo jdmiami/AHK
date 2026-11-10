@@ -1,6 +1,7 @@
 'use client';
 
 import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
+import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
 import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
 import dynamic from 'next/dynamic';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
@@ -394,6 +395,7 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
             )}
 
             <KeyEngineLauncher />
+            <TvPlaybackUnlock />
 
             {isTvIdle && roomId ? (
                 <TvPlayerQrZone

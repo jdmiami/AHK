@@ -1,6 +1,7 @@
 'use client';
 
 import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
+import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
 import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -482,6 +483,7 @@ function PlayerColumnInner({
             )}
 
             <KeyEngineLauncher />
+            <TvPlaybackUnlock />
 
             {isTvIdle && roomId && (
                 <TvPlayerQrZone
