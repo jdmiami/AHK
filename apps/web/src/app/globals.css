@@ -649,7 +649,7 @@ body {
 
 /* Big screen: the side panel slides in and the video shrinks beside it (nothing on top). */
 .ahk-stage-area {
-    transform-origin: 0% 50%;
+    transform-origin: 0 0;
     transition: transform 0.7s var(--ahk-ease-out);
     will-change: transform;
 }
@@ -670,15 +670,39 @@ body {
     opacity: 1;
 }
 
-/* The "Up next" screen stays left of the panel. */
+/* The "Up next" screen fits the video's box (never over the panel or the race track). */
 [data-tv-route] .tv-next-up-overlay.tv-next-up-overlay {
-    right: var(--ahk-stage-rail, 0px);
-    transition: right 0.7s var(--ahk-ease-out);
+    top: var(--ahk-stage-y, 0px);
+    left: var(--ahk-stage-x, 0px);
+    right: auto;
+    bottom: auto;
+    width: var(--ahk-stage-w, 100%);
+    height: var(--ahk-stage-h, 100%);
+    overflow: hidden;
+    transition:
+        top 0.7s var(--ahk-ease-out),
+        left 0.7s var(--ahk-ease-out),
+        width 0.7s var(--ahk-ease-out),
+        height 0.7s var(--ahk-ease-out);
+}
+
+/* Race track fades in with the race. */
+.ahk-race {
+    transition: opacity 0.5s ease;
+}
+
+.ahk-race--off {
+    opacity: 0;
+}
+
+.ahk-race--on {
+    opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .ahk-stage-area,
     .ahk-stage-rail,
+    .ahk-race,
     [data-tv-route] .tv-next-up-overlay.tv-next-up-overlay {
         transition: none;
     }

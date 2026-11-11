@@ -10,14 +10,11 @@ import {
     Lock,
     LockOpen,
     LogOut,
-    Mic,
-    Music,
     QrCode,
     X,
 } from 'lucide-react';
 
 import { useChangeLocale } from '@/hooks/use-change-locale';
-import { useHostShowStore } from '@/store/hostShowStore';
 import { useWebSocket } from '@/providers/websocket-provider';
 import { useYouTubeStore } from '@/store/youtubeStore';
 import { useI18n, useScopedI18n, useCurrentLocale } from '@/locales/client';
@@ -310,10 +307,6 @@ export function TvSettingsPanel({ onCloseAction }: TvSettingsPanelProps) {
     const hostDeviceId = useYouTubeStore((s) => s.room?.hostDeviceId);
     const participants = useYouTubeStore((s) => s.room?.participants);
     const showQRInPlayer = useYouTubeStore((s) => s.room?.showQRInPlayer ?? true);
-    const announcerOn = useHostShowStore((s) => s.announcer);
-    const musicOn = useHostShowStore((s) => s.music);
-    const setAnnouncer = useHostShowStore((s) => s.setAnnouncer);
-    const setMusic = useHostShowStore((s) => s.setMusic);
     const enterTvLobby = useYouTubeStore((s) => s.enterTvLobby);
     const { ensureConnectedAndSend } = useWebSocket();
     const myDeviceId = getOrCreateDeviceId();
@@ -424,32 +417,6 @@ export function TvSettingsPanel({ onCloseAction }: TvSettingsPanelProps) {
                             { value: 'hide', label: tRoom('hide') },
                         ]}
                         onChangeAction={(next) => handleShowQrChange(next === 'show')}
-                    />
-
-                    <SettingsDropdown
-                        {...scrollProps}
-                        focusKey={TV_FOCUS_KEYS.settingsAnnouncer}
-                        sectionLabel={tTv('hostAnnouncer')}
-                        icon={<Mic className="h-6 w-6" strokeWidth={2.5} aria-hidden />}
-                        value={announcerOn ? 'on' : 'off'}
-                        options={[
-                            { value: 'on', label: tTv('on') },
-                            { value: 'off', label: tTv('off') },
-                        ]}
-                        onChangeAction={(next) => setAnnouncer(next === 'on')}
-                    />
-
-                    <SettingsDropdown
-                        {...scrollProps}
-                        focusKey={TV_FOCUS_KEYS.settingsLoungeMusic}
-                        sectionLabel={tTv('loungeMusic')}
-                        icon={<Music className="h-6 w-6" strokeWidth={2.5} aria-hidden />}
-                        value={musicOn ? 'on' : 'off'}
-                        options={[
-                            { value: 'on', label: tTv('on') },
-                            { value: 'off', label: tTv('off') },
-                        ]}
-                        onChangeAction={(next) => setMusic(next === 'on')}
                     />
 
                     {roomLocked || isHost ? (

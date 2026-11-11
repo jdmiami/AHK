@@ -2,8 +2,6 @@
 
 import { TvSingerBadge } from '@/components/singer/tv-singer-badge';
 import { TvPartyOverlay } from '@/components/party/tv-party-overlay';
-import { TvHostShow } from '@/components/host-show/tv-host-show';
-import { whenHostIdle } from '@/store/hostShowStore';
 import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
 import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
 import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
@@ -490,7 +488,6 @@ function PlayerColumnInner({
             <TvPlaybackUnlock />
             <TvSingerBadge />
             <TvPartyOverlay />
-            <TvHostShow captionMode="inline" />
 
             {isTvIdle && roomId && (
                 <TvPlayerQrZone
@@ -574,7 +571,7 @@ function PlayerColumnInner({
                                 <CountdownTimer
                                     classNames="text-sm font-medium text-white"
                                     initialSeconds={NEXT_VIDEO_COUNTDOWN_SECONDS}
-                                    onCountdownComplete={() => whenHostIdle(handleVideoFinished)}
+                                    onCountdownComplete={handleVideoFinished}
                                 />
                             </p>
                         </div>

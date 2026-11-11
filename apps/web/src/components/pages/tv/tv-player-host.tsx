@@ -1,7 +1,6 @@
 'use client';
 
-import { TvStageArea, TvStageRail } from '@/components/stage-rail/tv-stage-rail';
-import { TvHostShow } from '@/components/host-show/tv-host-show';
+import { TvCheerRace, TvStageArea, TvStageRail } from '@/components/stage-rail/tv-stage-rail';
 import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
 import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
 import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
@@ -413,10 +412,10 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
             </TvStageArea>
 
             {/* Nothing sits on the video: lineup, chat, cheers and the announcer live in the side panel. */}
+            <TvCheerRace />
             <TvStageRail />
             <KeyEngineLauncher />
             <TvPlaybackUnlock />
-            <TvHostShow />
         </div>
     );
 }

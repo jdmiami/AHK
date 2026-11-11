@@ -16,8 +16,6 @@ export const TV_FOCUS_KEYS = {
     settingsPanel: 'TV_SETTINGS_PANEL',
     settingsClose: 'TV_SETTINGS_CLOSE',
     settingsQrToggle: 'TV_SETTINGS_QR_TOGGLE',
-    settingsAnnouncer: 'TV_SETTINGS_ANNOUNCER',
-    settingsLoungeMusic: 'TV_SETTINGS_LOUNGE_MUSIC',
     settingsLocale: 'TV_SETTINGS_LOCALE',
     settingsLeave: 'TV_SETTINGS_LEAVE',
     settingsCloseRoom: 'TV_SETTINGS_CLOSE_ROOM',

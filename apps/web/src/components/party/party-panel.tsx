@@ -12,6 +12,8 @@ import { useMySinger } from '@/hooks/use-singer';
 import { useRoomLineup } from '@/hooks/use-room-lineup';
 import { REMOTE_CHROME_CSS_VARS } from '@/lib/remote-chrome';
 import { cn } from '@/lib/utils';
+import { RACE } from '@/lib/cheer-race';
+import { useSingerStore } from '@/store/singerStore';
 import { useScopedI18n } from '@/locales/client';
 import { useWebSocket } from '@/providers/websocket-provider';
 
@@ -37,9 +39,24 @@ function CheerPad() {
     const { ensureConnectedAndSend } = useWebSocket();
     const [pops, setPops] = useState<Pop[]>([]);
     const nextKey = useRef(0);
+    // Same emoji, tapped again quickly = combo (your racer speeds up on the big screen).
+    const streak = useRef({ emoji: '', count: 0, at: 0 });
+    const [combo, setCombo] = useState<{ emoji: string; count: number } | null>(null);
+    const comboTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Your racer on the big screen wears your singer color.
+    const myColor = useSingerStore((st) => st.color);
+    const racerColor = /^#[0-9a-fA-F]{6}$/.test(myColor) ? myColor : '#FF2DAA';
 
     const cheer = (emoji: ReactionEmoji) => {
         ensureConnectedAndSend({ type: 'sendReaction', emoji });
+        const now = Date.now();
+        const s = streak.current;
+        s.count = s.emoji === emoji && now - s.at <= RACE.comboWindowMs ? s.count + 1 : 1;
+        s.emoji = emoji;
+        s.at = now;
+        setCombo({ emoji, count: Math.min(s.count, RACE.maxCombo) });
+        if (comboTimer.current) clearTimeout(comboTimer.current);
+        comboTimer.current = setTimeout(() => setCombo(null), RACE.comboWindowMs);
         const pop = { key: nextKey.current++, emoji, left: 10 + Math.random() * 80 };
         setPops((list) => [...list.slice(-11), pop]);
         setTimeout(() => setPops((list) => list.filter((p) => p.key !== pop.key)), 1300);
@@ -51,6 +68,14 @@ function CheerPad() {
             aria-label={t('cheerTitle')}
         >
             <div className="mb-2 flex min-w-0 items-center gap-2 text-sm font-medium">
+                <span
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background text-lg"
+                    style={{ boxShadow: `0 0 0 2px ${racerColor}, 0 0 10px ${racerColor}` }}
+                    title={t('yourRacer')}
+                    aria-label={t('yourRacer')}
+                >
+                    {combo?.emoji ?? '🏁'}
+                </span>
                 {now?.singer ? (
                     <>
                         <span className="shrink-0">{t('cheerFor')}</span>
@@ -73,7 +98,18 @@ function CheerPad() {
                     </button>
                 ))}
             </div>
-            <p className="mt-2 text-[11px] text-muted-foreground">{t('cheerHint')}</p>
+            <div className="mt-2 flex items-center justify-between gap-2">
+                <p className="text-[11px] text-muted-foreground">{t('cheerHint')}</p>
+                {combo && combo.count > 1 ? (
+                    <span
+                        key={combo.count}
+                        className="ahk-enter shrink-0 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-bold tabular-nums text-primary"
+                        aria-live="polite"
+                    >
+                        {combo.emoji} {t('combo', { count: combo.count })}
+                    </span>
+                ) : null}
+            </div>
             <div
                 className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl"
                 aria-hidden

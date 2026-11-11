@@ -1,65 +1,280 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Mic, Volume2 } from 'lucide-react';
+import { Flag } from 'lucide-react';
 import { QRCode } from 'react-qrcode-logo';
-import { resolveRoomPasswordForShare } from '@vkara/room';
-import { CHAT_ON_TV, type ReactionEvent } from '@vkara/room';
+import { CHAT_ON_TV, resolveRoomPasswordForShare, type ReactionEvent } from '@vkara/room';
 
 import { SingerChip } from '@/components/singer/singer-chip';
 import { useReactionEvents, useRoomChat } from '@/hooks/use-party';
 import { useRoomLineup } from '@/hooks/use-room-lineup';
+import { useViewportSize } from '@/hooks/use-viewport-size';
+import { pointOnLoop, RACE, standings, stepRace, tapRacer, type Racer } from '@/lib/cheer-race';
 import { generateShareableUrl } from '@/lib/room-share';
+import { stageLayout, STAGE_RAIL_FRACTION } from '@/lib/stage-layout';
 import { cn } from '@/lib/utils';
 import { useCurrentLocale, useScopedI18n } from '@/locales/client';
+import { useCheerRaceStore, type RaceStanding } from '@/store/cheerRaceStore';
 import { useCountdownStore } from '@/store/countdownTimersStore';
-import { useHostShowStore } from '@/store/hostShowStore';
-import { STAGE_RAIL_FRACTION, useStageRailStore } from '@/store/stageRailStore';
+import { useStageRailStore } from '@/store/stageRailStore';
 import { useYouTubeStore } from '@/store/youtubeStore';
 
 const CHAT_OPEN_MS = 15_000;
-const CHEER_OPEN_MS = 8_000;
-const FLOAT_MS = 3500;
-const MAX_FLOATING = 24;
 const UP_NEXT = 3;
 const HOUSE = { emoji: '🏠', color: '#9CA3AF' };
 
-type Floating = {
-    key: string;
-    emoji: string;
-    name: string;
-    color: string;
-    left: number;
-    drift: number;
-};
+const toStanding = (r: Racer): RaceStanding => ({
+    id: r.id,
+    name: r.name,
+    color: r.color,
+    emoji: r.emoji,
+    progress: r.progress,
+    combo: r.combo,
+});
+
+/** The video (or idle screen), placed in the largest box left free by the panel and track. */
+export function TvStageArea({ children }: { children: React.ReactNode }) {
+    const open = useStageRailStore((s) => s.open);
+    const raceOn = useStageRailStore((s) => s.raceOn);
+    const { width, height } = useViewportSize();
+    const { video, scale } = stageLayout(width, height, open, raceOn);
+    const moved = open || raceOn;
+    useEffect(() => {
+        const root = document.documentElement.style;
+        root.setProperty('--ahk-stage-x', `${moved ? video.x : 0}px`);
+        root.setProperty('--ahk-stage-y', `${moved ? video.y : 0}px`);
+        root.setProperty('--ahk-stage-w', moved ? `${video.w}px` : '100%');
+        root.setProperty('--ahk-stage-h', moved ? `${video.h}px` : '100%');
+    }, [moved, video.x, video.y, video.w, video.h]);
+    return (
+        <div
+            className="ahk-stage-area tv-fill"
+            style={{
+                transform: moved
+                    ? `translate3d(${video.x}px, ${video.y}px, 0) scale(${scale})`
+                    : 'none',
+            }}
+        >
+            {children}
+        </div>
+    );
+}
+
+/**
+ * Cheer race on the big screen: cheers from phones push each person's emoji around a road
+ * that frames the video. Same emoji again and again = combo = faster. First lap wins.
+ * The road only appears while a race is on; the video shrinks inside it, nothing on top.
+ */
+export function TvCheerRace() {
+    const raceOn = useStageRailStore((s) => s.raceOn);
+    const open = useStageRailStore((s) => s.open);
+    const { width, height } = useViewportSize();
+    const racers = useRef(new Map<string, Racer>());
+    const nodes = useRef(new Map<string, HTMLDivElement>());
+    const [ids, setIds] = useState<string[]>([]);
+    /** Set from the finish until the next race starts: the track stays, nothing moves. */
+    const finished = useRef(false);
+    const layout = stageLayout(width, height, open, true);
+    const layoutRef = useRef(layout);
+    layoutRef.current = layout;
+
+    const sync = useCallback(() => {
+        const next = [...racers.current.keys()];
+        setIds((prev) => (prev.join() === next.join() ? prev : next));
+        useCheerRaceStore.getState().set({ standings: standings(racers.current).map(toStanding) });
+        useStageRailStore.getState().setRaceOn(racers.current.size > 0 || finished.current);
+    }, []);
+
+    const onCheer = useCallback(
+        (reaction: ReactionEvent) => {
+            if (finished.current) return; // victory moment: the next race starts after it
+            tapRacer(racers.current, reaction, Date.now());
+            sync();
+        },
+        [sync],
+    );
+    useReactionEvents(onCheer);
+
+    // Animation loop: move racers along the track, check for a winner.
+    useEffect(() => {
+        let frame = 0;
+        let last = performance.now();
+        let lastSync = 0;
+        const tick = (nowPerf: number) => {
+            const dt = Math.min(0.1, (nowPerf - last) / 1000);
+            last = nowPerf;
+            const now = Date.now();
+            const before = racers.current.size;
+            const winner = finished.current ? null : stepRace(racers.current, dt, now);
+            if (winner) {
+                finished.current = true;
+                useCheerRaceStore.getState().set({ winner: toStanding(winner) });
+                setTimeout(() => {
+                    racers.current.clear();
+                    finished.current = false;
+                    useCheerRaceStore.getState().set({ winner: null, standings: [] });
+                    sync();
+                }, RACE.winHoldMs);
+            }
+            const { track } = layoutRef.current;
+            for (const racer of racers.current.values()) {
+                const node = nodes.current.get(racer.id);
+                if (!node) continue;
+                const p = pointOnLoop(track, racer.progress);
+                node.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-50%, -50%)`;
+            }
+            if (racers.current.size !== before || nowPerf - lastSync > 250) {
+                lastSync = nowPerf;
+                sync();
+            }
+            frame = requestAnimationFrame(tick);
+        };
+        frame = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(frame);
+    }, [sync]);
+
+    useEffect(
+        () => () => {
+            useStageRailStore.getState().setRaceOn(false);
+            useCheerRaceStore.getState().set({ standings: [], winner: null });
+        },
+        [],
+    );
+
+    // Test hook (`?ahk-debug=1`): read the race state.
+    useEffect(() => {
+        if (!new URLSearchParams(window.location.search).has('ahk-debug')) return;
+        (window as unknown as { __ahkRace?: object }).__ahkRace = {
+            racers: () => standings(racers.current).map(toStanding),
+            layout: () => layoutRef.current,
+            raceOn: () => useStageRailStore.getState().raceOn,
+            winner: () => useCheerRaceStore.getState().winner,
+        };
+    }, []);
+
+    const { track, band } = layout;
+    const emojiSize = Math.round(band * 0.62);
+    return (
+        <div
+            className={cn(
+                'ahk-race pointer-events-none absolute inset-0 z-[44]',
+                raceOn ? 'ahk-race--on' : 'ahk-race--off',
+            )}
+            aria-hidden
+        >
+            <svg className="absolute inset-0 h-full w-full" width={width} height={height}>
+                <defs>
+                    <pattern
+                        id="ahk-checker"
+                        width={band / 4}
+                        height={band / 4}
+                        patternUnits="userSpaceOnUse"
+                    >
+                        <rect width={band / 8} height={band / 8} fill="#fff" />
+                        <rect
+                            x={band / 8}
+                            y={band / 8}
+                            width={band / 8}
+                            height={band / 8}
+                            fill="#fff"
+                        />
+                    </pattern>
+                </defs>
+                {/* Asphalt */}
+                <rect
+                    x={track.x}
+                    y={track.y}
+                    width={track.w}
+                    height={track.h}
+                    rx={band * 0.12}
+                    fill="none"
+                    stroke="#1d1b26"
+                    strokeWidth={band * 0.92}
+                />
+                {/* Centre line */}
+                <rect
+                    x={track.x}
+                    y={track.y}
+                    width={track.w}
+                    height={track.h}
+                    rx={band * 0.12}
+                    fill="none"
+                    stroke="#ffffff"
+                    strokeOpacity={0.35}
+                    strokeWidth={Math.max(2, band * 0.05)}
+                    strokeDasharray={`${band * 0.5} ${band * 0.45}`}
+                />
+                {/* Start / finish line across the top-left of the track */}
+                <rect
+                    x={track.x + band * 0.7}
+                    y={track.y - band * 0.46}
+                    width={band / 4}
+                    height={band * 0.92}
+                    fill="#111"
+                />
+                <rect
+                    x={track.x + band * 0.7}
+                    y={track.y - band * 0.46}
+                    width={band / 4}
+                    height={band * 0.92}
+                    fill="url(#ahk-checker)"
+                />
+            </svg>
+            {ids.map((id) => {
+                const racer = racers.current.get(id);
+                if (!racer) return null;
+                return (
+                    <div
+                        key={id}
+                        ref={(node) => {
+                            if (node) nodes.current.set(id, node);
+                            else nodes.current.delete(id);
+                        }}
+                        className="absolute left-0 top-0 flex flex-col items-center"
+                        style={{ willChange: 'transform' }}
+                    >
+                        <span
+                            className="flex items-center justify-center rounded-full"
+                            style={{
+                                width: emojiSize + 8,
+                                height: emojiSize + 8,
+                                fontSize: emojiSize,
+                                lineHeight: 1,
+                                boxShadow: `0 0 0 3px ${racer.color}, 0 0 16px ${racer.color}`,
+                                background: '#0b0a12',
+                            }}
+                        >
+                            {racer.emoji}
+                        </span>
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
 
 /**
  * Big screen side panel. Closed, the video has the whole screen. It opens (and the video
- * shrinks beside it, nothing on top) during the intermission between songs, for a while after
- * a chat message, and while cheers are coming in.
+ * shrinks beside it) between songs, for a while after a chat message, and to show a race winner.
  */
 export function TvStageRail() {
     const t = useScopedI18n('lineup');
-    const caption = useHostShowStore((s) => s.caption);
-    const busy = useHostShowStore((s) => s.busy);
-    const audioReady = useHostShowStore((s) => s.audioReady);
-    const hostOn = useHostShowStore((s) => s.announcer || s.music);
-    const tTv = useScopedI18n('tvPage');
-    const ended = useCountdownStore((s) => s.shouldShowTimer);
-    const playingId = useYouTubeStore((s) => s.room?.playingNow?.id ?? null);
-    const chat = useRoomChat();
-    const { now, upcoming } = useRoomLineup();
-    const open = useStageRailStore((s) => s.open);
+    const tParty = useScopedI18n('party');
     const tPage = useScopedI18n('youtubePage');
     const locale = useCurrentLocale();
+    const ended = useCountdownStore((s) => s.shouldShowTimer);
+    const playingId = useYouTubeStore((s) => s.room?.playingNow?.id ?? null);
     const roomId = useYouTubeStore((s) => s.room?.id ?? null);
     const roomPassword = useYouTubeStore((s) => s.room?.password);
     const showQr = useYouTubeStore((s) => s.room?.showQRInPlayer ?? true);
+    const chat = useRoomChat();
+    const { now, upcoming } = useRoomLineup();
+    const open = useStageRailStore((s) => s.open);
+    const race = useCheerRaceStore((s) => s.standings);
+    const winner = useCheerRaceStore((s) => s.winner);
 
     const [chatUntil, setChatUntil] = useState(0);
-    const [cheerUntil, setCheerUntil] = useState(0);
     const [, setTick] = useState(0);
-    const [floating, setFloating] = useState<Floating[]>([]);
 
     // A new chat line (not the history loaded on join) opens the panel for a while.
     const lastChatId = chat.at(-1)?.id ?? null;
@@ -73,49 +288,28 @@ export function TvStageRail() {
         seenChat.current = lastChatId;
     }, [lastChatId]);
 
-    const onCheer = useCallback((reaction: ReactionEvent) => {
-        setCheerUntil(Date.now() + CHEER_OPEN_MS);
-        const item: Floating = {
-            key: reaction.id,
-            emoji: reaction.emoji,
-            name: reaction.from.name,
-            color: reaction.from.color,
-            left: 8 + Math.random() * 70,
-            drift: Math.round((Math.random() - 0.5) * 80),
-        };
-        setFloating((list) => [...list.slice(-(MAX_FLOATING - 1)), item]);
-        setTimeout(() => setFloating((list) => list.filter((e) => e.key !== item.key)), FLOAT_MS);
-    }, []);
-    useReactionEvents(onCheer);
-
-    // Re-check when the chat / cheer windows run out.
     useEffect(() => {
-        const until = Math.max(chatUntil, cheerUntil) - Date.now();
+        const until = chatUntil - Date.now();
         if (until <= 0) return;
         const timer = setTimeout(() => setTick((n) => n + 1), until + 50);
         return () => clearTimeout(timer);
-    }, [chatUntil, cheerUntil]);
+    }, [chatUntil]);
 
-    const intermission = busy || Boolean(caption) || (ended && Boolean(playingId));
-    // Until someone clicks the big screen once, the browser keeps it silent: ask for that click.
-    const needsClick = hostOn && !audioReady && Boolean(roomId);
-    const wantOpen =
-        needsClick || intermission || Date.now() < chatUntil || Date.now() < cheerUntil;
+    const intermission = ended && Boolean(playingId);
+    const wantOpen = intermission || Boolean(winner) || Date.now() < chatUntil;
 
     useEffect(() => {
         useStageRailStore.getState().setOpen(wantOpen);
-        document.documentElement.style.setProperty(
-            '--ahk-stage-rail',
-            wantOpen ? `${STAGE_RAIL_FRACTION * 100}vw` : '0px',
-        );
     }, [wantOpen]);
-    useEffect(
-        () => () => {
-            useStageRailStore.getState().setOpen(false);
-            document.documentElement.style.removeProperty('--ahk-stage-rail');
-        },
-        [],
-    );
+    useEffect(() => () => useStageRailStore.getState().setOpen(false), []);
+
+    // Test hook (`?ahk-debug=1`): mark the song as ended (YouTube can't play in test browsers).
+    useEffect(() => {
+        if (!new URLSearchParams(window.location.search).has('ahk-debug')) return;
+        (window as unknown as { __ahkStage?: object }).__ahkStage = {
+            endSong: () => useCountdownStore.getState().setShouldShowTimer(true),
+        };
+    }, []);
 
     const lines = chat.slice(-CHAT_ON_TV);
     const next = upcoming.slice(0, UP_NEXT);
@@ -159,22 +353,36 @@ export function TvStageRail() {
                 </div>
             ) : null}
 
-            {needsClick ? (
-                <p className="flex items-start gap-2 rounded-2xl border border-amber-400/50 bg-amber-400/10 px-4 py-3 text-[min(3vh,1.6rem)] font-semibold leading-tight text-amber-200">
-                    <Volume2 className="mt-1 h-[1em] w-[1em] shrink-0" aria-hidden />
-                    <span>{tTv('hostUnlock')}</span>
-                </p>
-            ) : null}
-
-            {caption ? (
-                <p
+            {winner ? (
+                <section
                     role="status"
-                    aria-label="Announcer"
-                    className="ahk-enter flex items-start gap-2 rounded-2xl border border-primary/40 bg-primary/10 px-4 py-3 text-[min(3.2vh,1.75rem)] font-semibold leading-tight shadow-[var(--ahk-glow-primary)]"
+                    aria-label={tParty('raceTitle')}
+                    className="ahk-enter rounded-2xl border border-amber-400/50 bg-amber-400/10 px-4 py-3"
                 >
-                    <Mic className="mt-1 h-[1em] w-[1em] shrink-0 text-primary" aria-hidden />
-                    <span>{caption}</span>
-                </p>
+                    <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-300">
+                        <Flag className="h-4 w-4" aria-hidden />
+                        {tParty('raceTitle')}
+                    </p>
+                    <p className="mt-1 text-[min(3.4vh,1.9rem)] font-bold leading-tight">
+                        <span className="mr-2">{winner.emoji}</span>
+                        <span style={{ color: winner.color }}>{winner.name}</span>{' '}
+                        {tParty('raceWins')}
+                    </p>
+                    {race.length > 1 ? (
+                        <ol className="mt-2 space-y-0.5 text-sm text-white/80">
+                            {race.slice(0, 3).map((r, i) => (
+                                <li key={r.id} className="flex justify-between gap-2">
+                                    <span className="truncate">
+                                        {['🥇', '🥈', '🥉'][i]} {r.emoji} {r.name}
+                                    </span>
+                                    <span className="tabular-nums text-white/50">
+                                        {Math.round(r.progress * 100)}%
+                                    </span>
+                                </li>
+                            ))}
+                        </ol>
+                    ) : null}
+                </section>
             ) : null}
 
             {now?.singer ? (
@@ -223,29 +431,7 @@ export function TvStageRail() {
                 ) : null}
             </section>
 
-            {/* Cheers rise inside the panel. */}
-            <div className="relative min-h-0 flex-1" aria-hidden>
-                {floating.map((item) => (
-                    <div
-                        key={item.key}
-                        className="ahk-float-emoji absolute bottom-0 flex flex-col items-center"
-                        style={
-                            {
-                                left: `${item.left}%`,
-                                '--ahk-drift': `${item.drift}px`,
-                            } as React.CSSProperties
-                        }
-                    >
-                        <span className="text-[min(7vh,3.5rem)] leading-none">{item.emoji}</span>
-                        <span
-                            className="mt-0.5 max-w-[9rem] truncate text-xs font-medium"
-                            style={{ color: item.color }}
-                        >
-                            {item.name}
-                        </span>
-                    </div>
-                ))}
-            </div>
+            <div className="min-h-0 flex-1" />
 
             {lines.length > 0 ? (
                 <ol className="space-y-1.5" aria-label="Party chat">
@@ -267,18 +453,5 @@ export function TvStageRail() {
                 </ol>
             ) : null}
         </aside>
-    );
-}
-
-/** Wraps the video (or idle screen) and shrinks it beside the side panel, never under it. */
-export function TvStageArea({ children }: { children: React.ReactNode }) {
-    const open = useStageRailStore((s) => s.open);
-    return (
-        <div
-            className="ahk-stage-area tv-fill"
-            style={{ transform: open ? `scale(${1 - STAGE_RAIL_FRACTION})` : 'none' }}
-        >
-            {children}
-        </div>
     );
 }
