@@ -136,6 +136,11 @@ export const wsClientMessageSchema = z.discriminatedUnion('type', [
     withBase({ type: z.literal('setSingerPaused'), paused: z.boolean() }),
     /** Let everyone waiting go first this round. */
     withBase({ type: z.literal('skipMyTurn') }),
+    /** Party: a cheer emoji that pops on the big screen (checked against the allowed list on the server). */
+    withBase({ type: z.literal('sendReaction'), emoji: z.string().max(16) }),
+    /** Party chat line (cleaned and shortened on the server). */
+    withBase({ type: z.literal('sendChat'), text: z.string().max(1000) }),
+    withBase({ type: z.literal('clearChat') }),
     /** Reported by the TV/laptop when its key engine starts or stops capturing audio. */
     withBase({ type: z.literal('setKeyEngineActive'), active: z.boolean() }),
     withBase({

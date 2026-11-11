@@ -1,3 +1,4 @@
+import type { ChatMessage, ReactionEvent } from './party';
 import type { Singer } from './rotation';
 import type { SongAdjust } from './song-adjust';
 import type { ClientMessage } from '@vkara/validators/ws/client-message';
@@ -57,6 +58,8 @@ export interface Room {
     keyEngineActive?: boolean;
     /** Singer rotation (see `rotation.ts`), keyed by device id. */
     singers?: Record<string, Singer>;
+    /** Party chat, newest last (see `party.ts`). */
+    chat?: ChatMessage[];
     lastActivity: number;
     /** Set when the last client leaves; used to release empty rooms after a grace period. */
     emptySince?: number;
@@ -104,6 +107,7 @@ export type ServerMessage =
     | { type: 'pause' }
     | { type: 'volumeChanged'; volume: number }
     | { type: 'currentTimeChanged'; currentTime: number; videoId: string | null }
+    | { type: 'reaction'; reaction: ReactionEvent }
     | {
           type: 'tiktokPhotoIndexChanged';
           index: number;

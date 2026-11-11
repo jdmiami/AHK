@@ -595,3 +595,50 @@ body {
         transition: none;
     }
 }
+
+/* Party: cheer emoji rising on the big screen. --ahk-drift sets the sideways sway. */
+@keyframes ahk-float-up {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.6);
+    }
+    12% {
+        opacity: 1;
+        transform: translate3d(0, -6vh, 0) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(var(--ahk-drift, 0px), -60vh, 0) scale(1);
+    }
+}
+
+@keyframes ahk-pop-fade {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    15% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+.ahk-float-emoji {
+    animation: ahk-float-up 3.4s var(--ahk-ease-out) forwards;
+    will-change: transform, opacity;
+}
+
+.ahk-pop-emoji {
+    animation: ahk-float-up 1.2s var(--ahk-ease-out) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ahk-float-emoji,
+    .ahk-pop-emoji {
+        animation: ahk-pop-fade 2.4s ease forwards;
+    }
+}

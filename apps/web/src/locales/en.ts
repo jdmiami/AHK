@@ -422,6 +422,18 @@ export default {
         'Your browser needs one click on this screen before it plays songs with sound. After this, songs start by themselves.',
     'tvUnlock.idleHint': 'Click anywhere on this screen once so songs can play with sound.',
 
+    'party.cheerTitle': 'Cheer the singer',
+    'party.cheerFor': 'Cheer for',
+    'party.cheerNobody': 'Send some love to the room',
+    'party.sendCheer': 'Send {emoji}',
+    'party.cheerHint': 'Your cheers pop up on the big screen.',
+    'party.chatTitle': 'Party chat',
+    'party.clearChat': 'Clear chat',
+    'party.chatEmpty': 'No messages yet. Say hi!',
+    'party.you': 'You',
+    'party.chatPlaceholder': 'Message the party…',
+    'party.send': 'Send',
+
     'lineup.title': 'Lineup',
     'lineup.singingNow': 'Singing now',
     'lineup.upNext': 'Up next',

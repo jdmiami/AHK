@@ -16,6 +16,7 @@ export enum ErrorCode {
     NOT_YOUR_TURN = 'notYourTurn',
     /** Queued songs can be changed only by their singer (or the host). */
     NOT_YOUR_SONG = 'notYourSong',
+    SLOW_DOWN = 'slowDown',
 }
 
 export interface ErrorResponse {
@@ -51,6 +52,7 @@ function getDefaultErrorMessage(code: ErrorCode): string {
         [ErrorCode.NOT_HOST]: 'Only the room host can perform this action',
         [ErrorCode.NOT_YOUR_TURN]: 'Only the host or the person singing can control playback',
         [ErrorCode.NOT_YOUR_SONG]: 'Only the singer who added this song can change it',
+        [ErrorCode.SLOW_DOWN]: 'Too many messages. Wait a few seconds.',
     };
 
     return messages[code];

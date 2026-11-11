@@ -432,6 +432,18 @@ export default {
     'tvUnlock.idleHint':
         'Haz clic una vez en cualquier parte de esta pantalla para que las canciones suenen.',
 
+    'party.cheerTitle': 'Anima al cantante',
+    'party.cheerFor': 'Anima a',
+    'party.cheerNobody': 'Manda cariño a la sala',
+    'party.sendCheer': 'Enviar {emoji}',
+    'party.cheerHint': 'Tus ánimos aparecen en la pantalla grande.',
+    'party.chatTitle': 'Chat de la fiesta',
+    'party.clearChat': 'Borrar chat',
+    'party.chatEmpty': 'Aún no hay mensajes. ¡Saluda!',
+    'party.you': 'Tú',
+    'party.chatPlaceholder': 'Escribe a la fiesta…',
+    'party.send': 'Enviar',
+
     'lineup.title': 'Turnos',
     'lineup.singingNow': 'Cantando ahora',
     'lineup.upNext': 'Sigue',

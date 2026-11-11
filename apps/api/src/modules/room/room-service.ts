@@ -15,6 +15,16 @@ import {
     type ServerMessage,
 } from '@vkara/room';
 import {
+    appendChat,
+    cleanChatText,
+    CHAT_LIMIT,
+    createRateLimiter,
+    defaultSingerLook,
+    isReactionEmoji,
+    REACTION_LIMIT,
+    type PartyAuthor,
+} from '@vkara/room';
+import {
     applySongAdjustChange,
     canControlPlayback,
     canEditQueuedSong,
@@ -1138,6 +1148,72 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
         broadcastRoomState(roomId, room);
     }
 
+    const allowReaction = createRateLimiter(REACTION_LIMIT);
+    const allowChat = createRateLimiter(CHAT_LIMIT);
+
+    function partyAuthor(room: Room, deviceId: string): PartyAuthor {
+        const singer = room.singers?.[deviceId];
+        const look = defaultSingerLook(deviceId);
+        return {
+            deviceId,
+            name: singer?.stageName || room.participants?.[deviceId]?.displayName || 'Guest',
+            emoji: singer?.emoji || look.emoji,
+            color: singer?.color || look.color,
+        };
+    }
+
+    /** A cheer for the singer: sent to every screen in the room, not stored. */
+    async function sendReaction(ws: ElysiaWS, emoji: string): Promise<void> {
+        if (!isReactionEmoji(emoji)) throw new RoomError(ErrorCode.INVALID_MESSAGE);
+        const roomId = await validateClientInRoom(ws);
+        const deviceId = await resolveDeviceIdForWs(ws);
+        if (!deviceId) throw new RoomError(ErrorCode.NOT_IN_ROOM);
+        if (!allowReaction(`${roomId}:${deviceId}`)) return; // over the limit: drop quietly
+        const room = await loadRoom(roomId);
+        if (!room) throw new RoomError(ErrorCode.ROOM_NOT_FOUND);
+        const singerId = room.playingNow?.singerId;
+        publishToRoom(roomId, {
+            type: 'reaction',
+            reaction: {
+                id: crypto.randomUUID(),
+                emoji,
+                from: partyAuthor(room, deviceId),
+                toName: singerId ? (room.singers?.[singerId]?.stageName ?? null) : null,
+            },
+        });
+    }
+
+    async function sendChat(ws: ElysiaWS, raw: string): Promise<void> {
+        const text = cleanChatText(raw);
+        if (!text) return;
+        const roomId = await validateClientInRoom(ws);
+        const deviceId = await resolveDeviceIdForWs(ws);
+        if (!deviceId) throw new RoomError(ErrorCode.NOT_IN_ROOM);
+        if (!allowChat(`${roomId}:${deviceId}`)) throw new RoomError(ErrorCode.SLOW_DOWN);
+        const room = await mutateRoom(roomId, (room) => {
+            room.chat = appendChat(room.chat, {
+                ...partyAuthor(room, deviceId),
+                id: crypto.randomUUID(),
+                text,
+                at: Date.now(),
+            });
+        });
+        broadcastRoomState(roomId, room);
+    }
+
+    async function clearChat(ws: ElysiaWS): Promise<void> {
+        const roomId = await validateClientInRoom(ws);
+        const deviceId = await resolveDeviceIdForWs(ws);
+        const current = await loadRoom(roomId);
+        if (!current || !isRoomController(current, deviceId)) {
+            throw new RoomError(ErrorCode.NOT_HOST);
+        }
+        const room = await mutateRoom(roomId, (room) => {
+            room.chat = [];
+        });
+        broadcastRoomState(roomId, room);
+    }
+
     async function skipMyTurn(ws: ElysiaWS): Promise<void> {
         const roomId = await validateClientInRoom(ws);
         const deviceId = await resolveDeviceIdForWs(ws);
@@ -1662,6 +1738,15 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
                 break;
             case 'skipMyTurn':
                 await skipMyTurn(ws);
+                break;
+            case 'sendReaction':
+                await sendReaction(ws, message.emoji);
+                break;
+            case 'sendChat':
+                await sendChat(ws, message.text);
+                break;
+            case 'clearChat':
+                await clearChat(ws);
                 break;
             case 'setShowQRInPlayer':
                 if (typeof message.show !== 'boolean') {
