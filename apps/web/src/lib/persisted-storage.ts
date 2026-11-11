@@ -20,6 +20,7 @@ export const PERSIST_STORE_KEYS = {
     appSettings: 'vkara-app-settings',
     rejoinSecrets: 'vkara-room-rejoin-secrets',
     singer: 'ahk-singer',
+    hostShow: 'ahk-host-show',
 } as const;
 
 function normalizePersistedYouTubeVideo(video: unknown): YouTubeVideo | null {

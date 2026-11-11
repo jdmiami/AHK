@@ -6,11 +6,9 @@ import { useShallow } from 'zustand/react/shallow';
 
 import { applyPlaybackSeek } from '@/lib/active-playback';
 import { ensureConnectedAndSend } from '@/lib/ensure-ws-send';
-import {
-    markServerPlaybackCommand,
-    markUserSeekTarget,
-} from '@/lib/youtube-playback-sync';
+import { markServerPlaybackCommand, markUserSeekTarget } from '@/lib/youtube-playback-sync';
 import { useCountdownStore } from '@/store/countdownTimersStore';
+import { useHostShowStore, whenHostIdle } from '@/store/hostShowStore';
 import { useYouTubeStore } from '@/store/youtubeStore';
 
 const TvNextUpOverlay = dynamic(
@@ -62,6 +60,23 @@ function TvNextUpGateInner() {
         ensureConnectedAndSend({ type: 'replay' });
     }, []);
 
+    // Countdown done: let the announcer finish introducing the next singer first.
+    const handleCountdownComplete = useCallback(() => {
+        const finishedId = useYouTubeStore.getState().room?.playingNow?.id ?? null;
+        whenHostIdle(() => {
+            // Only advance if nobody moved on in the meantime.
+            if ((useYouTubeStore.getState().room?.playingNow?.id ?? null) === finishedId) {
+                handleVideoFinished();
+            }
+        });
+    }, [handleVideoFinished]);
+
+    // "Play next" pressed: cut the announcer off and go.
+    const handlePlayNextNow = useCallback(() => {
+        useHostShowStore.getState().cancel();
+        handleVideoFinished();
+    }, [handleVideoFinished]);
+
     const handleNextUpReplay = useCallback(() => {
         dismissNextUp();
         handleReplayVideo();
@@ -74,9 +89,9 @@ function TvNextUpGateInner() {
     return (
         <TvNextUpOverlay
             nextVideo={nextQueuedVideo}
-            onPlayNextAction={handleVideoFinished}
+            onPlayNextAction={handlePlayNextNow}
             onReplayAction={handleNextUpReplay}
-            onCountdownCompleteAction={handleVideoFinished}
+            onCountdownCompleteAction={handleCountdownComplete}
         />
     );
 }

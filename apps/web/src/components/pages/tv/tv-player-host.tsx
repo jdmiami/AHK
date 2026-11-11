@@ -2,6 +2,7 @@
 
 import { TvSingerBadge } from '@/components/singer/tv-singer-badge';
 import { TvPartyOverlay } from '@/components/party/tv-party-overlay';
+import { TvHostShow } from '@/components/host-show/tv-host-show';
 import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
 import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
 import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
@@ -400,6 +401,7 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
             <TvPlaybackUnlock />
             <TvSingerBadge />
             <TvPartyOverlay />
+            <TvHostShow />
 
             {isTvIdle && roomId ? (
                 <TvPlayerQrZone
