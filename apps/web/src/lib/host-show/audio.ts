@@ -30,8 +30,13 @@ export function unlockHostAudio(): void {
     if (a && a.ctx.state === 'suspended') void a.ctx.resume().catch(() => undefined);
 }
 
+/** Sound and speech are allowed: the audio engine runs and the page has had a click or key press. */
 export function hostAudioReady(): boolean {
-    return Boolean(ctx && ctx.state === 'running');
+    const activation = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } })
+        .userActivation;
+    return Boolean(
+        ctx && ctx.state === 'running' && (activation ? activation.hasBeenActive : true),
+    );
 }
 
 function noiseBuffer(c: Ctx): AudioBuffer {

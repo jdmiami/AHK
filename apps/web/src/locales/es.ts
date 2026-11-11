@@ -436,6 +436,8 @@ export default {
     'youtubePage.partyUnreadLabel': 'Fiesta, {count} mensajes nuevos',
     'toast.slowDown': 'Más despacio',
     'toast.slowDownDescription': 'Demasiados mensajes seguidos. Inténtalo en unos segundos.',
+    'tvPage.hostUnlock':
+        'Haz clic una vez en esta pantalla para activar el presentador y la música.',
     'tvPage.hostAnnouncer': 'Presentador y aplausos',
     'tvPage.loungeMusic': 'Música de ambiente entre canciones',
     'tvPage.on': 'Sí',

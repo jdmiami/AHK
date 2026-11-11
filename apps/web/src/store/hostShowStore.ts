@@ -14,6 +14,9 @@ type HostShowState = {
     caption: string | null;
     /** Bumped to cut the announcer off (e.g. "Play next" pressed). */
     cancelSeq: number;
+    /** The browser allows sound and speech (someone clicked the big screen once). */
+    audioReady: boolean;
+    setAudioReady: (ready: boolean) => void;
     setAnnouncer: (on: boolean) => void;
     setMusic: (on: boolean) => void;
     setBusy: (busy: boolean) => void;
@@ -29,6 +32,8 @@ export const useHostShowStore = create<HostShowState>()(
             busy: false,
             caption: null,
             cancelSeq: 0,
+            audioReady: false,
+            setAudioReady: (audioReady) => set({ audioReady }),
             setAnnouncer: (announcer) => set({ announcer }),
             setMusic: (music) => set({ music }),
             setBusy: (busy) => set({ busy }),

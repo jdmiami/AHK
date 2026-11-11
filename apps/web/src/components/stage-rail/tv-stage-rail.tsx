@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Mic } from 'lucide-react';
+import { Mic, Volume2 } from 'lucide-react';
 import { QRCode } from 'react-qrcode-logo';
 import { resolveRoomPasswordForShare } from '@vkara/room';
 import { CHAT_ON_TV, type ReactionEvent } from '@vkara/room';
@@ -42,6 +42,9 @@ export function TvStageRail() {
     const t = useScopedI18n('lineup');
     const caption = useHostShowStore((s) => s.caption);
     const busy = useHostShowStore((s) => s.busy);
+    const audioReady = useHostShowStore((s) => s.audioReady);
+    const hostOn = useHostShowStore((s) => s.announcer || s.music);
+    const tTv = useScopedI18n('tvPage');
     const ended = useCountdownStore((s) => s.shouldShowTimer);
     const playingId = useYouTubeStore((s) => s.room?.playingNow?.id ?? null);
     const chat = useRoomChat();
@@ -94,7 +97,10 @@ export function TvStageRail() {
     }, [chatUntil, cheerUntil]);
 
     const intermission = busy || Boolean(caption) || (ended && Boolean(playingId));
-    const wantOpen = intermission || Date.now() < chatUntil || Date.now() < cheerUntil;
+    // Until someone clicks the big screen once, the browser keeps it silent: ask for that click.
+    const needsClick = hostOn && !audioReady && Boolean(roomId);
+    const wantOpen =
+        needsClick || intermission || Date.now() < chatUntil || Date.now() < cheerUntil;
 
     useEffect(() => {
         useStageRailStore.getState().setOpen(wantOpen);
@@ -151,6 +157,13 @@ export function TvStageRail() {
                         </p>
                     </div>
                 </div>
+            ) : null}
+
+            {needsClick ? (
+                <p className="flex items-start gap-2 rounded-2xl border border-amber-400/50 bg-amber-400/10 px-4 py-3 text-[min(3vh,1.6rem)] font-semibold leading-tight text-amber-200">
+                    <Volume2 className="mt-1 h-[1em] w-[1em] shrink-0" aria-hidden />
+                    <span>{tTv('hostUnlock')}</span>
+                </p>
             ) : null}
 
             {caption ? (

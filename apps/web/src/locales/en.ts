@@ -426,6 +426,7 @@ export default {
     'youtubePage.partyUnreadLabel': 'Party, {count} new messages',
     'toast.slowDown': 'Slow down a little',
     'toast.slowDownDescription': 'Too many messages at once. Try again in a few seconds.',
+    'tvPage.hostUnlock': 'Click anywhere on this screen once to turn on the announcer and music.',
     'tvPage.hostAnnouncer': 'Announcer & applause',
     'tvPage.loungeMusic': 'Lounge music between songs',
     'tvPage.on': 'On',
