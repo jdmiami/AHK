@@ -14,7 +14,11 @@ import {
  * songs that name one, mark a newly started song as sung, park/unpark paused singers' songs and
  * re-order the queue by fairness.
  */
-function applyRotationAfterMutation(room: Room, previousPlayingId: string | null): void {
+function applyRotationAfterMutation(
+    room: Room,
+    previousPlayingId: string | null,
+    previousSingerId: string | null,
+): void {
     const now = Date.now();
     const owners = [room.playingNow, ...room.videoQueue]
         .map((video) => video?.singerId)
@@ -28,7 +32,7 @@ function applyRotationAfterMutation(room: Room, previousPlayingId: string | null
             });
         }
     }
-    applyRotation(room, now, previousPlayingId);
+    applyRotation(room, now, previousPlayingId, previousSingerId);
 }
 
 function normalizeRoomCaptionFields(room: Room): void {
@@ -139,9 +143,10 @@ async function mutateRoomUnlocked(
 
             normalizeRoomCaptionFields(room);
             const previousPlayingId = room.playingNow?.id ?? null;
+            const previousSingerId = room.playingNow?.singerId ?? null;
             mutator(room);
             normalizeRoomCaptionFields(room);
-            applyRotationAfterMutation(room, previousPlayingId);
+            applyRotationAfterMutation(room, previousPlayingId, previousSingerId);
             room.lastActivity = Date.now();
 
             const execResult = await redis.multi().set(key, JSON.stringify(room)).exec();

@@ -369,7 +369,8 @@ export const useYouTubeStore = create(
                                             seekBase,
                                             message.currentTime,
                                         ) &&
-                                        (isTikTokPlayback({ video: playing }) || Boolean(state.player));
+                                        (isTikTokPlayback({ video: playing }) ||
+                                            Boolean(state.player));
                                     if (needsSeek) {
                                         markServerPlaybackCommand();
                                         applyPlaybackSeek({
@@ -543,6 +544,22 @@ export const useYouTubeStore = create(
                                         t('roomLockedJoinDescription'),
                                     );
                                     break;
+                                case ErrorCode.NOT_YOUR_TURN:
+                                    toast({
+                                        id: 'not-your-turn',
+                                        title: t('notYourTurn'),
+                                        description: t('notYourTurnDescription'),
+                                        variant: 'warning',
+                                    });
+                                    break;
+                                case ErrorCode.NOT_YOUR_SONG:
+                                    toast({
+                                        id: 'not-your-song',
+                                        title: t('notYourSong'),
+                                        description: t('notYourSongDescription'),
+                                        variant: 'warning',
+                                    });
+                                    break;
                                 case ErrorCode.NOT_HOST:
                                     toast({
                                         id: 'not-host',
@@ -641,7 +658,10 @@ export const useYouTubeStore = create(
                 const merged = {
                     ...currentState,
                     wsId: persisted.wsId ?? currentState.wsId,
-                    volume: typeof persisted.volume === 'number' ? persisted.volume : currentState.volume,
+                    volume:
+                        typeof persisted.volume === 'number'
+                            ? persisted.volume
+                            : currentState.volume,
                     currentTab: persisted.currentTab ?? currentState.currentTab,
                     room,
                     player: null,

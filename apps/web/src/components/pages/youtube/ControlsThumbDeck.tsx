@@ -1,5 +1,7 @@
 'use client';
 
+import { SingerChip } from '@/components/singer/singer-chip';
+import { useMySinger } from '@/hooks/use-singer';
 import { usePlaybackDisplayTime } from '@/hooks/use-playback-display-time';
 import { usePlayerAction } from '@/hooks/use-player-action';
 import { useYouTubeStore } from '@/store/youtubeStore';
@@ -33,6 +35,9 @@ export function ControlsThumbDeck({ className, tickEnabled = true }: ControlsThu
     const { handleSeekToSeconds, handleTikTokPhotoNavigate } = usePlayerAction();
 
     const playing = room?.playingNow;
+    const tSinger = useScopedI18n('singer');
+    const { canControl, singerFor } = useMySinger();
+    const singingNow = singerFor(playing?.singerId);
     const isPhotoPost = playing ? isTikTokPhotoPost({ video: playing }) : false;
     const { index: photoIndex, maxIndex: photoMaxIndex } = useTikTokPhotoIndex(isPhotoPost);
 
@@ -82,7 +87,27 @@ export function ControlsThumbDeck({ className, tickEnabled = true }: ControlsThu
                     />
                 ) : null}
 
-                <PlayerControls variant="panel" className="gap-3 p-0" />
+                {singingNow ? (
+                    <div className="flex flex-col items-center gap-1">
+                        <SingerChip
+                            singer={singingNow}
+                            size="md"
+                            suffix={tSinger('singingSuffix')}
+                        />
+                        {!canControl ? (
+                            <p className="text-center text-[11px] text-muted-foreground">
+                                {tSinger('controlsLocked')}
+                            </p>
+                        ) : null}
+                    </div>
+                ) : null}
+
+                <div
+                    className={cn(!canControl && 'pointer-events-none opacity-50')}
+                    aria-disabled={!canControl}
+                >
+                    <PlayerControls variant="panel" className="gap-3 p-0" />
+                </div>
 
                 {!isTikTokVideo(playing) && !isLive ? <SongAdjustChips /> : null}
             </div>

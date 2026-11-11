@@ -1,5 +1,6 @@
 'use client';
 
+import { TvSingerBadge } from '@/components/singer/tv-singer-badge';
 import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
 import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
 import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
@@ -396,6 +397,7 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
 
             <KeyEngineLauncher />
             <TvPlaybackUnlock />
+            <TvSingerBadge />
 
             {isTvIdle && roomId ? (
                 <TvPlayerQrZone

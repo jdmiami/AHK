@@ -1,5 +1,7 @@
 'use client';
 
+import { SingerChip } from '@/components/singer/singer-chip';
+import { useYouTubeStore } from '@/store/youtubeStore';
 import { memo, type ReactNode } from 'react';
 import { VideoChannels } from '@/components/video-channels';
 import { LiveBadge } from '@/components/youtube-live-badge';
@@ -42,6 +44,9 @@ export const VideoListItem = memo(function VideoListItem({
     actions,
     onSelect,
 }: VideoListItemProps) {
+    const singer = useYouTubeStore((s) =>
+        video.singerId ? (s.room?.singers?.[video.singerId] ?? null) : null,
+    );
     const t = useI18n();
     const uploadedAtLabel = video.uploadedAt ? formatUploadedAt(video.uploadedAt, t) : '';
     const views = coerceViewCount(video.views);
@@ -110,7 +115,11 @@ export const VideoListItem = memo(function VideoListItem({
                     <div className="line-clamp-2 break-words text-sm font-medium leading-snug">
                         {video.title}
                     </div>
-                    <VideoChannels video={video} tone="muted" maxLines={2} />
+                    {singer ? (
+                        <SingerChip singer={singer} className="self-start" />
+                    ) : (
+                        <VideoChannels video={video} tone="muted" maxLines={2} />
+                    )}
                     {metadataLine ? (
                         <div className="line-clamp-1 text-xs text-muted-foreground">
                             {metadataLine}

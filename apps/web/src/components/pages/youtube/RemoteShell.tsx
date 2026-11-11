@@ -1,5 +1,6 @@
 'use client';
 
+import { useSingerIdentitySync } from '@/hooks/use-singer';
 import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
 
@@ -48,6 +49,7 @@ export function RemoteShell() {
     const hasRoom = useYouTubeStore((state) => Boolean(state.room));
     const tvSuppressAutoCreate = useYouTubeStore((state) => state.tvSuppressAutoCreate);
     const { effectiveLayoutMode } = useEffectiveLayoutMode();
+    useSingerIdentitySync();
     const showNowPlayingBar = hasPlaying && currentTab !== 'controls';
 
     const showJoinLobby =

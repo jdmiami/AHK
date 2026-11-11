@@ -1,5 +1,7 @@
 'use client';
 
+import { SingerCard } from '@/components/singer/singer-card';
+import { useMySinger } from '@/hooks/use-singer';
 import { useCallback } from 'react';
 import { Trash2, MoveUp, Shuffle, ListMusic, Search, ListVideo } from 'lucide-react';
 
@@ -28,41 +30,51 @@ export function VideoQueue() {
     const t = useScopedI18n('videoQueue');
     const setImportPlaylistPanelOpen = useCuratedStore((state) => state.setImportPlaylistPanelOpen);
     const hideYoutubeOnlyActions = isTikTokProviderActive();
+    const tSinger = useScopedI18n('singer');
+    const { canEditSong, isController, rotationOn, singerFor } = useMySinger();
 
     const renderActions = useCallback(
-        (video: YouTubeVideo, { closeMenu }: VideoListActionHelpers) => (
-            <VideoListActionBar
-                actions={[
-                    {
-                        id: 'priority',
-                        label: t('moveToTop'),
-                        buttonText: t('moveToTopShort'),
-                        icon: <MoveUp />,
-                        tone: 'priority',
-                        onClick: () => {
-                            closeMenu();
-                            handleMoveVideoToTop(video);
+        (video: YouTubeVideo, { closeMenu }: VideoListActionHelpers) =>
+            !canEditSong(video.id) ? (
+                <p className="px-1 text-xs text-muted-foreground">
+                    {tSinger('notYourSongHint', {
+                        name: singerFor(video.singerId)?.stageName ?? tSinger('theHost'),
+                    })}
+                </p>
+            ) : (
+                <VideoListActionBar
+                    actions={[
+                        {
+                            id: 'priority',
+                            label: t('moveToTop'),
+                            buttonText: t('moveToTopShort'),
+                            icon: <MoveUp />,
+                            tone: 'priority',
+                            onClick: () => {
+                                closeMenu();
+                                handleMoveVideoToTop(video);
+                            },
                         },
-                    },
-                    {
-                        id: 'remove',
-                        label: t('remove'),
-                        buttonText: t('remove'),
-                        icon: <Trash2 />,
-                        tone: 'destructive',
-                        onClick: () => {
-                            closeMenu();
-                            handleRemoveVideoFromQueue(video);
+                        {
+                            id: 'remove',
+                            label: t('remove'),
+                            buttonText: t('remove'),
+                            icon: <Trash2 />,
+                            tone: 'destructive',
+                            onClick: () => {
+                                closeMenu();
+                                handleRemoveVideoFromQueue(video);
+                            },
                         },
-                    },
-                ]}
-            />
-        ),
-        [t, handleMoveVideoToTop, handleRemoveVideoFromQueue],
+                    ]}
+                />
+            ),
+        [t, tSinger, canEditSong, singerFor, handleMoveVideoToTop, handleRemoveVideoFromQueue],
     );
 
     return (
         <div className="flex h-full min-h-0 flex-col">
+            <SingerCard className="mx-page-gutter mb-2 mt-2" />
             <VideoListToolbar
                 leading={
                     <>
@@ -74,7 +86,7 @@ export function VideoQueue() {
                                 onConfirm={() => setImportPlaylistPanelOpen(true)}
                             />
                         ) : null}
-                        {(room?.videoQueue?.length || 0) > 2 ? (
+                        {(room?.videoQueue?.length || 0) > 2 && (isController || !rotationOn) ? (
                             <TooltipButton
                                 tooltipContent={t('shuffle')}
                                 buttonText={t('shuffle')}
@@ -85,7 +97,7 @@ export function VideoQueue() {
                     </>
                 }
                 trailing={
-                    (room?.videoQueue?.length || 0) > 0 ? (
+                    (room?.videoQueue?.length || 0) > 0 && (isController || !rotationOn) ? (
                         <TooltipButton
                             tooltipContent={t('clearQueue')}
                             buttonText={t('clearQueue')}

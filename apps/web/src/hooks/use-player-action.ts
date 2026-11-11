@@ -23,7 +23,8 @@ import {
     markUserSeekTarget,
 } from '@/lib/youtube-playback-sync';
 import { useYouTubeStore } from '@/store/youtubeStore';
-import { applySongAdjustChange } from '@vkara/room';
+import { applySongAdjustChange, isRoomController } from '@vkara/room';
+import { getDeviceId } from '@/lib/device-id';
 import { getTikTokPhotoMaxIndex } from '@vkara/tiktok';
 import type { YouTubeVideo } from '@vkara/youtube';
 
@@ -161,8 +162,12 @@ export const usePlayerAction = (): PlayerAction => {
             }
 
             ensureConnectedAndSend({ type: 'playNow', video });
+            // In a rotation, a singer's "Play" queues the song as their next turn (server rule).
+            const rotationOn = Object.keys(currentRoom?.singers ?? {}).length > 0;
+            const queuedAsNext =
+                rotationOn && currentRoom ? !isRoomController(currentRoom, getDeviceId()) : false;
             toast({
-                title: t('toast.playNowHandler'),
+                title: queuedAsNext ? t('toast.addedAsYourNext') : t('toast.playNowHandler'),
                 description: truncateVideoTitle(video.title),
                 variant: 'info',
                 duration: ACTION_FEEDBACK_DURATION_MS,

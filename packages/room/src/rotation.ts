@@ -128,10 +128,15 @@ function laneOf(video: YouTubeVideo): string {
     return video.singerId ?? HOUSE_SINGER_ID;
 }
 
-/** How long a lane has been waiting: earlier = goes first. */
-function waitKey(singers: Record<string, Singer>, lane: string): number {
+/** How long a lane has been waiting: earlier = goes first. The person singing now waits last. */
+function waitKey(
+    singers: Record<string, Singer>,
+    lane: string,
+    singingNow?: string | null,
+): number {
     const singer = singers[lane];
     if (!singer) return Number.NEGATIVE_INFINITY; // house songs keep their place at the front
+    if (singingNow && lane === singingNow) return Number.POSITIVE_INFINITY;
     return singer.lastSangAt ?? singer.joinedAt;
 }
 
@@ -139,6 +144,7 @@ function waitKey(singers: Record<string, Singer>, lane: string): number {
 export function orderByRotation(
     queue: readonly YouTubeVideo[],
     singers: Record<string, Singer>,
+    singingNow?: string | null,
 ): YouTubeVideo[] {
     const lanes = new Map<string, YouTubeVideo[]>();
     for (const video of queue) {
@@ -148,9 +154,9 @@ export function orderByRotation(
         else lanes.set(lane, [video]);
     }
     const order = [...lanes.keys()].sort((a, b) => {
-        const diff = waitKey(singers, a) - waitKey(singers, b);
-        if (diff !== 0 && Number.isFinite(diff)) return diff;
-        if (diff !== 0) return waitKey(singers, a) === Number.NEGATIVE_INFINITY ? -1 : 1;
+        const ka = waitKey(singers, a, singingNow);
+        const kb = waitKey(singers, b, singingNow);
+        if (ka !== kb) return ka < kb ? -1 : 1;
         return a < b ? -1 : a > b ? 1 : 0;
     });
     const rounds = Math.max(0, ...[...lanes.values()].map((list) => list.length));
@@ -166,7 +172,7 @@ export function orderByRotation(
 
 /**
  * Bring a room in line with the rotation rules after any change:
- * - a newly started song marks its singer as just sung;
+ * - a newly started song counts for its singer; when a singer's song ends their wait restarts;
  * - paused singers' songs move aside (and come back when they return);
  * - the queue is re-ordered by fairness.
  * No-op for rooms with no singers (legacy behaviour).
@@ -175,12 +181,18 @@ export function applyRotation(
     room: RotationRoom,
     now: number,
     previousPlayingId: string | null,
+    previousSingerId: string | null = null,
 ): void {
     const singers = room.singers;
     if (!singers || Object.keys(singers).length === 0) return;
 
     const playing = room.playingNow;
-    if (playing && playing.id !== previousPlayingId && playing.singerId) {
+    const songChanged = (playing?.id ?? null) !== previousPlayingId;
+    if (songChanged && previousSingerId && singers[previousSingerId]) {
+        // Their song just ended (or was skipped): their wait starts now.
+        singers[previousSingerId].lastSangAt = now;
+    }
+    if (playing && songChanged && playing.singerId) {
         const singer = singers[playing.singerId];
         if (singer) {
             singer.lastSangAt = now;
@@ -200,7 +212,7 @@ export function applyRotation(
             singer.parked = [];
         }
     }
-    room.videoQueue = orderByRotation(keep, singers);
+    room.videoQueue = orderByRotation(keep, singers, playing?.singerId ?? null);
 }
 
 /** Move a singer to the back of the line for one turn ("skip my turn"). */

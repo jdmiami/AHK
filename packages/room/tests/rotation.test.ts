@@ -122,6 +122,28 @@ describe('fairness with join times', () => {
     });
 });
 
+describe('the person singing waits last', () => {
+    it('someone who joins mid-song goes before the singer’s next song', () => {
+        // Ana started singing at t=300; Ben joined at t=400 while she was still singing.
+        const room = {
+            playingNow: song('a1', 'ana'),
+            videoQueue: [song('a2', 'ana'), song('b1', 'ben')],
+            singers: singers([
+                ['ana', { joinedAt: 10, lastSangAt: 300, songsSung: 1 }],
+                ['ben', { joinedAt: 400 }],
+            ]),
+        };
+        applyRotation(room, 450, 'a1', 'ana');
+        expect(ids(room.videoQueue)).toEqual(['b1', 'a2']);
+        // Ana's song ends at t=500 and Ben starts: Ana's wait restarts at 500.
+        room.playingNow = room.videoQueue.shift()!;
+        applyRotation(room, 500, 'a1', 'ana');
+        expect(room.singers.ana!.lastSangAt).toBe(500);
+        expect(room.singers.ben!.songsSung).toBe(1);
+        expect(ids(room.videoQueue)).toEqual(['a2']);
+    });
+});
+
 describe('singers and standing', () => {
     it('creates a singer once with a stable look', () => {
         const room: { singers?: Record<string, Singer> } = {};
