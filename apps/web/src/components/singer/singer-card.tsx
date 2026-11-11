@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Coffee, Dices, Pencil, SkipForward, Undo2 } from 'lucide-react';
 import { SINGER_COLORS, SINGER_EMOJIS, STAGE_NAME_MAX } from '@vkara/room';
 
@@ -13,6 +13,8 @@ import { cn } from '@/lib/utils';
 import { useCurrentLocale, useScopedI18n } from '@/locales/client';
 import { useWebSocket } from '@/providers/websocket-provider';
 import { useSingerStore } from '@/store/singerStore';
+
+import { ProfilePanel } from './profile-panel';
 
 /** This phone's place in the rotation, with sit out / skip my turn / edit. */
 export function SingerCard({ className, extra }: { className?: string; extra?: React.ReactNode }) {
@@ -111,8 +113,11 @@ function SingerEditSheet({
 }) {
     const t = useScopedI18n('singer');
     const locale = useCurrentLocale();
-    const { stageName, emoji, color, setIdentity } = useSingerStore();
+    const { stageName, emoji, color, profile, setIdentity } = useSingerStore();
+    const locked = Boolean(profile);
     const [draft, setDraft] = useState(stageName);
+    // A profile login replaces the name while the sheet is open.
+    useEffect(() => setDraft(stageName), [stageName]);
 
     return (
         <Dialog
@@ -122,7 +127,10 @@ function SingerEditSheet({
                 onOpenChange(next);
             }}
         >
-            <DialogContent className="bottom-0 top-auto max-h-[90dvh] max-w-lg translate-y-0 gap-5 overflow-y-auto rounded-t-3xl p-5 pb-safe-offset sm:bottom-4 sm:rounded-3xl">
+            <DialogContent
+                overlayClassName="z-[80]"
+                className="bottom-0 top-auto z-[80] max-h-[90dvh] max-w-lg translate-y-0 gap-5 overflow-y-auto rounded-t-3xl p-5 pb-safe-offset sm:bottom-4 sm:rounded-3xl"
+            >
                 <div className="space-y-1 pr-8">
                     <DialogTitle>{t('editTitle')}</DialogTitle>
                     <DialogDescription>{t('editHint')}</DialogDescription>
@@ -136,14 +144,18 @@ function SingerEditSheet({
                             id="ahk-stage-name"
                             value={draft}
                             maxLength={STAGE_NAME_MAX}
+                            disabled={locked}
                             onChange={(e) => setDraft(e.target.value)}
-                            onBlur={() => draft.trim() && setIdentity({ stageName: draft.trim() })}
+                            onBlur={() =>
+                                !locked && draft.trim() && setIdentity({ stageName: draft.trim() })
+                            }
                         />
                         <Button
                             type="button"
                             variant="outline"
                             size="icon"
                             aria-label={t('randomName')}
+                            disabled={locked}
                             onClick={() => {
                                 const name = randomStageName(locale);
                                 setDraft(name);
@@ -194,12 +206,13 @@ function SingerEditSheet({
                         ))}
                     </div>
                 </div>
+                <ProfilePanel />
                 {extra}
                 <Button
                     type="button"
                     className="h-11"
                     onClick={() => {
-                        if (draft.trim()) setIdentity({ stageName: draft.trim() });
+                        if (!locked && draft.trim()) setIdentity({ stageName: draft.trim() });
                         onOpenChange(false);
                     }}
                 >

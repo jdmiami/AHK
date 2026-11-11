@@ -40,7 +40,13 @@ export function formatSemitones(semitones: number): string {
 }
 
 /** Two chips under the transport controls; tapping either opens the tempo & key sheet. */
-export function SongAdjustChips({ className }: { className?: string }) {
+export function SongAdjustChips({
+    className,
+    extra,
+}: {
+    className?: string;
+    extra?: React.ReactNode;
+}) {
     const t = useScopedI18n('songAdjust');
     const [open, setOpen] = useState(false);
     // Select primitives: an object selector would re-render forever once values change.
@@ -50,7 +56,7 @@ export function SongAdjustChips({ className }: { className?: string }) {
 
     return (
         <>
-            <div className={cn('flex items-center justify-center gap-2', className)}>
+            <div className={cn('flex flex-wrap items-center justify-center gap-2', className)}>
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
@@ -79,6 +85,7 @@ export function SongAdjustChips({ className }: { className?: string }) {
                     <Music2 className="h-3.5 w-3.5" aria-hidden />
                     {t('key')} {formatSemitones(semitones)}
                 </button>
+                {extra}
                 {changed ? <span className="sr-only">{t('resetsNote')}</span> : null}
             </div>
             <SongAdjustSheet open={open} onOpenChange={setOpen} />

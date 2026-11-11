@@ -12,6 +12,7 @@ import { useScopedI18n } from '@/locales/client';
 import { PlaybackScrubber } from '@/components/pages/youtube/PlaybackScrubber';
 import { PlayerControls } from '@/components/pages/youtube/PlayerControls';
 import { SongAdjustChips } from '@/components/pages/youtube/song-adjust-sheet';
+import { FavoriteStar } from '@/components/singer/favorite-star';
 import {
     TikTokPhotoNavigationBar,
     useTikTokPhotoIndex,
@@ -109,7 +110,9 @@ export function ControlsThumbDeck({ className, tickEnabled = true }: ControlsThu
                     <PlayerControls variant="panel" className="gap-3 p-0" />
                 </div>
 
-                {!isTikTokVideo(playing) && !isLive ? <SongAdjustChips /> : null}
+                {!isTikTokVideo(playing) && !isLive ? (
+                    <SongAdjustChips extra={<FavoriteStar video={playing} />} />
+                ) : null}
             </div>
         </section>
     );
