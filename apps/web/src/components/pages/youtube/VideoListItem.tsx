@@ -32,6 +32,8 @@ export function getVideoListRowHeight(hasActions: boolean): number {
 interface VideoListItemProps {
     video: YouTubeVideo;
     viewsLabel: string;
+    /** Place in the shared queue (1 = up next). */
+    position?: number;
     isActive?: boolean;
     actions?: ReactNode;
     onSelect?: (video: YouTubeVideo) => void;
@@ -40,6 +42,7 @@ interface VideoListItemProps {
 export const VideoListItem = memo(function VideoListItem({
     video,
     viewsLabel,
+    position,
     isActive = false,
     actions,
     onSelect,
@@ -113,6 +116,19 @@ export const VideoListItem = memo(function VideoListItem({
                 />
                 <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-0.5 overflow-hidden">
                     <div className="line-clamp-2 break-words text-sm font-medium leading-snug">
+                        {position ? (
+                            <span
+                                className={cn(
+                                    'mr-1.5 inline-flex min-w-6 items-center justify-center rounded-md px-1 text-[11px] font-semibold tabular-nums',
+                                    position === 1
+                                        ? 'bg-primary/15 text-primary'
+                                        : 'bg-muted text-muted-foreground',
+                                )}
+                                aria-label={`#${position}`}
+                            >
+                                {position}
+                            </span>
+                        ) : null}
                         {video.title}
                     </div>
                     {singer ? (

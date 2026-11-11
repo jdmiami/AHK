@@ -243,6 +243,42 @@ export function singerStanding(
     };
 }
 
+export interface LineupEntry {
+    /** 1 = up next. */
+    position: number;
+    video: YouTubeVideo;
+    /** null for house songs (no singer). */
+    singer: Singer | null;
+}
+
+export interface RoomLineup {
+    now: { video: YouTubeVideo; singer: Singer | null } | null;
+    upcoming: LineupEntry[];
+    /** Singers sitting out with songs saved, in the order they joined. */
+    sittingOut: Array<{ singer: Singer; songs: number }>;
+}
+
+/** Who is singing, who is next and who is sitting out: the same view for every screen. */
+export function roomLineup(
+    room: Pick<Room, 'videoQueue' | 'playingNow'> & { singers?: Record<string, Singer> },
+): RoomLineup {
+    const singers = room.singers ?? {};
+    const singerOf = (video: YouTubeVideo) =>
+        video.singerId ? (singers[video.singerId] ?? null) : null;
+    return {
+        now: room.playingNow ? { video: room.playingNow, singer: singerOf(room.playingNow) } : null,
+        upcoming: room.videoQueue.map((video, index) => ({
+            position: index + 1,
+            video,
+            singer: singerOf(video),
+        })),
+        sittingOut: Object.values(singers)
+            .filter((singer) => singer.paused)
+            .sort((a, b) => a.joinedAt - b.joinedAt)
+            .map((singer) => ({ singer, songs: singer.parked.length })),
+    };
+}
+
 type PolicyRoom = Pick<Room, 'playingNow' | 'videoQueue'> & {
     participants?: Record<string, Participant>;
     hostDeviceId?: string;

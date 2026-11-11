@@ -9,6 +9,7 @@ import {
     HOUSE_SINGER_ID,
     isRoomController,
     orderByRotation,
+    roomLineup,
     singerStanding,
     skipSingerTurn,
 } from '../src';
@@ -217,5 +218,41 @@ describe('permissions', () => {
         expect(canEditQueuedSong(room, 'ana', 'h1')).toBe(false);
         expect(canEditQueuedSong(room, 'host', 'h1')).toBe(true);
         expect(HOUSE_SINGER_ID).toBe('__house');
+    });
+});
+
+describe('roomLineup', () => {
+    it('shows who is singing, the numbered queue and who is sitting out', () => {
+        const s = singers([
+            ['ana', { stageName: 'Ana', joinedAt: 1 }],
+            ['ben', { stageName: 'Ben', joinedAt: 2 }],
+            ['cy', { stageName: 'Cy', joinedAt: 3, paused: true, parked: [song('c1', 'cy')] }],
+            ['dee', { stageName: 'Dee', joinedAt: 0, paused: true }],
+        ]);
+        const lineup = roomLineup({
+            playingNow: song('a1', 'ana'),
+            videoQueue: [song('h1'), song('b1', 'ben'), song('a2', 'ana')],
+            singers: s,
+        });
+        expect(lineup.now?.singer?.stageName).toBe('Ana');
+        expect(
+            lineup.upcoming.map((e) => [e.position, e.video.id, e.singer?.stageName ?? null]),
+        ).toEqual([
+            [1, 'h1', null],
+            [2, 'b1', 'Ben'],
+            [3, 'a2', 'Ana'],
+        ]);
+        expect(lineup.sittingOut.map((e) => [e.singer.stageName, e.songs])).toEqual([
+            ['Dee', 0],
+            ['Cy', 1],
+        ]);
+    });
+
+    it('is empty for an idle room', () => {
+        expect(roomLineup({ playingNow: null, videoQueue: [] })).toEqual({
+            now: null,
+            upcoming: [],
+            sittingOut: [],
+        });
     });
 });

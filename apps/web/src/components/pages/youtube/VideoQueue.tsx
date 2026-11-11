@@ -1,5 +1,6 @@
 'use client';
 
+import { LineupCard } from '@/components/singer/lineup-card';
 import { SingerCard } from '@/components/singer/singer-card';
 import { useMySinger } from '@/hooks/use-singer';
 import { useCallback } from 'react';
@@ -75,6 +76,7 @@ export function VideoQueue() {
     return (
         <div className="flex h-full min-h-0 flex-col">
             <SingerCard className="mx-page-gutter mb-2 mt-2" />
+            <LineupCard className="mx-page-gutter mb-2" />
             <VideoListToolbar
                 leading={
                     <>
@@ -133,6 +135,7 @@ export function VideoQueue() {
                     </div>
                 }
                 renderActions={renderActions}
+                showPositions
             />
         </div>
     );

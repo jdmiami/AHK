@@ -38,6 +38,8 @@ interface VideoListProps {
     isLoading?: boolean;
     loadError?: string | null;
     onRefresh?: () => void | Promise<void>;
+    /** Number the rows (1 = up next), for the shared queue. */
+    showPositions?: boolean;
 }
 
 export const VideoList = memo(function VideoList({
@@ -50,6 +52,7 @@ export const VideoList = memo(function VideoList({
     isLoading = false,
     loadError = null,
     onRefresh,
+    showPositions = false,
 }: VideoListProps) {
     const t = useScopedI18n('videoSearch');
     const viewsLabel = t('views');
@@ -200,6 +203,7 @@ export const VideoList = memo(function VideoList({
                                     <VideoListItem
                                         video={video}
                                         viewsLabel={viewsLabel}
+                                        position={showPositions ? virtualRow.index + 1 : undefined}
                                         isActive={isMenuOpen}
                                         actions={
                                             isMenuOpen

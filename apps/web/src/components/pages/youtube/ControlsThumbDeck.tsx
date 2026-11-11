@@ -13,6 +13,7 @@ import { PlaybackScrubber } from '@/components/pages/youtube/PlaybackScrubber';
 import { PlayerControls } from '@/components/pages/youtube/PlayerControls';
 import { SongAdjustChips } from '@/components/pages/youtube/song-adjust-sheet';
 import { FavoriteStar } from '@/components/singer/favorite-star';
+import { useRoomLineup } from '@/hooks/use-room-lineup';
 import {
     TikTokPhotoNavigationBar,
     useTikTokPhotoIndex,
@@ -39,6 +40,8 @@ export function ControlsThumbDeck({ className, tickEnabled = true }: ControlsThu
     const tSinger = useScopedI18n('singer');
     const { canControl, singerFor } = useMySinger();
     const singingNow = singerFor(playing?.singerId);
+    const tLineup = useScopedI18n('lineup');
+    const upNext = useRoomLineup().upcoming[0] ?? null;
     const isPhotoPost = playing ? isTikTokPhotoPost({ video: playing }) : false;
     const { index: photoIndex, maxIndex: photoMaxIndex } = useTikTokPhotoIndex(isPhotoPost);
 
@@ -88,13 +91,21 @@ export function ControlsThumbDeck({ className, tickEnabled = true }: ControlsThu
                     />
                 ) : null}
 
-                {singingNow ? (
+                {singingNow || upNext?.singer ? (
                     <div className="flex flex-col items-center gap-1">
-                        <SingerChip
-                            singer={singingNow}
-                            size="md"
-                            suffix={tSinger('singingSuffix')}
-                        />
+                        {singingNow ? (
+                            <SingerChip
+                                singer={singingNow}
+                                size="md"
+                                suffix={tSinger('singingSuffix')}
+                            />
+                        ) : null}
+                        {upNext?.singer ? (
+                            <p className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                                {tLineup('upNext')}
+                                <SingerChip singer={upNext.singer} />
+                            </p>
+                        ) : null}
                         {!canControl ? (
                             <p className="text-center text-[11px] text-muted-foreground">
                                 {tSinger('controlsLocked')}

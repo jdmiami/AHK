@@ -432,6 +432,17 @@ export default {
     'tvUnlock.idleHint':
         'Haz clic una vez en cualquier parte de esta pantalla para que las canciones suenen.',
 
+    'lineup.title': 'Turnos',
+    'lineup.singingNow': 'Cantando ahora',
+    'lineup.upNext': 'Sigue',
+    'lineup.then': 'Después',
+    'lineup.sittingOut': 'En pausa',
+    'lineup.nobodyNext': 'Nadie sigue todavía. ¡Añade una canción!',
+    'lineup.more': '+{count} más',
+    'lineup.you': '{name} (tú)',
+    'lineup.house': 'Canción de la casa',
+    'lineup.tvSinging': 'cantando',
+
     'singer.cardLabel': 'Tu turno',
     'singer.statusSinging': '¡Estás cantando!',
     'singer.statusPaused': 'En pausa · {count} canciones guardadas',
@@ -456,8 +467,6 @@ export default {
     'singer.controlsLocked': 'Solo quien canta o el anfitrión pueden controlar la canción.',
     'singer.notYourSongHint': 'Solo {name} puede cambiar esta canción.',
     'singer.theHost': 'el anfitrión',
-    'singer.tvSinging': 'cantando',
-    'singer.tvNext': 'sigue',
     'toast.notYourTurn': 'No es tu canción',
     'toast.notYourTurnDescription':
         'Solo quien canta o el anfitrión pueden controlar la reproducción.',
