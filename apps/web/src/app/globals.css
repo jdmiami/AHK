@@ -602,9 +602,13 @@ body {
         opacity: 0;
         transform: translate3d(0, 0, 0) scale(0.6);
     }
-    12% {
+    10% {
         opacity: 1;
         transform: translate3d(0, -6vh, 0) scale(1.2);
+    }
+    75% {
+        opacity: 1;
+        transform: translate3d(calc(var(--ahk-drift, 0px) * 0.75), -46vh, 0) scale(1);
     }
     100% {
         opacity: 0;
@@ -628,12 +632,12 @@ body {
 }
 
 .ahk-float-emoji {
-    animation: ahk-float-up 3.4s var(--ahk-ease-out) forwards;
+    animation: ahk-float-up 3.4s ease-out forwards;
     will-change: transform, opacity;
 }
 
 .ahk-pop-emoji {
-    animation: ahk-float-up 1.2s var(--ahk-ease-out) forwards;
+    animation: ahk-float-up 1.2s ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

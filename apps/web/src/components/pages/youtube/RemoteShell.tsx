@@ -1,5 +1,6 @@
 'use client';
 
+import { PartyPanel } from '@/components/party/party-panel';
 import { useProfileSync } from '@/hooks/use-profile-sync';
 import { useSingerIdentitySync } from '@/hooks/use-singer';
 import dynamic from 'next/dynamic';
@@ -95,6 +96,7 @@ export function RemoteShell() {
                                     {currentTab === 'queue' && <VideoQueue />}
                                     {currentTab === 'history' && <VideoHistory />}
                                     {currentTab === 'settings' && <RoomSettings />}
+                                    {currentTab === 'party' && <PartyPanel />}
                                 </div>
                             ) : null}
                             <RemoteTabKeepAlive

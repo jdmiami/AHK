@@ -1,12 +1,21 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { Clock3, ListVideo, MoreHorizontal, Search, Settings, SlidersVertical } from 'lucide-react';
+import {
+    Clock3,
+    ListVideo,
+    MoreHorizontal,
+    PartyPopper,
+    Search,
+    Settings,
+    SlidersVertical,
+} from 'lucide-react';
 
 import { useI18n, useScopedI18n } from '@/locales/client';
 import { prefetchPlayerControlsTabs } from '@/lib/layout-chunk-prefetch';
 import { REMOTE_CHROME_Z_INDEX, REMOTE_NAV_POPOVER_SIDE_OFFSET } from '@/lib/remote-chrome';
 import { useYouTubeStore } from '@/store/youtubeStore';
+import { useUnreadChatCount } from '@/hooks/use-party';
 import { cn } from '@/lib/utils';
 
 import {
@@ -16,7 +25,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const PRIMARY_TABS = ['search', 'queue', 'controls'] as const;
+const PRIMARY_TABS = ['search', 'queue', 'controls', 'party'] as const;
 
 type PrimaryTab = (typeof PRIMARY_TABS)[number];
 
@@ -36,12 +45,15 @@ export const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(
         const currentTab = useYouTubeStore((state) => state.currentTab);
         const setCurrentTab = useYouTubeStore((state) => state.setCurrentTab);
         const queueCount = useYouTubeStore((state) => state.room?.videoQueue?.length ?? 0);
+        const unreadChat = useUnreadChatCount();
 
         const isPrimary = (tab: string): tab is PrimaryTab =>
             PRIMARY_TABS.includes(tab as PrimaryTab);
 
         const activePrimary = isPrimary(currentTab) ? currentTab : null;
-        const activeIndex = activePrimary ? PRIMARY_TABS.indexOf(activePrimary) : 3;
+        const activeIndex = activePrimary
+            ? PRIMARY_TABS.indexOf(activePrimary)
+            : PRIMARY_TABS.length;
 
         return (
             <nav
@@ -52,11 +64,11 @@ export const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(
                 )}
                 aria-label={t('mainNavigation')}
             >
-                <div className="relative grid grid-cols-4 items-stretch">
+                <div className="relative grid grid-cols-5 items-stretch">
                     {/* One pill slides between tabs (transform only). */}
                     <span
                         aria-hidden
-                        className="ahk-nav-indicator pointer-events-none absolute inset-y-1 left-0 flex w-1/4 justify-center"
+                        className="ahk-nav-indicator pointer-events-none absolute inset-y-1 left-0 flex w-1/5 justify-center"
                         style={{ transform: `translate3d(${activeIndex * 100}%, 0, 0)` }}
                     >
                         <span className="h-full w-[72%] rounded-xl bg-primary/10 shadow-[var(--ahk-glow-primary)] dark:bg-primary/15" />
@@ -81,6 +93,18 @@ export const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(
                         label={t('controls')}
                         onClick={() => setCurrentTab('controls')}
                         onPrefetch={prefetchPlayerControlsTabs}
+                    />
+                    <NavItem
+                        active={activePrimary === 'party'}
+                        icon={<PartyPopper className="h-6 w-6" />}
+                        label={t('party')}
+                        badge={unreadChat > 0 && activePrimary !== 'party' ? unreadChat : undefined}
+                        ariaLabel={
+                            unreadChat > 0
+                                ? tGlobal('youtubePage.partyUnreadLabel', { count: unreadChat })
+                                : undefined
+                        }
+                        onClick={() => setCurrentTab('party')}
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>

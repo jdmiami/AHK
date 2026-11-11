@@ -432,6 +432,10 @@ export default {
     'tvUnlock.idleHint':
         'Haz clic una vez en cualquier parte de esta pantalla para que las canciones suenen.',
 
+    'youtubePage.party': 'Fiesta',
+    'youtubePage.partyUnreadLabel': 'Fiesta, {count} mensajes nuevos',
+    'toast.slowDown': 'Más despacio',
+    'toast.slowDownDescription': 'Demasiados mensajes seguidos. Inténtalo en unos segundos.',
     'party.cheerTitle': 'Anima al cantante',
     'party.cheerFor': 'Anima a',
     'party.cheerNobody': 'Manda cariño a la sala',

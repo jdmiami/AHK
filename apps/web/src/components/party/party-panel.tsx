@@ -10,6 +10,7 @@ import { SingerChip } from '@/components/singer/singer-chip';
 import { usePartySeenStore, useRoomChat } from '@/hooks/use-party';
 import { useMySinger } from '@/hooks/use-singer';
 import { useRoomLineup } from '@/hooks/use-room-lineup';
+import { REMOTE_CHROME_CSS_VARS } from '@/lib/remote-chrome';
 import { cn } from '@/lib/utils';
 import { useScopedI18n } from '@/locales/client';
 import { useWebSocket } from '@/providers/websocket-provider';
@@ -19,7 +20,11 @@ type Pop = { key: number; emoji: string; left: number };
 /** Party tab: cheer the singer (emoji pop on the big screen) and the room chat. */
 export function PartyPanel() {
     return (
-        <div className="flex h-full min-h-0 flex-col">
+        <div
+            className="flex h-full min-h-0 flex-col"
+            // Keep the message box above the now-playing bar.
+            style={{ paddingBottom: `var(${REMOTE_CHROME_CSS_VARS.insetBottom}, 0px)` }}
+        >
             <CheerPad />
             <PartyChat />
         </div>

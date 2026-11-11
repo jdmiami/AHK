@@ -552,6 +552,14 @@ export const useYouTubeStore = create(
                                         variant: 'warning',
                                     });
                                     break;
+                                case ErrorCode.SLOW_DOWN:
+                                    toast({
+                                        id: 'slow-down',
+                                        title: t('slowDown'),
+                                        description: t('slowDownDescription'),
+                                        variant: 'warning',
+                                    });
+                                    break;
                                 case ErrorCode.NOT_YOUR_SONG:
                                     toast({
                                         id: 'not-your-song',

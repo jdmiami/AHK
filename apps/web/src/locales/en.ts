@@ -422,6 +422,10 @@ export default {
         'Your browser needs one click on this screen before it plays songs with sound. After this, songs start by themselves.',
     'tvUnlock.idleHint': 'Click anywhere on this screen once so songs can play with sound.',
 
+    'youtubePage.party': 'Party',
+    'youtubePage.partyUnreadLabel': 'Party, {count} new messages',
+    'toast.slowDown': 'Slow down a little',
+    'toast.slowDownDescription': 'Too many messages at once. Try again in a few seconds.',
     'party.cheerTitle': 'Cheer the singer',
     'party.cheerFor': 'Cheer for',
     'party.cheerNobody': 'Send some love to the room',
