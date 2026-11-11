@@ -129,6 +129,10 @@ export const loginProfile = (name: string, pin: string) =>
 
 export const logoutProfile = (token: string) => rpc<null>('ahk_logout', { p_token: token });
 
+/** Rename a saved profile. The new name is also the name to log in with. */
+export const renameProfile = (token: string, name: string) =>
+    rpc<{ stageName: string }>('ahk_rename_profile', { p_token: token, p_name: name });
+
 export const fetchProfile = (token: string) => rpc<ProfileData>('ahk_profile', { p_token: token });
 
 export const updateProfileLook = (token: string, emoji: string, color: string) =>

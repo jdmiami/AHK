@@ -14,6 +14,7 @@ import {
     profilesEnabled,
     type ProfileErrorCode,
 } from '@/lib/profile-api';
+import { setUserDisplayName } from '@/lib/device-label';
 import { cn } from '@/lib/utils';
 import { useScopedI18n } from '@/locales/client';
 import { useProfileDataStore } from '@/store/profileStore';
@@ -43,7 +44,6 @@ export function ProfilePanel() {
                     <UserRoundCheck className="h-4 w-4 text-primary" aria-hidden />
                     {t('savedAs', { name: profile.stageName })}
                 </p>
-                <p className="text-xs text-muted-foreground">{t('nameLocked')}</p>
                 <div className="flex gap-2">
                     <Button
                         type="button"
@@ -85,6 +85,7 @@ export function ProfilePanel() {
                     : await loginProfile(name.trim(), pin);
             setProfile(session);
             setIdentity({ stageName: session.stageName });
+            setUserDisplayName(session.stageName);
             setPin('');
             await useProfileDataStore.getState().refresh();
             const look = useProfileDataStore.getState().data?.profile;

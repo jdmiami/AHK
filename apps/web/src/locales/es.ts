@@ -447,6 +447,10 @@ export default {
     'singer.randomName': 'Nombre al azar',
     'singer.emoji': 'Emoji',
     'singer.color': 'Color',
+    'singer.nameEverywhere':
+        'Tu nombre artístico. Aparece en la cola, en la pantalla grande y en la lista de personas.',
+    'profile.renameHint':
+        'Al cambiarlo también se renombra tu perfil guardado. La próxima vez entra con el nuevo nombre.',
     'singer.done': 'Listo',
     'singer.singingSuffix': 'está cantando',
     'singer.controlsLocked': 'Solo quien canta o el anfitrión pueden controlar la canción.',
@@ -474,8 +478,6 @@ export default {
     'profile.loginButton': 'Entrar',
     'profile.pinWarning': 'No uses el PIN de tu banco. No se puede recuperar, así que recuérdalo.',
     'profile.savedAs': 'Guardado como {name}',
-    'profile.nameLocked':
-        'Tu nombre artístico está ligado a tu perfil. Sal para cantar con otro nombre.',
     'profile.open': 'Mi perfil',
     'profile.logout': 'Salir',
     'profile.error.pin_format': 'El PIN debe tener de 4 a 8 dígitos.',

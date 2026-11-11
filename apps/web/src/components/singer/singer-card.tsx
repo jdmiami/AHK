@@ -12,6 +12,7 @@ import { randomStageName } from '@/lib/stage-names';
 import { cn } from '@/lib/utils';
 import { useCurrentLocale, useScopedI18n } from '@/locales/client';
 import { useWebSocket } from '@/providers/websocket-provider';
+import { useRenameStageName } from '@/hooks/use-rename-stage-name';
 import { useSingerStore } from '@/store/singerStore';
 
 import { ProfilePanel } from './profile-panel';
@@ -113,11 +114,23 @@ function SingerEditSheet({
 }) {
     const t = useScopedI18n('singer');
     const locale = useCurrentLocale();
+    const tProfile = useScopedI18n('profile');
     const { stageName, emoji, color, profile, setIdentity } = useSingerStore();
-    const locked = Boolean(profile);
+    const rename = useRenameStageName();
     const [draft, setDraft] = useState(stageName);
-    // A profile login replaces the name while the sheet is open.
+    const [nameError, setNameError] = useState<string | null>(null);
+    // A profile login or a rename elsewhere replaces the name while the sheet is open.
     useEffect(() => setDraft(stageName), [stageName]);
+
+    const commitName = async (next: string) => {
+        setNameError(null);
+        if (!next.trim() || next.trim() === stageName) return true;
+        const error = await rename(next);
+        if (!error) return true;
+        setNameError(tProfile(`error.${error}`));
+        setDraft(useSingerStore.getState().stageName);
+        return false;
+    };
 
     return (
         <Dialog
@@ -144,27 +157,37 @@ function SingerEditSheet({
                             id="ahk-stage-name"
                             value={draft}
                             maxLength={STAGE_NAME_MAX}
-                            disabled={locked}
                             onChange={(e) => setDraft(e.target.value)}
-                            onBlur={() =>
-                                !locked && draft.trim() && setIdentity({ stageName: draft.trim() })
-                            }
+                            onBlur={() => void commitName(draft)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') e.currentTarget.blur();
+                            }}
+                            aria-invalid={nameError ? true : undefined}
+                            enterKeyHint="done"
                         />
                         <Button
                             type="button"
                             variant="outline"
                             size="icon"
                             aria-label={t('randomName')}
-                            disabled={locked}
                             onClick={() => {
                                 const name = randomStageName(locale);
                                 setDraft(name);
-                                setIdentity({ stageName: name });
+                                void commitName(name);
                             }}
                         >
                             <Dices className="h-4 w-4" />
                         </Button>
                     </div>
+                    {nameError ? (
+                        <p className="text-xs text-destructive" role="alert">
+                            {nameError}
+                        </p>
+                    ) : (
+                        <p className="text-xs text-muted-foreground">
+                            {profile ? tProfile('renameHint') : t('nameEverywhere')}
+                        </p>
+                    )}
                 </div>
                 <div className="space-y-2">
                     <p className="text-sm font-medium">{t('emoji')}</p>
@@ -212,8 +235,7 @@ function SingerEditSheet({
                     type="button"
                     className="h-11"
                     onClick={() => {
-                        if (!locked && draft.trim()) setIdentity({ stageName: draft.trim() });
-                        onOpenChange(false);
+                        void commitName(draft).then((ok) => ok && onOpenChange(false));
                     }}
                 >
                     {t('done')}

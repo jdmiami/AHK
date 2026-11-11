@@ -437,6 +437,10 @@ export default {
     'singer.randomName': 'Random name',
     'singer.emoji': 'Emoji',
     'singer.color': 'Color',
+    'singer.nameEverywhere':
+        'Your stage name. It shows in the queue, on the big screen and in the people list.',
+    'profile.renameHint':
+        'Changing it renames your saved profile too. Log in with the new name next time.',
     'singer.done': 'Done',
     'singer.singingSuffix': 'is singing',
     'singer.controlsLocked': 'Only the singer or the host can control the song.',
@@ -461,8 +465,6 @@ export default {
     'profile.loginButton': 'Log in',
     'profile.pinWarning': 'Don’t reuse your bank PIN. There’s no reset, so remember it.',
     'profile.savedAs': 'Saved as {name}',
-    'profile.nameLocked':
-        'Your stage name is tied to your profile. Log out to sing under another name.',
     'profile.open': 'My profile',
     'profile.logout': 'Log out',
     'profile.error.pin_format': 'The PIN must be 4 to 8 digits.',

@@ -4,12 +4,14 @@ import { useEffect, useMemo } from 'react';
 import {
     canControlPlayback,
     canEditQueuedSong,
+    cleanStageName,
     defaultSingerLook,
     isRoomController,
     singerStanding,
     type Singer,
 } from '@vkara/room';
 
+import { getUserDisplayName, setUserDisplayName } from '@/lib/device-label';
 import { getDeviceId } from '@/lib/device-id';
 import { randomStageName } from '@/lib/stage-names';
 import { useCurrentLocale } from '@/locales/client';
@@ -59,11 +61,17 @@ export function useSingerIdentitySync(): void {
         if (stageName) return;
         const look = defaultSingerLook(getDeviceId() ?? Math.random().toString(36));
         setIdentity({
-            stageName: randomStageName(locale),
+            // Keep a name the person already typed on this device; otherwise a random one.
+            stageName: cleanStageName(getUserDisplayName()) || randomStageName(locale),
             emoji: emoji || look.emoji,
             color: color || look.color,
         });
     }, [stageName, emoji, color, locale, setIdentity]);
+
+    // The device name (used when joining a room) always matches the stage name.
+    useEffect(() => {
+        if (stageName && getUserDisplayName() !== stageName) setUserDisplayName(stageName);
+    }, [stageName]);
 
     const profileId = profile?.profileId ?? null;
     useEffect(() => {

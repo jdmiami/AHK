@@ -843,7 +843,7 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
     }
 
     async function setDisplayName(ws: ElysiaWS, displayName: string): Promise<void> {
-        const trimmed = displayName.trim().slice(0, MAX_DISPLAY_NAME_LENGTH);
+        const trimmed = displayName.replace(/\s+/g, ' ').trim().slice(0, MAX_DISPLAY_NAME_LENGTH);
         if (!trimmed) {
             throw new RoomError(ErrorCode.INVALID_MESSAGE, 'Display name cannot be empty');
         }
@@ -861,6 +861,10 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
             }
             participant.displayName = trimmed;
             participant.lastSeen = Date.now();
+            // Keep the singer's stage name in step with a rename from settings.
+            const singer = room.singers?.[deviceId];
+            const stageName = cleanStageName(trimmed);
+            if (singer && stageName) singer.stageName = stageName;
         });
 
         broadcastRoomState(roomId, room);
@@ -1107,7 +1111,12 @@ export function createRoomService({ wsConnections, sendToClient }: RoomServiceDe
                 joinedAt: room.participants?.[deviceId]?.joinedAt,
             });
             const name = cleanStageName(patch.stageName);
-            if (name) singer.stageName = name;
+            if (name) {
+                singer.stageName = name;
+                // One name everywhere: the people list shows the stage name too.
+                const participant = room.participants?.[deviceId];
+                if (participant) participant.displayName = name;
+            }
             if (patch.emoji) singer.emoji = patch.emoji;
             if (patch.color) singer.color = patch.color;
             if (patch.profileId !== undefined) singer.profileId = patch.profileId;
