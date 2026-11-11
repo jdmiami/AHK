@@ -1,9 +1,9 @@
 {
-  "org": "vkara",
+  "org": "REPLACE_WITH_YOUR_SENTRY_ORG",
   "regionApi": "https://us.sentry.io/api/0",
   "projects": {
-    "vkara-api": 4511749708120064,
-    "vkara-web": 4511749707792384
+    "vkara-api": 0,
+    "vkara-web": 0
   },
   "dashboards": [
     {

@@ -1,5 +1,7 @@
 'use client';
 
+import { SingerChip } from '@/components/singer/singer-chip';
+import { useYouTubeStore } from '@/store/youtubeStore';
 import { memo, type ReactNode } from 'react';
 import { VideoChannels } from '@/components/video-channels';
 import { LiveBadge } from '@/components/youtube-live-badge';
@@ -30,6 +32,8 @@ export function getVideoListRowHeight(hasActions: boolean): number {
 interface VideoListItemProps {
     video: YouTubeVideo;
     viewsLabel: string;
+    /** Place in the shared queue (1 = up next). */
+    position?: number;
     isActive?: boolean;
     actions?: ReactNode;
     onSelect?: (video: YouTubeVideo) => void;
@@ -38,10 +42,14 @@ interface VideoListItemProps {
 export const VideoListItem = memo(function VideoListItem({
     video,
     viewsLabel,
+    position,
     isActive = false,
     actions,
     onSelect,
 }: VideoListItemProps) {
+    const singer = useYouTubeStore((s) =>
+        video.singerId ? (s.room?.singers?.[video.singerId] ?? null) : null,
+    );
     const t = useI18n();
     const uploadedAtLabel = video.uploadedAt ? formatUploadedAt(video.uploadedAt, t) : '';
     const views = coerceViewCount(video.views);
@@ -72,7 +80,7 @@ export const VideoListItem = memo(function VideoListItem({
     return (
         <div
             className={cn(
-                'w-full overflow-hidden rounded-lg text-left text-sm transition-colors',
+                'ahk-reveal w-full overflow-hidden rounded-lg text-left text-sm transition-colors',
                 isActive && 'bg-primary/10 dark:bg-primary/15',
             )}
         >
@@ -108,9 +116,26 @@ export const VideoListItem = memo(function VideoListItem({
                 />
                 <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-0.5 overflow-hidden">
                     <div className="line-clamp-2 break-words text-sm font-medium leading-snug">
+                        {position ? (
+                            <span
+                                className={cn(
+                                    'mr-1.5 inline-flex min-w-6 items-center justify-center rounded-md px-1 text-[11px] font-semibold tabular-nums',
+                                    position === 1
+                                        ? 'bg-primary/15 text-primary'
+                                        : 'bg-muted text-muted-foreground',
+                                )}
+                                aria-label={`#${position}`}
+                            >
+                                {position}
+                            </span>
+                        ) : null}
                         {video.title}
                     </div>
-                    <VideoChannels video={video} tone="muted" maxLines={2} />
+                    {singer ? (
+                        <SingerChip singer={singer} className="self-start" />
+                    ) : (
+                        <VideoChannels video={video} tone="muted" maxLines={2} />
+                    )}
                     {metadataLine ? (
                         <div className="line-clamp-1 text-xs text-muted-foreground">
                             {metadataLine}

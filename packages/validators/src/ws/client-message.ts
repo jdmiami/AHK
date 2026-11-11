@@ -109,6 +109,40 @@ export const wsClientMessageSchema = z.discriminatedUnion('type', [
     withBase({ type: z.literal('play') }),
     withBase({ type: z.literal('pause') }),
     withBase({ type: z.literal('seek'), time: z.number() }),
+    /** Tempo for the playing song; `videoId` guards against stale taps after a song change. */
+    withBase({
+        type: z.literal('setTempo'),
+        videoId: z.string().min(1),
+        rate: z.number().finite(),
+    }),
+    /** Key in semitones for the playing song (audible when the laptop key engine is on). */
+    withBase({
+        type: z.literal('setKey'),
+        videoId: z.string().min(1),
+        semitones: z.number().finite(),
+    }),
+    /** Singer rotation: set this device's stage name / look / linked profile. */
+    withBase({
+        type: z.literal('updateSinger'),
+        stageName: z.string().max(64).optional(),
+        emoji: z.string().max(16).optional(),
+        color: z
+            .string()
+            .regex(/^#[0-9a-fA-F]{6}$/)
+            .optional(),
+        profileId: z.string().max(64).nullable().optional(),
+    }),
+    /** Sit out (songs kept aside) or come back. */
+    withBase({ type: z.literal('setSingerPaused'), paused: z.boolean() }),
+    /** Let everyone waiting go first this round. */
+    withBase({ type: z.literal('skipMyTurn') }),
+    /** Party: a cheer emoji that pops on the big screen (checked against the allowed list on the server). */
+    withBase({ type: z.literal('sendReaction'), emoji: z.string().max(16) }),
+    /** Party chat line (cleaned and shortened on the server). */
+    withBase({ type: z.literal('sendChat'), text: z.string().max(1000) }),
+    withBase({ type: z.literal('clearChat') }),
+    /** Reported by the TV/laptop when its key engine starts or stops capturing audio. */
+    withBase({ type: z.literal('setKeyEngineActive'), active: z.boolean() }),
     withBase({
         type: z.literal('syncPlaybackPosition'),
         time: z.number(),

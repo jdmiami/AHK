@@ -1,4 +1,6 @@
 import { DEFAULT_CAPTION_LANGUAGE } from '@vkara/youtube';
+import { clampSemitones, clampTempo } from './song-adjust';
+import { normalizeChat } from './party';
 import type { Participant, Room } from './websocket';
 
 /** Room snapshot persisted in the browser (no `clients`). */
@@ -30,6 +32,20 @@ export function normalizePersistedRoom(
         captionTracks: Array.isArray(room.captionTracks) ? room.captionTracks : [],
         captionTracksVideoId: room.captionTracksVideoId ?? null,
         playingNow: room.playingNow ?? null,
+        songAdjust:
+            room.songAdjust && typeof room.songAdjust === 'object'
+                ? {
+                      videoId:
+                          typeof room.songAdjust.videoId === 'string'
+                              ? room.songAdjust.videoId
+                              : null,
+                      rate: clampTempo(room.songAdjust.rate),
+                      semitones: clampSemitones(room.songAdjust.semitones),
+                  }
+                : undefined,
+        keyEngineActive: Boolean(room.keyEngineActive),
+        singers: room.singers && typeof room.singers === 'object' ? room.singers : {},
+        chat: normalizeChat(room.chat),
         isPlaying: room.isPlaying ?? false,
         currentTime: typeof room.currentTime === 'number' ? room.currentTime : 0,
         tiktokPhotoIndex:

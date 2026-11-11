@@ -17,6 +17,8 @@ export type PlaybackDisplayAnchor = {
     syncedAtMs: number;
     isPlaying: boolean;
     videoId: string | null;
+    /** Playback rate on the TV (tempo control); defaults to 1. */
+    rate?: number;
 };
 
 /**
@@ -29,7 +31,8 @@ export function computeExtrapolatedPlaybackSeconds(
     if (!anchor.isPlaying) {
         return Math.max(0, Math.floor(anchor.baseSeconds));
     }
-    const elapsedSec = Math.max(0, (nowMs - anchor.syncedAtMs) / 1000);
+    const rate = anchor.rate && anchor.rate > 0 ? anchor.rate : 1;
+    const elapsedSec = Math.max(0, (nowMs - anchor.syncedAtMs) / 1000) * rate;
     return Math.max(0, Math.floor(anchor.baseSeconds + elapsedSec));
 }
 

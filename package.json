@@ -2,14 +2,14 @@
     "name": "vkara-monorepo",
     "private": true,
     "packageManager": "bun@1.4.4",
-    "author": "lehuygiang28 <lehuygiang28@gmail.com>",
+    "author": "AHK maintainers",
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/lehuygiang28/vkara"
+        "url": "https://github.com/jdmiami/AHK"
     },
-    "homepage": "https://github.com/lehuygiang28/vkara",
-    "bugs": "https://github.com/lehuygiang28/vkara/issues",
+    "homepage": "https://github.com/jdmiami/AHK",
+    "bugs": "https://github.com/jdmiami/AHK/issues",
     "version": "0.0.1",
     "workspaces": [
         "apps/*",
@@ -20,11 +20,6 @@
         "dev:api": "turbo run dev --filter='@vkara/api'",
         "build:web": "turbo run build --filter='@vkara/web'",
         "build:api": "turbo run build --filter='@vkara/api'",
-        "build:tizen": "cd apps/tizen && bun run build:all",
-        "build:tizen:wgt": "cd apps/tizen && bun run build:wgt",
-        "build:tizen:tizenbrew": "cd apps/tizen && bun run build:tizenbrew",
-        "build:android-tv": "bun run --cwd apps/android-tv sync:assets && bun run --cwd apps/android-tv build:eas production",
-        "check:android-tv": "bun run --cwd apps/android-tv check:bake",
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
         "build": "turbo run build",

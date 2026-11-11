@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 
 import { env } from '@/env';
-import { CREATOR_GITHUB_URL, CREATOR_LEGAL_NAME } from '@/lib/creator';
+import { BRAND } from '@/lib/brand';
 import {
     APP_LOCALES,
     DEFAULT_APP_LOCALE,
     getLocalePublicPath,
+    localeToBcp47,
     type AppLocale,
 } from '@/lib/locale-path';
 import { getSiteUrl } from '@/lib/site-url';
@@ -46,8 +47,8 @@ export function buildPageMetadata(locale: AppLocale, t: SeoTranslations): Metada
         description: t.description,
         keywords,
         applicationName: t.siteName,
-        authors: [{ name: CREATOR_LEGAL_NAME, url: CREATOR_GITHUB_URL }],
-        creator: CREATOR_LEGAL_NAME,
+        authors: [{ name: BRAND.full, url: BRAND.repoUrl }],
+        creator: BRAND.full,
         icons: {
             icon: [
                 { url: '/icons/icon-32.png', sizes: '32x32', type: 'image/png' },
@@ -65,8 +66,10 @@ export function buildPageMetadata(locale: AppLocale, t: SeoTranslations): Metada
         },
         openGraph: {
             type: 'website',
-            locale: locale === 'vi' ? 'vi_VN' : 'en_US',
-            alternateLocale: locale === 'vi' ? ['en_US'] : ['vi_VN'],
+            locale: localeToBcp47(locale).replace('-', '_'),
+            alternateLocale: APP_LOCALES.filter((other) => other !== locale).map((other) =>
+                localeToBcp47(other).replace('-', '_'),
+            ),
             url: canonicalPath,
             title: t.title,
             description: t.description,

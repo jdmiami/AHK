@@ -1,5 +1,39 @@
 import { isValidRoomId } from '@vkara/room';
-import { ErrorCode, normalizePersistedRoom, RoomError, type Room } from '@vkara/room';
+import { withRoomLock } from './room-lock';
+import {
+    applyRotation,
+    ensureSinger,
+    ErrorCode,
+    normalizePersistedRoom,
+    RoomError,
+    type Room,
+} from '@vkara/room';
+
+/**
+ * Singer rotation runs after every room change, whatever code path made it: create singers for
+ * songs that name one, mark a newly started song as sung, park/unpark paused singers' songs and
+ * re-order the queue by fairness.
+ */
+function applyRotationAfterMutation(
+    room: Room,
+    previousPlayingId: string | null,
+    previousSingerId: string | null,
+): void {
+    const now = Date.now();
+    const owners = [room.playingNow, ...room.videoQueue]
+        .map((video) => video?.singerId)
+        .filter((id): id is string => Boolean(id));
+    for (const deviceId of owners) {
+        if (!room.singers?.[deviceId]) {
+            const participant = room.participants?.[deviceId];
+            ensureSinger(room, deviceId, now, {
+                stageName: participant?.displayName,
+                joinedAt: participant?.joinedAt,
+            });
+        }
+    }
+    applyRotation(room, now, previousPlayingId, previousSingerId);
+}
 
 function normalizeRoomCaptionFields(room: Room): void {
     const normalized = normalizePersistedRoom(room);
@@ -73,6 +107,14 @@ export async function mutateRoom(
     mutator: (room: Room) => void,
     options?: { isRejoin?: boolean },
 ): Promise<Room> {
+    return withRoomLock(roomId, () => mutateRoomUnlocked(roomId, mutator, options));
+}
+
+async function mutateRoomUnlocked(
+    roomId: string,
+    mutator: (room: Room) => void,
+    options?: { isRejoin?: boolean },
+): Promise<Room> {
     const key = roomKey(roomId);
 
     if (!isValidRoomId(roomId)) {
@@ -100,8 +142,11 @@ export async function mutateRoom(
             }
 
             normalizeRoomCaptionFields(room);
+            const previousPlayingId = room.playingNow?.id ?? null;
+            const previousSingerId = room.playingNow?.singerId ?? null;
             mutator(room);
             normalizeRoomCaptionFields(room);
+            applyRotationAfterMutation(room, previousPlayingId, previousSingerId);
             room.lastActivity = Date.now();
 
             const execResult = await redis.multi().set(key, JSON.stringify(room)).exec();

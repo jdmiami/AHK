@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>AHK · Key changer</title>
+<style>
+  :root { color-scheme: dark; --bg:#07060b; --card:#12101a; --fg:#f4f1ff; --muted:#a49cc0; --pink:#ff2daa; --cyan:#22e6ff; --border:#2a2538; }
+  * { box-sizing: border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; display:flex; align-items:center; justify-content:center; padding:20px; }
+  main { width:100%; max-width:380px; background:var(--card); border:1px solid var(--border); border-radius:20px; padding:24px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 18px; font-size:13px; }
+  ol { margin:0 0 18px; padding-left:20px; color:var(--muted); font-size:13px; }
+  ol b { color:var(--fg); }
+  button { width:100%; min-height:48px; border:0; border-radius:14px; font:600 15px system-ui,sans-serif; cursor:pointer; }
+  #start { background:linear-gradient(90deg,var(--pink),#7c5cff,var(--cyan)); color:#07060b; }
+  #stop { background:transparent; color:var(--fg); border:1px solid var(--border); margin-top:10px; }
+  .status { display:flex; align-items:center; gap:10px; margin:0 0 16px; padding:12px; border-radius:14px; background:#0c0a12; border:1px solid var(--border); }
+  .dot { width:10px; height:10px; border-radius:50%; background:#555; flex:none; }
+  .on .dot { background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+  .key { margin-left:auto; font:600 22px ui-monospace,monospace; color:var(--cyan); }
+  .err { color:#ff6b8b; font-size:13px; margin:10px 0 0; min-height:1em; }
+  .note { color:var(--muted); font-size:12px; margin:14px 0 0; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<main>
+  <h1 data-t="title"></h1>
+  <p class="sub" data-t="sub"></p>
+  <div class="status" id="status"><span class="dot"></span><span id="statusText"></span><span class="key" id="key">0</span></div>
+  <ol id="steps"><li data-t="step1"></li><li data-t="step2"></li><li data-t="step3"></li></ol>
+  <button id="start" data-t="start"></button>
+  <button id="stop" data-t="stop" hidden></button>
+  <p class="err" id="err"></p>
+  <p class="note" data-t="note"></p>
+</main>
+<script>
+(function () {
+  var STR = {
+    en: {
+      title: 'Key changer',
+      sub: 'Plays the big screen in the key picked on the phones.',
+      step1: 'Click <b>Start</b>.',
+      step2: 'In the share window choose the <b>AHK big-screen tab</b> and turn on <b>Share tab audio</b>.',
+      step3: 'Keep this window open (move it behind the projector window).',
+      start: 'Start', stop: 'Stop key changer', idle: 'Off', on: 'On',
+      note: 'Chrome or Edge on a computer. Audio is processed only on this laptop; nothing is uploaded.',
+      noTab: 'No tab audio. Start again, pick the AHK tab and turn on “Share tab audio”.',
+      denied: 'Sharing was cancelled.', unsupported: 'This browser cannot capture tab audio. Use Chrome or Edge on a computer.'
+    },
+    es: {
+      title: 'Cambiar tono',
+      sub: 'La pantalla grande suena en el tono elegido en los teléfonos.',
+      step1: 'Haz clic en <b>Iniciar</b>.',
+      step2: 'En la ventana para compartir elige la <b>pestaña de AHK de la pantalla grande</b> y activa <b>Compartir audio de la pestaña</b>.',
+      step3: 'Deja esta ventana abierta (muévela detrás de la ventana del proyector).',
+      start: 'Iniciar', stop: 'Detener cambio de tono', idle: 'Apagado', on: 'Activo',
+      note: 'Chrome o Edge en una computadora. El audio se procesa solo en esta laptop; no se sube nada.',
+      noTab: 'No hay audio de la pestaña. Inicia de nuevo, elige la pestaña de AHK y activa “Compartir audio de la pestaña”.',
+      denied: 'Se canceló compartir.', unsupported: 'Este navegador no puede capturar el audio de una pestaña. Usa Chrome o Edge en una computadora.'
+    }
+  };
+  var lang = /[?&]lang=es\b/.test(location.search) ? 'es' : 'en';
+  var s = STR[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach(function (el) { el.innerHTML = s[el.getAttribute('data-t')]; });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var channel = new BroadcastChannel('ahk-key-engine');
+  var ctx = null, node = null, stream = null, beat = null, semitones = 0;
+
+  function fmt(n) { return n === 0 ? '0' : (n > 0 ? '+' + n : '−' + Math.abs(n)); }
+  function render(active) {
+    $('status').classList.toggle('on', active);
+    $('statusText').textContent = active ? s.on : s.idle;
+    $('key').textContent = fmt(semitones);
+    $('start').hidden = active; $('stop').hidden = !active; $('steps').hidden = active;
+  }
+  function applyKey() {
+    if (node) node.parameters.get('ratio').setTargetAtTime(Math.pow(2, semitones / 12), ctx.currentTime, 0.02);
+    $('key').textContent = fmt(semitones);
+  }
+
+  channel.onmessage = function (e) {
+    var m = e.data || {};
+    if (m.type === 'key' && typeof m.semitones === 'number') { semitones = m.semitones; applyKey(); }
+  };
+
+  function stop() {
+    if (beat) clearInterval(beat); beat = null;
+    if (stream) stream.getTracks().forEach(function (t) { t.stop(); });
+    if (ctx) ctx.close();
+    stream = null; ctx = null; node = null;
+    channel.postMessage({ type: 'status', active: false });
+    render(false);
+  }
+
+  async function start() {
+    $('err').textContent = '';
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia || typeof AudioWorkletNode !== 'function') {
+      $('err').textContent = s.unsupported; return;
+    }
+    try {
+      stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: { suppressLocalAudioPlayback: true, echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+        preferCurrentTab: false, selfBrowserSurface: 'exclude', surfaceSwitching: 'exclude', systemAudio: 'exclude'
+      });
+    } catch (err) { $('err').textContent = s.denied; return; }
+    var audio = stream.getAudioTracks();
+    stream.getVideoTracks().forEach(function (t) { t.stop(); });
+    if (!audio.length) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; $('err').textContent = s.noTab; return; }
+    audio[0].addEventListener('ended', stop);
+
+    ctx = new AudioContext({ latencyHint: 'interactive' });
+    await ctx.audioWorklet.addModule('/worklets/ahk-pitch-shifter.js');
+    node = new AudioWorkletNode(ctx, 'ahk-pitch-shifter', { outputChannelCount: [2] });
+    ctx.createMediaStreamSource(new MediaStream(audio)).connect(node).connect(ctx.destination);
+    applyKey();
+    channel.postMessage({ type: 'status', active: true });
+    beat = setInterval(function () { channel.postMessage({ type: 'heartbeat' }); }, 1500);
+    render(true);
+  }
+
+  $('start').addEventListener('click', start);
+  $('stop').addEventListener('click', stop);
+  window.addEventListener('pagehide', function () { channel.postMessage({ type: 'status', active: false }); });
+  channel.postMessage({ type: 'hello' });
+  render(false);
+})();
+</script>
+</body>
+</html>

@@ -14,10 +14,10 @@ import {
 const LOCALE_OPTIONS: {
     code: SUPPORTED_LOCALES;
     shortLabel: string;
-    menuLabelKey: 'languageVietnamese' | 'languageEnglish';
+    menuLabelKey: 'languageEnglish' | 'languageSpanish';
 }[] = [
-    { code: 'vi', shortLabel: 'Vi', menuLabelKey: 'languageVietnamese' },
     { code: 'en', shortLabel: 'En', menuLabelKey: 'languageEnglish' },
+    { code: 'es', shortLabel: 'Es', menuLabelKey: 'languageSpanish' },
 ];
 
 type LanguageSwitcherVariant = 'inline' | 'overlay' | 'menu';

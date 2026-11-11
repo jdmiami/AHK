@@ -12,6 +12,11 @@ export enum ErrorCode {
     REJOIN_ROOM_NOT_FOUND = 'rejoinRoomNotFound',
     ROOM_LOCKED = 'roomLocked',
     NOT_HOST = 'notHost',
+    /** Playback controls are for the host and the person singing now. */
+    NOT_YOUR_TURN = 'notYourTurn',
+    /** Queued songs can be changed only by their singer (or the host). */
+    NOT_YOUR_SONG = 'notYourSong',
+    SLOW_DOWN = 'slowDown',
 }
 
 export interface ErrorResponse {
@@ -45,6 +50,9 @@ function getDefaultErrorMessage(code: ErrorCode): string {
         [ErrorCode.REJOIN_ROOM_NOT_FOUND]: 'Rejoin room not found',
         [ErrorCode.ROOM_LOCKED]: 'Room is locked — ask the host to unlock it',
         [ErrorCode.NOT_HOST]: 'Only the room host can perform this action',
+        [ErrorCode.NOT_YOUR_TURN]: 'Only the host or the person singing can control playback',
+        [ErrorCode.NOT_YOUR_SONG]: 'Only the singer who added this song can change it',
+        [ErrorCode.SLOW_DOWN]: 'Too many messages. Wait a few seconds.',
     };
 
     return messages[code];

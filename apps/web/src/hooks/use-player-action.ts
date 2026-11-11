@@ -23,6 +23,8 @@ import {
     markUserSeekTarget,
 } from '@/lib/youtube-playback-sync';
 import { useYouTubeStore } from '@/store/youtubeStore';
+import { applySongAdjustChange, isRoomController } from '@vkara/room';
+import { getDeviceId } from '@/lib/device-id';
 import { getTikTokPhotoMaxIndex } from '@vkara/tiktok';
 import type { YouTubeVideo } from '@vkara/youtube';
 
@@ -40,6 +42,7 @@ export type PlayerAction = {
     handlePlayNextVideo: () => void;
     handleRemoveVideoFromQueue: (video: YouTubeVideo) => void;
     handleSetVideoVolume: (volume: number) => void;
+    handleSongAdjust: (change: { rate?: number; semitones?: number }) => Promise<void>;
     handleMoveVideoToTop: (video: YouTubeVideo) => void;
     handleShuffleQueue: () => void;
     handleClearQueue: () => void;
@@ -159,8 +162,12 @@ export const usePlayerAction = (): PlayerAction => {
             }
 
             ensureConnectedAndSend({ type: 'playNow', video });
+            // In a rotation, a singer's "Play" queues the song as their next turn (server rule).
+            const rotationOn = Object.keys(currentRoom?.singers ?? {}).length > 0;
+            const queuedAsNext =
+                rotationOn && currentRoom ? !isRoomController(currentRoom, getDeviceId()) : false;
             toast({
-                title: t('toast.playNowHandler'),
+                title: queuedAsNext ? t('toast.addedAsYourNext') : t('toast.playNowHandler'),
                 description: truncateVideoTitle(video.title),
                 variant: 'info',
                 duration: ACTION_FEEDBACK_DURATION_MS,
@@ -233,6 +240,26 @@ export const usePlayerAction = (): PlayerAction => {
             });
             if (!(await ensureRoomReady())) return;
             ensureConnectedAndSend({ type: 'setVolume', volume: clamped });
+        },
+        [ensureRoomReady, ensureConnectedAndSend],
+    );
+
+    /** Tempo/key for the playing song: applied locally at once, then sent to the room. */
+    const handleSongAdjust = useCallback(
+        async (change: { rate?: number; semitones?: number }) => {
+            const { room, setRoom } = useYouTubeStore.getState();
+            const videoId = room?.playingNow?.id;
+            if (!room || !videoId) return;
+            const next = applySongAdjustChange(room, videoId, change);
+            if (!next) return;
+            setRoom({ ...room, songAdjust: next });
+            if (!(await ensureRoomReady())) return;
+            if (change.rate !== undefined) {
+                ensureConnectedAndSend({ type: 'setTempo', videoId, rate: next.rate });
+            }
+            if (change.semitones !== undefined) {
+                ensureConnectedAndSend({ type: 'setKey', videoId, semitones: next.semitones });
+            }
         },
         [ensureRoomReady, ensureConnectedAndSend],
     );
@@ -494,6 +521,7 @@ export const usePlayerAction = (): PlayerAction => {
         handlePlayNextVideo,
         handleRemoveVideoFromQueue,
         handleSetVideoVolume,
+        handleSongAdjust,
         handleMoveVideoToTop,
         handleShuffleQueue,
         handleClearQueue,

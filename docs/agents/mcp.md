@@ -1,4 +1,4 @@
-# vkara MCP (v1)
+# AHK MCP (v1)
 
 v1 is a **factory**: validate, build URL, mint `once`, mint `joinToken`. It does **not** join WebSocket as a hidden participant and does not reuse the TV/browser `deviceId`.
 
@@ -19,7 +19,7 @@ Base: `{API}/url-commands`
 | `/mint-once` | `{ bind }` | `{ once, bind }` |
 | `/mint-join-token` | `{ bind, password? }` | `{ joinToken, roomId, exp, bind }` — **password required**; passwordless rooms are refused (same error as a missing room) |
 
-`bind` is `{ roomId: "4821", displayName: "Claude" }`. `path` is `/` \| `/en` \| `/tv` \| `/en/tv`.
+`bind` is `{ roomId: "4821", displayName: "Claude" }`. `path` is `/` \| `/es` \| `/tv` \| `/es/tv`.
 
 ## HTTP room control (headless)
 
@@ -39,7 +39,7 @@ Open rooms: a host mints `joinToken` over WebSocket (`mintJoinToken`). Do not ca
 ```json
 {
   "mcpServers": {
-    "vkara": {
+    "ahk": {
       "command": "npx",
       "args": ["-y", "mcp-remote", "http://127.0.0.1:8000/url-commands/validate"],
       "env": {

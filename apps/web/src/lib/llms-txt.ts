@@ -1,6 +1,6 @@
 import { resolveUrl } from '@vkara/room';
 
-const GITHUB = 'https://github.com/lehuygiang28/vkara/blob/main';
+const GITHUB = 'https://github.com/jdmiami/AHK/blob/main';
 
 export type LlmsTxtOrigins = {
     appOrigin: string;
@@ -58,11 +58,11 @@ export function buildLlmsTxtContent({ appOrigin, apiOrigin }: LlmsTxtOrigins): s
     const factory = `${api}/url-commands`;
     const llmsUrl = `${app}/llms.txt`;
 
-    return `# vkara
+    return `# AHK · Artist House Karaoke
 
 > Shared karaoke rooms: one TV or laptop is the player, phones are remotes. No account. Guests scan a QR or type a 4-digit room code. Optional URL commands and an HTTP factory exist for power users and AI agents only.
 
-vkara is a party app. Keep the guest path short: open the site, create or join, search, add a song. Do not ask non-technical people to edit query strings, mint tokens, or open MCP tools.
+AHK is a party app. Keep the guest path short: open the site, create or join, search, add a song. Do not ask non-technical people to edit query strings, mint tokens, or open MCP tools.
 
 ## This deployment
 
@@ -97,17 +97,17 @@ If the message is **only** the invite line (no “thêm/chọn/tìm/play/skip/�
 - Confirm you read this file and joined (or will join) the room.
 - Reply with the **capability bullets** below so the user knows what to ask next.
 
-**Example (VI):**
+**Example (ES):**
 
-> Tôi đã đọc hướng dẫn và có thể giúp bạn điều khiển phòng 4821:
-> - Tìm bài karaoke trên YouTube (mặc định) hoặc TikTok (khi bạn yêu cầu rõ)
-> - Thêm bài vào hàng đợi
-> - Phát bài ngay
-> - Chuyển sang bài tiếp theo
-> - Mở tab tìm kiếm, hàng đợi, lịch sử, điều khiển, hoặc cài đặt
-> - Bật/tắt lọc karaoke khi tìm kiếm
+> Leí las instrucciones y puedo ayudarte a controlar la sala 4821:
+> - Buscar karaoke en YouTube (por defecto) o TikTok (solo si lo pides)
+> - Agregar canciones a la cola
+> - Reproducir una canción ahora
+> - Pasar a la siguiente canción
+> - Abrir la pestaña de búsqueda, cola, historial, controles o ajustes
+> - Activar o desactivar el filtro de karaoke al buscar
 >
-> Bạn muốn tôi làm gì?
+> ¿Qué quieres que haga?
 
 ### Case B — invite + task
 
@@ -117,27 +117,27 @@ If the user adds a task on the same message (e.g. add N songs, play something, s
 2. Execute the task using **Capabilities** and **Task recipes** below.
 3. Reply with **concrete results** (song titles / video ids queued, errors, password needed).
 
-**Example (VI):** after adding 3 Đạt K karaoke tracks → list the three titles and confirm they are in the queue.
+**Example (ES):** after adding 3 Juan Luis Guerra karaoke tracks → list the three titles and confirm they are in the queue.
 
 ### What you can do (tell the user — Case A bullets)
 
 Use these bullets (adapt wording; keep the list complete):
 
-| VI (user-facing) | EN (user-facing) |
+| EN (user-facing) | ES (user-facing) |
 |---|---|
-| Tìm bài karaoke trên YouTube (mặc định) | Search karaoke on YouTube (default) |
-| Tìm trên TikTok (chỉ khi bạn yêu cầu rõ) | Search TikTok (only when explicitly asked) |
-| Thêm bài vào hàng đợi | Add songs to the queue |
-| Phát bài ngay | Play a song immediately |
-| Chuyển sang bài tiếp theo | Skip to the next song |
-| Mở tab tìm kiếm / hàng đợi / lịch sử / điều khiển / cài đặt | Open search / queue / history / controls / settings tab |
-| Bật hoặc tắt lọc karaoke khi tìm | Toggle karaoke filter while searching |
+| Search karaoke on YouTube (default) | Buscar karaoke en YouTube (por defecto) |
+| Search TikTok (only when explicitly asked) | Buscar en TikTok (solo si lo pides) |
+| Add songs to the queue | Agregar canciones a la cola |
+| Play a song immediately | Reproducir una canción ahora |
+| Skip to the next song | Pasar a la siguiente canción |
+| Open search / queue / history / controls / settings tab | Abrir búsqueda / cola / historial / controles / ajustes |
+| Toggle karaoke filter while searching | Activar o desactivar el filtro de karaoke |
 
 ### What you cannot do (v1)
 
 Do not promise these — they are **blocked** from URL commands and the HTTP factory:
 
-- Xóa hàng đợi / lịch sử, kick, khóa/mở khóa phòng, đóng phòng, nhận host
+- Clear queue / history, kick, lock/unlock room, close room, claim host
 - Clear queue/history, kick, lock/unlock room, close room, claim host
 
 If the user asks, explain you can only join, search, queue, play, skip, and UI prefs via the supported URL surface.
@@ -179,7 +179,7 @@ HTTP mutations use the Redis session room only. \`bind.roomId\` must match. Neve
 ## Guests (non-tech)
 
 - Phone: open the site (or scan the QR on the TV). Join with the 4-digit code. Password only if the host set one.
-- TV: open \`${app}/tv\` (or the Tizen app). Create a room. Show the QR. Play.
+- TV: open \`${app}/tv\` in the TV browser. Create a room. Show the QR. Play.
 - Human share/QR links are **only** \`roomId\` and optional \`password\`. Never add \`queue\`, \`play\`, \`next\`, \`layoutMode\`, or \`name\` to a guest invite.
 - Compact in-app payload: \`vkara:<roomId>\` or \`vkara:<roomId>:<password>\`.
 
@@ -223,7 +223,7 @@ Mutations apply only when the live room id equals \`roomId\`. Wrong room = no ac
 
 \`\`\`
 ${app}/?roomId=4821
-${app}/en?roomId=4821&name=Claude&q=son+tung&karaoke=1
+${app}/es?roomId=4821&name=Claude&q=bad+bunny&karaoke=1
 ${app}/?roomId=4821&queue=<videoId>&once=<token>&name=Claude
 ${app}/tv?roomId=4821
 \`\`\`
@@ -249,6 +249,6 @@ Base: \`${factory}\`. v1 does **not** join WebSocket as a hidden participant.
 ## Optional
 
 - [Vietnamese README](${GITHUB}/docs/vi/README.md)
-- [OpenSpec specs](https://github.com/lehuygiang28/vkara/tree/main/openspec/specs/url-command-surface): design and security specs
+- [OpenSpec specs](https://github.com/jdmiami/AHK/tree/main/openspec/specs/url-command-surface): design and security specs
 `;
 }

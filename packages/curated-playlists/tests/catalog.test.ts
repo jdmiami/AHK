@@ -8,7 +8,7 @@ const sampleFile: CuratedPlaylistsFile = {
     catalogs: [
         {
             id: 'karaoke',
-            suggestLocales: ['vi', 'en'],
+            suggestLocales: ['es', 'en'],
             playlists: [
                 'https://www.youtube.com/playlist?list=PLFgquLnL59alCl_2TQvOiD5Vgm1hCaGSI',
                 'https://www.youtube.com/playlist?list=PLRH1bes7ddmVMYRkmPNJY4lFZsGlAAXbC',
@@ -20,8 +20,8 @@ const sampleFile: CuratedPlaylistsFile = {
             playlists: [],
         },
         {
-            id: 'vi-only',
-            suggestLocales: ['vi'],
+            id: 'es-only',
+            suggestLocales: ['es'],
             playlists: ['https://www.youtube.com/playlist?list=PLRH1bes7ddmVp0Cpe2OWJxK6zqA2h8CrD'],
         },
     ],
@@ -32,17 +32,17 @@ const duplicateIdFile: CuratedPlaylistsFile = {
     catalogs: [
         {
             id: 'karaoke',
-            suggestLocales: ['vi', 'en'],
+            suggestLocales: ['es', 'en'],
             playlists: ['https://www.youtube.com/playlist?list=PLVIET1111111111111111111111111111'],
         },
         {
             id: 'music',
-            suggestLocales: ['vi', 'en'],
+            suggestLocales: ['es', 'en'],
             playlists: ['https://www.youtube.com/playlist?list=PLMUSIC111111111111111111111111111'],
         },
         {
             id: 'karaoke',
-            suggestLocales: ['en', 'vi'],
+            suggestLocales: ['en', 'es'],
             playlists: ['https://www.youtube.com/playlist?list=PLENGLISH222222222222222222222222'],
         },
     ],
@@ -51,11 +51,10 @@ const duplicateIdFile: CuratedPlaylistsFile = {
 describe('loadCatalogs', () => {
     it('loads shipped curated starters from playlists.json', () => {
         const catalogs = loadCatalogs();
-        const karaoke = catalogs.find((catalog) => catalog.id === 'karaoke');
-        const music = catalogs.find((catalog) => catalog.id === 'music');
-        expect(karaoke?.playlists).toHaveLength(3);
-        expect(music?.playlists).toHaveLength(1);
-        expect(music?.playlists[0]).toContain('PLRH1bes7ddmWZCJsf02s3WLhtMV2dXbWO');
+        // AHK ships one English-friendly starter until Song Packs replace them.
+        expect(catalogs.map((catalog) => catalog.id)).toEqual(['karaoke']);
+        expect(catalogs[0]?.playlists).toHaveLength(1);
+        expect(catalogs[0]?.playlists[0]).toContain('PLRH1bes7ddmWO-sNw14I-FxKKvxMujKoc');
     });
 
     it('rejects invalid playlist URLs', () => {
@@ -76,20 +75,20 @@ describe('loadCatalogs', () => {
 
 describe('filterCatalogsByLocale', () => {
     it('filters by locale, omits empty catalogs, and keeps playlist order', () => {
-        const vi = filterCatalogsByLocale(loadCatalogs(sampleFile), 'vi');
-        expect(vi.map((catalog) => catalog.id)).toEqual(['karaoke', 'vi-only']);
-        expect(vi[0]?.playlists[0]).toContain('PLFgquLnL59');
+        const es = filterCatalogsByLocale(loadCatalogs(sampleFile), 'es');
+        expect(es.map((catalog) => catalog.id)).toEqual(['karaoke', 'es-only']);
+        expect(es[0]?.playlists[0]).toContain('PLFgquLnL59');
 
         const en = filterCatalogsByLocale(loadCatalogs(sampleFile), 'en');
         expect(en.map((catalog) => catalog.id)).toEqual(['karaoke']);
         expect(en.some((catalog) => catalog.id === 'music')).toBe(false);
-        expect(en.some((catalog) => catalog.id === 'vi-only')).toBe(false);
+        expect(en.some((catalog) => catalog.id === 'es-only')).toBe(false);
     });
 
     it('merges duplicate ids with locale-priority playlist order', () => {
-        const vi = filterCatalogsByLocale(loadCatalogs(duplicateIdFile), 'vi');
-        expect(vi.map((catalog) => catalog.id)).toEqual(['karaoke', 'music']);
-        expect(vi[0]?.playlists).toEqual([
+        const es = filterCatalogsByLocale(loadCatalogs(duplicateIdFile), 'es');
+        expect(es.map((catalog) => catalog.id)).toEqual(['karaoke', 'music']);
+        expect(es[0]?.playlists).toEqual([
             expect.stringContaining('PLVIET111'),
             expect.stringContaining('PLENGLISH222'),
         ]);
@@ -101,12 +100,12 @@ describe('filterCatalogsByLocale', () => {
         ]);
     });
 
-    it('merges shipped duplicate karaoke rows for each UI locale', () => {
-        for (const locale of ['vi', 'en'] as const) {
+    it('shows the shipped karaoke starter on each UI locale', () => {
+        for (const locale of ['es', 'en'] as const) {
             const catalogs = filterCatalogsByLocale(loadCatalogs(), locale);
             const karaoke = catalogs.find((catalog) => catalog.id === 'karaoke');
             expect(catalogs.filter((catalog) => catalog.id === 'karaoke')).toHaveLength(1);
-            expect(karaoke?.playlists).toHaveLength(4);
+            expect(karaoke?.playlists).toHaveLength(1);
         }
 
         const enKaraoke = getCuratedCatalogsForLocale('en').find(

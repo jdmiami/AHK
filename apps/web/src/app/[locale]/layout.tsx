@@ -61,8 +61,8 @@ export const viewport: Viewport = {
     initialScale: 1,
     viewportFit: 'cover',
     themeColor: [
-        { media: '(prefers-color-scheme: light)', color: '#fafafa' },
-        { media: '(prefers-color-scheme: dark)', color: '#0a0a0f' },
+        { media: '(prefers-color-scheme: light)', color: '#faf7ff' },
+        { media: '(prefers-color-scheme: dark)', color: '#07060b' },
     ],
 };
 
@@ -100,7 +100,7 @@ export default async function RootLayout({
                 />
                 <ThemeProvider
                     attribute="class"
-                    defaultTheme="system"
+                    defaultTheme="dark"
                     enableSystem
                     disableTransitionOnChange
                 >

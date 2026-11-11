@@ -4,7 +4,7 @@ import { youtubeEmbedHl } from '@/lib/youtube-embed-locale';
 
 describe('youtubeEmbedHl', () => {
     it('maps app locales to YouTube hl params', () => {
-        expect(youtubeEmbedHl('vi')).toBe('vi_vn');
+        expect(youtubeEmbedHl('es')).toBe('es_us');
         expect(youtubeEmbedHl('en')).toBe('en_us');
     });
 });

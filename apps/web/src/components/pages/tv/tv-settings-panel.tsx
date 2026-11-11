@@ -447,8 +447,8 @@ export function TvSettingsPanel({ onCloseAction }: TvSettingsPanelProps) {
                         icon={<Languages className="h-6 w-6" strokeWidth={2.5} aria-hidden />}
                         value={locale}
                         options={[
-                            { value: 'vi', label: tAppearance('languageVietnamese') },
                             { value: 'en', label: tAppearance('languageEnglish') },
+                            { value: 'es', label: tAppearance('languageSpanish') },
                         ]}
                         onChangeAction={changeLocale}
                     />

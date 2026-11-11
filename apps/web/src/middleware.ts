@@ -13,13 +13,38 @@ const I18nMiddleware = createI18nMiddleware({
 });
 
 /**
- * Default locale (vi) is served at `/` with no prefix.
- * English is at `/en`. Legacy `/vi` URLs redirect to `/`.
+ * One public address: requests to legacy hostnames (AHK_REDIRECT_HOSTS, comma-separated) are
+ * permanently redirected to the canonical NEXT_PUBLIC_APP_URL host, keeping path and query
+ * (so old QR codes and invite links keep working).
+ */
+function canonicalRedirect(request: NextRequest): NextResponse | null {
+    const legacy = (process.env.AHK_REDIRECT_HOSTS ?? '')
+        .split(',')
+        .map((host) => host.trim().toLowerCase())
+        .filter(Boolean);
+    if (legacy.length === 0 || !env.NEXT_PUBLIC_APP_URL) return null;
+    const host = (request.headers.get('host') ?? '').toLowerCase();
+    if (!legacy.includes(host)) return null;
+    const target = new URL(env.NEXT_PUBLIC_APP_URL);
+    if (target.host.toLowerCase() === host) return null;
+    const url = request.nextUrl.clone();
+    url.protocol = target.protocol;
+    url.host = target.host;
+    url.port = target.port;
+    return NextResponse.redirect(url, 308);
+}
+
+/**
+ * Default locale (en) is served at `/` with no prefix.
+ * Spanish is at `/es`. Legacy `/en` URLs (and upstream's `/vi`) redirect to `/`.
  *
  * Skip redirect on internal Next.js subrequests (RSC, prefetch, middleware rewrite).
- * AIO image also handles /vi at the Caddy edge.
+ * AIO image also handles the legacy prefixes at the Caddy edge.
  */
 function middleware(request: NextRequest) {
+    const canonical = canonicalRedirect(request);
+    if (canonical) return canonical;
+
     const { pathname } = request.nextUrl;
     const isInternalSubrequest =
         request.headers.has('rsc') ||
@@ -29,7 +54,10 @@ function middleware(request: NextRequest) {
     if (
         env.VKARA_AIO !== '1' &&
         !isInternalSubrequest &&
-        (pathname === '/vi' || pathname.startsWith('/vi/'))
+        (pathname === '/en' ||
+            pathname.startsWith('/en/') ||
+            pathname === '/vi' ||
+            pathname.startsWith('/vi/'))
     ) {
         const url = request.nextUrl.clone();
         url.pathname = pathname.slice(3) || '/';
@@ -41,7 +69,7 @@ function middleware(request: NextRequest) {
         return response;
     }
 
-    // Default locale (vi) Smart TV display at `/tv` without locale prefix.
+    // Default locale (en) Smart TV display at `/tv` without locale prefix.
     if (pathname === '/tv' || pathname.startsWith('/tv/')) {
         const url = request.nextUrl.clone();
         url.pathname = `/${DEFAULT_APP_LOCALE}${pathname}`;
@@ -54,9 +82,9 @@ function middleware(request: NextRequest) {
     }
 
     const localeSegment = pathname.split('/').filter(Boolean)[0];
-    if (localeSegment === 'en') {
+    if (localeSegment === 'es') {
         const response = NextResponse.next();
-        response.cookies.set(LOCALE_COOKIE_NAME, 'en', { sameSite: 'strict', path: '/' });
+        response.cookies.set(LOCALE_COOKIE_NAME, 'es', { sameSite: 'strict', path: '/' });
         return response;
     }
 

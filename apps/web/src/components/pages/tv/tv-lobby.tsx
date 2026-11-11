@@ -16,6 +16,8 @@ import { tvSettingsIconPlate, tvSettingsLabel, tvSettingsRow } from '@/lib/tv-fo
 import { cn } from '@/lib/utils';
 
 import { TvFocusable } from './tv-focusable';
+import { BrandLockup } from '@/components/brand/ahk-mark';
+
 import { TvRoomCodeInput } from './tv-room-code-input';
 import { TvSpatialOverlayShell } from './tv-spatial-overlay-shell';
 
@@ -105,6 +107,7 @@ export function TvLobby() {
             >
                 <div className="tv-lobby-grid">
                     <header className="tv-lobby-grid__header">
+                        <BrandLockup size="tv" className="mb-6" animated />
                         <h1 className="tv-lobby-title">{t('title')}</h1>
                         {tvLobbyBanner ? (
                             <div

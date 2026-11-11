@@ -7,8 +7,6 @@ WORKDIR /repo
 COPY bun.lock package.json turbo.json ./
 COPY apps/api/package.json ./apps/api/package.json
 COPY apps/web/package.json ./apps/web/package.json
-COPY apps/tizen/package.json ./apps/tizen/package.json
-COPY apps/android-tv/package.json ./apps/android-tv/package.json
 COPY packages/env/package.json ./packages/env/package.json
 COPY packages/redis/package.json ./packages/redis/package.json
 COPY packages/cache-redis/package.json ./packages/cache-redis/package.json
@@ -57,9 +55,9 @@ RUN mkdir -p /runtime/node_modules && \
 
 FROM build AS production
 
-LABEL git="https://github.com/lehuygiang28/vkara"
-LABEL author="lehuygiang28 <lehuygiang28@gmail.com>"
-LABEL org.opencontainers.image.maintainer="lehuygiang28 <lehuygiang28@gmail.com>"
+LABEL git="https://github.com/jdmiami/AHK"
+LABEL author="AHK maintainers"
+LABEL org.opencontainers.image.maintainer="AHK maintainers"
 
 WORKDIR /app
 
@@ -99,7 +97,8 @@ RUN ARCH="$(uname -m)" && \
 COPY --chown=bun:bun ./containers/api-redis/supervisord.conf ./supervisord.conf
 COPY --chown=bun:bun ./containers/api-redis/entrypoint.sh ./entrypoint.sh
 COPY --chown=bun:bun ./containers/api-redis/start-api.sh ./start-api.sh
-RUN chmod +x ./entrypoint.sh ./start-api.sh
+COPY --chown=bun:bun ./containers/api-redis/idle-watchdog.sh ./idle-watchdog.sh
+RUN chmod +x ./entrypoint.sh ./start-api.sh ./idle-watchdog.sh
 
 RUN touch /app/supervisord.pid && \
     chown bun:bun /app/supervisord.pid && \

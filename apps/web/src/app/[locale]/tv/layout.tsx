@@ -6,20 +6,20 @@ import '@/app/tv-tokens.css';
 import { TvRootScale } from '@/components/pages/tv/tv-root-scale';
 
 export const metadata: Metadata = {
-    title: 'vkara TV',
-    description: 'Smart TV display for vkara karaoke rooms',
+    title: 'AHK TV',
+    description: 'TV display for AHK · Artist House Karaoke rooms',
     robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
     width: 'device-width',
     initialScale: 1,
-    themeColor: '#0f0f0f',
+    themeColor: '#07060b',
 };
 
 export default function TvLayout({ children }: { children: ReactNode }) {
     return (
-        <div className="dark h-full min-h-dvh-screen bg-[#0f0f0f] text-white" data-tv-route>
+        <div className="dark h-full min-h-dvh-screen bg-[#07060b] text-white" data-tv-route>
             {/* Apply before paint to avoid rem flash; TvRootScale clears on leave. */}
             <script
                 dangerouslySetInnerHTML={{

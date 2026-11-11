@@ -7,15 +7,15 @@ import { useCurrentLocale, type SUPPORTED_LOCALES } from '@/locales/client';
 import { LOCALE_COOKIE_NAME, buildLocalePrefixedPath, type AppLocale } from '@/lib/locale-path';
 
 const localeLoaders: Record<SUPPORTED_LOCALES, () => Promise<{ default: unknown }>> = {
-    vi: () => import('@/locales/vi'),
     en: () => import('@/locales/en'),
+    es: () => import('@/locales/es'),
 };
 
 type UseChangeLocaleOptions = {
     preserveSearchParams?: boolean;
 };
 
-/** Switch locale: vi stays at `/`, en navigates to `/en`. */
+/** Switch locale: en stays at `/`, es navigates to `/es`. */
 export function useChangeLocale(options: UseChangeLocaleOptions = {}) {
     const { preserveSearchParams = true } = options;
     const router = useRouter();

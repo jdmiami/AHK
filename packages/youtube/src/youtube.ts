@@ -21,6 +21,8 @@ export type VideoSource = 'youtube' | 'tiktok';
 
 export type YouTubeVideo = {
     id: string;
+    /** Device id of the singer whose turn this song is (set by the server; absent = house song). */
+    singerId?: string;
     duration: number;
     duration_formatted: string;
     title: string;

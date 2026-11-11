@@ -5,6 +5,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 
 import { generateShareableUrl } from '@/lib/room-share';
 import { resolveRoomPasswordForShare } from '@vkara/room';
+import type { AppLocale } from '@/lib/locale-path';
+import { BrandLockup } from '@/components/brand/ahk-mark';
 import { useScopedI18n } from '@/locales/client';
 import { cn } from '@/lib/utils';
 import { TvFocusable } from '@/components/pages/tv/tv-focusable';
@@ -18,7 +20,7 @@ const CORNER_QR_SIZE = 72;
 type TvPlayerQrZoneProps = {
     roomId: string;
     roomPassword?: string | null;
-    locale: 'vi' | 'en';
+    locale: AppLocale;
     showQR: boolean;
     isIdle: boolean;
     /** Side-by-side “this device” layout: smaller QR, no phone-only steps. */
@@ -146,7 +148,7 @@ export function TvPlayerQrZone({
             {...shellMotionProps}
             {...(staticLayout ? {} : { layoutId: 'tv-player-room-label' })}
             className={cn(
-                'mt-4 text-center font-semibold tabular-nums text-white',
+                'mt-4 text-center font-semibold tabular-nums text-white [text-shadow:var(--ahk-glow-text)]',
                 !staticLayout && 'drop-shadow-sm',
                 compact ? 'text-2xl' : 'text-3xl sm:text-4xl',
             )}
@@ -201,9 +203,7 @@ export function TvPlayerQrZone({
                 focusOnMount={spatialFocusOnMount}
                 accessibilityLabel={t('tvEmptyQrAria')}
                 onEnterPress={onOpenSettings}
-                className={({ focused }) =>
-                    tvDefaultFocusLeaf(focused, 'mt-0 rounded-2xl p-2')
-                }
+                className={({ focused }) => tvDefaultFocusLeaf(focused, 'mt-0 rounded-2xl p-2')}
             >
                 {idleQrAnchor}
             </TvFocusable>
@@ -255,6 +255,8 @@ export function TvPlayerQrZone({
                     reserveFooterSpace && 'pb-28',
                 )}
             >
+                {/* CSS-only backdrop: off for reduced motion and on old TV engines (globals.css). */}
+                {!reduceMotion ? <div className="ahk-ambient" aria-hidden /> : null}
                 {!staticLayout ? (
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgb(39_39_42_/_0.55),transparent_65%)]" />
                 ) : null}
@@ -271,7 +273,9 @@ export function TvPlayerQrZone({
                         'relative z-[1] flex w-full flex-col items-center text-center',
                         twoColEnabled &&
                             'tv-wide-short:flex-row tv-wide-short:items-center tv-wide-short:justify-center tv-wide-short:text-left',
-                        compact ? 'max-w-sm py-2 sm:max-w-none lg:py-0' : 'max-w-xl py-2 sm:max-w-4xl sm:py-0',
+                        compact
+                            ? 'max-w-sm py-2 sm:max-w-none lg:py-0'
+                            : 'max-w-xl py-2 sm:max-w-4xl sm:py-0',
                     )}
                 >
                     {/* ── 1-col only: title + subtitle above QR ── */}
@@ -282,6 +286,11 @@ export function TvPlayerQrZone({
                             compact ? 'mb-4 sm:mb-5' : 'mb-5 sm:mb-8',
                         )}
                     >
+                        <BrandLockup
+                            size={compact ? 'default' : 'tv'}
+                            className="mb-1"
+                            animated={!reduceMotion}
+                        />
                         <h1
                             className={cn(
                                 'text-balance font-semibold leading-tight tracking-tight text-zinc-50',
@@ -313,6 +322,7 @@ export function TvPlayerQrZone({
                     {/* ── Right column (2-col only): title + instructions stacked ── */}
                     {twoColEnabled ? (
                         <div className="hidden flex-col items-start justify-center border-l border-white/10 pl-8 tv-wide-short:flex">
+                            <BrandLockup className="mb-4 justify-start" animated={!reduceMotion} />
                             <h1
                                 className={cn(
                                     'text-balance font-semibold leading-tight tracking-tight text-zinc-50',

@@ -1,5 +1,10 @@
 'use client';
 
+import { TvSingerBadge } from '@/components/singer/tv-singer-badge';
+import { TvPartyOverlay } from '@/components/party/tv-party-overlay';
+import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
+import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
+import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 
 import { Settings } from 'lucide-react';
@@ -107,6 +112,7 @@ function PlayerColumnInner({
         })),
     );
     const t = useScopedI18n('youtubePage');
+    useApplySongTempo();
     const locale = useCurrentLocale();
     const { shouldShowTimer, setShouldShowTimer, cancelCountdown, resetCountdown } =
         useCountdownStore(
@@ -477,6 +483,11 @@ function PlayerColumnInner({
                     </div>
                 </div>
             )}
+
+            <KeyEngineLauncher />
+            <TvPlaybackUnlock />
+            <TvSingerBadge />
+            <TvPartyOverlay />
 
             {isTvIdle && roomId && (
                 <TvPlayerQrZone

@@ -12,8 +12,8 @@ export function isWebSpeechRecognitionSupported(): boolean {
 
 export function localeToSpeechLanguage(locale: string): string {
     switch (locale) {
-        case 'vi':
-            return 'vi';
+        case 'es':
+            return 'es';
         case 'en':
             return 'en';
         default:
@@ -23,8 +23,8 @@ export function localeToSpeechLanguage(locale: string): string {
 
 export function localeToSpeechRecognitionLang(locale: string): string {
     switch (locale) {
-        case 'vi':
-            return 'vi-VN';
+        case 'es':
+            return 'es-US';
         case 'en':
             return 'en-US';
         default:

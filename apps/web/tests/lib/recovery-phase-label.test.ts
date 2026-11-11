@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest';
 import { recoveryPhaseLabel } from '@/lib/recovery-phase-label';
 
 describe('recoveryPhaseLabel', () => {
-    it('uses Vietnamese copy when lang is vi', () => {
-        expect(recoveryPhaseLabel('retrying', 'vi')).toBe('Đang tự khôi phục…');
-        expect(recoveryPhaseLabel('reporting', 'vi')).toBe('Đang ghi nhận lỗi…');
-        expect(recoveryPhaseLabel('redirecting', 'vi')).toBe('Đang đưa bạn về trang chính…');
+    it('uses Spanish copy when lang is es', () => {
+        expect(recoveryPhaseLabel('retrying', 'es')).toBe('Recuperando automáticamente…');
+        expect(recoveryPhaseLabel('reporting', 'es')).toBe('Reportando el problema…');
+        expect(recoveryPhaseLabel('redirecting', 'es')).toBe('Llevándote de vuelta…');
     });
 
     it('uses English copy when lang is en', () => {
@@ -18,6 +18,6 @@ describe('recoveryPhaseLabel', () => {
     it('falls back to English for missing or unknown lang', () => {
         expect(recoveryPhaseLabel('retrying', undefined)).toBe('Recovering automatically…');
         expect(recoveryPhaseLabel('retrying', '')).toBe('Recovering automatically…');
-        expect(recoveryPhaseLabel('retrying', 'fr')).toBe('Recovering automatically…');
+        expect(recoveryPhaseLabel('retrying', 'vi')).toBe('Recovering automatically…');
     });
 });

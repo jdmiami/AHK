@@ -271,59 +271,80 @@ body {
     }
 }
 
+/*
+ * AHK "neon lounge" palette. Semantic shadcn tokens keep their roles (surfaces stay quiet);
+ * the neon accents live in --primary (magenta), --ring (cyan) and the --neon-* utilities.
+ * Light theme uses darkened accents so text on them stays WCAG AA.
+ */
 @layer base {
     :root {
-        --background: 0 0% 100%;
-        --foreground: 222.2 84% 4.9%;
+        --background: 262 100% 98%;
+        --foreground: 252 41% 12%;
         --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
+        --card-foreground: 252 41% 12%;
         --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-        --primary: 222.2 47.4% 11.2%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 222.2 84% 4.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
+        --popover-foreground: 252 41% 12%;
+        --primary: 324 100% 42%;
+        --primary-foreground: 0 0% 100%;
+        --primary-rgb: 214, 0, 127;
+        --secondary: 261 58% 95%;
+        --secondary-foreground: 252 41% 12%;
+        --muted: 261 58% 95%;
+        --muted-foreground: 253 14% 46%;
+        --accent: 261 67% 94%;
+        --accent-foreground: 252 41% 12%;
+        --destructive: 352 70% 50%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 260 41% 91%;
+        --input: 260 41% 91%;
+        --ring: 188 100% 33%;
+        --neon-pink: 324 100% 42%;
+        --neon-cyan: 188 100% 33%;
+        --neon-violet: 252 70% 55%;
+        --ahk-glow-primary: 0 0 18px rgba(214, 0, 127, 0.28);
+        --ahk-glow-secondary: 0 0 18px rgba(0, 146, 168, 0.28);
+        --ahk-glow-drop: 0 0 8px rgba(214, 0, 127, 0.35);
+        --ahk-glow-text: 0 0 18px rgba(214, 0, 127, 0.25);
+        --chart-1: 324 100% 42%;
+        --chart-2: 188 100% 33%;
+        --chart-3: 252 70% 55%;
+        --chart-4: 43 90% 50%;
+        --chart-5: 160 60% 40%;
+        --radius: 0.75rem;
     }
     .dark {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 210 40% 98%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 212.7 26.8% 83.9%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
+        --background: 252 29% 3%;
+        --foreground: 260 100% 97%;
+        --card: 251 27% 8%;
+        --card-foreground: 260 100% 97%;
+        --popover: 251 27% 8%;
+        --popover-foreground: 260 100% 97%;
+        --primary: 324 100% 59%;
+        --primary-foreground: 252 29% 3%;
+        --primary-rgb: 255, 45, 170;
+        --secondary: 256 29% 15%;
+        --secondary-foreground: 260 100% 97%;
+        --muted: 255 27% 12%;
+        --muted-foreground: 252 19% 64%;
+        --accent: 256 33% 19%;
+        --accent-foreground: 260 100% 97%;
+        --destructive: 354 100% 65%;
+        --destructive-foreground: 252 29% 3%;
+        --border: 255 24% 16%;
+        --input: 255 24% 16%;
+        --ring: 187 100% 57%;
+        --neon-pink: 324 100% 59%;
+        --neon-cyan: 187 100% 57%;
+        --neon-violet: 252 100% 68%;
+        --ahk-glow-primary: 0 0 24px rgba(255, 45, 170, 0.45);
+        --ahk-glow-secondary: 0 0 24px rgba(34, 230, 255, 0.4);
+        --ahk-glow-drop: 0 0 10px rgba(255, 45, 170, 0.6);
+        --ahk-glow-text: 0 0 24px rgba(255, 45, 170, 0.45);
+        --chart-1: 324 100% 59%;
+        --chart-2: 187 100% 57%;
+        --chart-3: 252 100% 68%;
+        --chart-4: 43 100% 62%;
+        --chart-5: 160 70% 50%;
     }
 }
 
@@ -337,5 +358,352 @@ body {
     body {
         @apply bg-background text-foreground min-h-dvh-screen;
         overscroll-behavior: none;
+    }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+ * AHK motion
+ * Rules: animate only transform + opacity (compositor work, no layout or paint
+ * per frame), run once on mount or tie to scroll position, no JS timers.
+ * Everything here switches off under prefers-reduced-motion.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+    --ahk-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ahk-ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+    --ahk-stagger: 70ms;
+}
+
+@keyframes ahk-rise {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.985);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes ahk-fade-up {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 8px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes ahk-draw {
+    from {
+        stroke-dashoffset: 1;
+    }
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes ahk-halo {
+    0%,
+    100% {
+        opacity: 0.35;
+        transform: scale(0.92);
+    }
+    50% {
+        opacity: 0.75;
+        transform: scale(1.06);
+    }
+}
+
+@keyframes ahk-drift {
+    0%,
+    100% {
+        transform: translate3d(-6%, -4%, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(6%, 5%, 0) scale(1.12);
+    }
+}
+
+@keyframes ahk-pop {
+    0% {
+        transform: scale(1);
+    }
+    45% {
+        transform: scale(1.18);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Translate only (no scale): virtualized lists measure rows with getBoundingClientRect. */
+@keyframes ahk-reveal {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Entrances use fill-mode `backwards`: hold the start frame during the delay, then hand
+   transform back to the element so hover/press transitions keep working afterwards. */
+
+/* Staggered entrance: set --ahk-i (0, 1, 2…) inline for the cascade. */
+.ahk-enter {
+    animation: ahk-rise 0.55s var(--ahk-ease-out) backwards;
+    animation-delay: calc(var(--ahk-i, 0) * var(--ahk-stagger));
+}
+
+/* Tab content swap: short so switching tabs never feels slow. */
+.ahk-tab-enter {
+    animation: ahk-fade-up 0.24s var(--ahk-ease-out) backwards;
+}
+
+/* Logo letters draw in once (three tiny paths; runs ~0.9 s total). */
+.ahk-mark-draw path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: ahk-draw 0.7s var(--ahk-ease-out) forwards;
+}
+.ahk-mark-draw path:nth-child(2) {
+    animation-delay: 0.12s;
+}
+.ahk-mark-draw path:nth-child(3) {
+    animation-delay: 0.24s;
+}
+
+/* Soft breathing glow behind the logo: a gradient layer animated by opacity/scale only. */
+.ahk-mark-halo::before {
+    content: '';
+    position: absolute;
+    inset: -35%;
+    z-index: -1;
+    border-radius: 9999px;
+    background: radial-gradient(
+        circle,
+        hsl(var(--neon-pink) / 0.45),
+        hsl(var(--neon-violet) / 0.18) 45%,
+        transparent 70%
+    );
+    animation: ahk-halo 4.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Ambient neon backdrop: two big blurred-looking gradients that drift slowly.
+   No filter: blur (costly on TV engines); the softness comes from the gradient itself. */
+.ahk-ambient {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+.ahk-ambient::before,
+.ahk-ambient::after {
+    content: '';
+    position: absolute;
+    width: 70vmax;
+    height: 70vmax;
+    border-radius: 9999px;
+    opacity: 0.22;
+    will-change: transform;
+}
+.ahk-ambient::before {
+    top: -30vmax;
+    left: -25vmax;
+    background: radial-gradient(circle, hsl(var(--neon-pink)) 0%, transparent 62%);
+    animation: ahk-drift 22s ease-in-out infinite;
+}
+.ahk-ambient::after {
+    bottom: -32vmax;
+    right: -28vmax;
+    background: radial-gradient(circle, hsl(var(--neon-cyan)) 0%, transparent 62%);
+    animation: ahk-drift 26s ease-in-out infinite reverse;
+}
+:root:not(.dark) .ahk-ambient::before,
+:root:not(.dark) .ahk-ambient::after {
+    opacity: 0.12;
+}
+
+/* Pressable cards/buttons: lift on hover, settle on press. */
+.ahk-press {
+    transition:
+        transform 0.18s var(--ahk-ease-out),
+        box-shadow 0.25s var(--ahk-ease-out),
+        border-color 0.25s var(--ahk-ease-out);
+}
+@media (hover: hover) {
+    .ahk-press:hover {
+        transform: translate3d(0, -2px, 0);
+    }
+}
+.ahk-press:active {
+    transform: scale(0.98);
+}
+
+/* Bottom nav: sliding pill under the active tab + icon pop on selection. */
+.ahk-nav-indicator {
+    transition: transform 0.38s var(--ahk-ease-spring);
+    will-change: transform;
+}
+.ahk-nav-pop {
+    animation: ahk-pop 0.32s var(--ahk-ease-out);
+}
+
+/* Scroll reveal: list rows and cards ease in as they scroll into view.
+   Uses CSS scroll-driven animations (no JS, runs off the main thread). Browsers without
+   support (older TVs, older Safari) simply show the content as-is. */
+@supports (animation-timeline: view()) {
+    .ahk-reveal {
+        animation: ahk-reveal linear backwards;
+        animation-timeline: view();
+        animation-range: entry 0% entry 55%;
+    }
+}
+
+/* Old TV engines (Chrome < 104 lacks the `translate` property): skip the always-running
+   decoration so idle TVs stay cool; entrances and reveals still run once. */
+@supports not (translate: none) {
+    .ahk-ambient,
+    .ahk-mark-halo::before {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ahk-enter,
+    .ahk-tab-enter,
+    .ahk-nav-pop,
+    .ahk-reveal,
+    .ahk-mark-halo::before,
+    .ahk-ambient::before,
+    .ahk-ambient::after {
+        animation: none !important;
+    }
+    .ahk-mark-draw path {
+        animation: none;
+        stroke-dashoffset: 0;
+    }
+    .ahk-press,
+    .ahk-nav-indicator {
+        transition: none;
+    }
+}
+
+/* Party: cheer emoji rising on the big screen. --ahk-drift sets the sideways sway. */
+@keyframes ahk-float-up {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.6);
+    }
+    10% {
+        opacity: 1;
+        transform: translate3d(0, -6vh, 0) scale(1.2);
+    }
+    75% {
+        opacity: 1;
+        transform: translate3d(calc(var(--ahk-drift, 0px) * 0.75), -46vh, 0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(var(--ahk-drift, 0px), -60vh, 0) scale(1);
+    }
+}
+
+@keyframes ahk-pop-fade {
+    0% {
+        opacity: 0;
+        transform: scale(0.6);
+    }
+    15% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+.ahk-float-emoji {
+    animation: ahk-float-up 3.4s ease-out forwards;
+    will-change: transform, opacity;
+}
+
+.ahk-pop-emoji {
+    animation: ahk-float-up 1.2s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ahk-float-emoji,
+    .ahk-pop-emoji {
+        animation: ahk-pop-fade 2.4s ease forwards;
+    }
+}
+
+/* Big screen: the side panel slides in and the video shrinks beside it (nothing on top). */
+.ahk-stage-area {
+    transform-origin: 0 0;
+    transition: transform 0.7s var(--ahk-ease-out);
+    will-change: transform;
+}
+
+.ahk-stage-rail {
+    transition:
+        transform 0.7s var(--ahk-ease-out),
+        opacity 0.4s ease;
+}
+
+.ahk-stage-rail--closed {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+}
+
+.ahk-stage-rail--open {
+    transform: none;
+    opacity: 1;
+}
+
+/* The "Up next" screen fits the video's box (never over the panel or the race track). */
+[data-tv-route] .tv-next-up-overlay.tv-next-up-overlay {
+    top: var(--ahk-stage-y, 0px);
+    left: var(--ahk-stage-x, 0px);
+    right: auto;
+    bottom: auto;
+    width: var(--ahk-stage-w, 100%);
+    height: var(--ahk-stage-h, 100%);
+    overflow: hidden;
+    transition:
+        top 0.7s var(--ahk-ease-out),
+        left 0.7s var(--ahk-ease-out),
+        width 0.7s var(--ahk-ease-out),
+        height 0.7s var(--ahk-ease-out);
+}
+
+/* Race track fades in with the race. */
+.ahk-race {
+    transition: opacity 0.5s ease;
+}
+
+.ahk-race--off {
+    opacity: 0;
+}
+
+.ahk-race--on {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ahk-stage-area,
+    .ahk-stage-rail,
+    .ahk-race,
+    [data-tv-route] .tv-next-up-overlay.tv-next-up-overlay {
+        transition: none;
     }
 }

@@ -286,13 +286,7 @@ export function collectFloorViolations(repoRoot: string): FloorViolation[] {
         }
     }
 
-    for (const file of ['README.md', 'docs/vi/README.md']) {
-        pushDocErrors(violations, file, readText(repoRoot, file), true);
-    }
-
-    const tvPath = 'docs/standalone-tv-deployment.md';
-    const tvSource = tryRead(repoRoot, tvPath);
-    if (tvSource !== null) pushDocErrors(violations, tvPath, tvSource, false);
+    pushDocErrors(violations, 'README.md', readText(repoRoot, 'README.md'), true);
 
     const vercelPath = 'apps/web/vercel.json';
     const vercelSource = tryRead(repoRoot, vercelPath);

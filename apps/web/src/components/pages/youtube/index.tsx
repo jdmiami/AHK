@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { useYouTubeStore } from '@/store/youtubeStore';
 import { useScopedI18n } from '@/locales/client';
@@ -14,8 +15,10 @@ import { usePlaybackPositionSync } from '@/hooks/use-playback-position-sync';
 import { useTikTokHiddenPlayGuard } from '@/hooks/use-tiktok-hidden-play-guard';
 import { useTikTokPhotoIndexSync } from '@/hooks/use-tiktok-photo-index-sync';
 import { useWebSocketStore } from '@/store/websocketStore';
+import { useUrlCommandStore } from '@/store/urlCommandStore';
 
 import { ConnectionStatusToast } from '@/components/connection-status-toast';
+import { DeviceIntro } from '@/components/pages/youtube/device-intro';
 import {
     PlayerColumnSkeleton,
     RemoteShellSkeleton,
@@ -55,6 +58,34 @@ export default function YoutubePlayerPage() {
     );
     const prevLayoutMode = useRef(effectiveLayoutMode);
 
+    // First visit on this device: ask "big screen or phone?" before anything else.
+    // Skipped when an invite link (?roomId=…) brought the visitor here: that is a phone joining.
+    const searchParams = useSearchParams();
+    const layoutModeSource = useYouTubeStore((s) => s.layoutModeSource);
+    const setLayoutMode = useYouTubeStore((s) => s.setLayoutMode);
+    const [mounted, setMounted] = useState(false);
+    const inRoom = useYouTubeStore((s) => Boolean(s.room));
+    // Read once after mount (not subscribed): the provider fills the URL-command snapshot while
+    // rendering, and the room query is stripped from the address bar once applied.
+    const [arrivedWithInvite, setArrivedWithInvite] = useState(false);
+    useEffect(() => {
+        setArrivedWithInvite(
+            Boolean(
+                searchParams.get('roomId') ||
+                searchParams.get('joinToken') ||
+                useUrlCommandStore.getState().snapshot?.document.roomId,
+            ),
+        );
+        setMounted(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- first visit only
+    }, []);
+    useEffect(() => {
+        if (mounted && arrivedWithInvite && layoutModeSource === 'auto') {
+            setLayoutMode('remote', 'user');
+        }
+    }, [mounted, arrivedWithInvite, layoutModeSource, setLayoutMode]);
+    const showDeviceIntro = mounted && layoutModeSource === 'auto' && !arrivedWithInvite && !inRoom;
+
     useStripRoomQueryFromUrl();
     useLayoutChunkPrefetch();
 
@@ -76,11 +107,9 @@ export default function YoutubePlayerPage() {
             if (!state.lastMessage) {
                 return;
             }
-            useYouTubeStore
-                .getState()
-                .handleServerMessage(state.lastMessage, t_Toast, {
-                    isTvLayout: isTvLayoutRef.current,
-                });
+            useYouTubeStore.getState().handleServerMessage(state.lastMessage, t_Toast, {
+                isTvLayout: isTvLayoutRef.current,
+            });
         });
     }, [t_Toast]);
 
@@ -101,6 +130,10 @@ export default function YoutubePlayerPage() {
     const showsPlayer = effectiveLayoutMode === 'player' || effectiveLayoutMode === 'both';
     const isTvPlayerIdle = Boolean(isTvViewport && showsPlayer && !playingNow);
     const useTvIdleShell = needsLayoutBootstrap || isTvPlayerIdle;
+
+    if (showDeviceIntro) {
+        return <DeviceIntro />;
+    }
 
     if (needsLayoutBootstrap) {
         return (

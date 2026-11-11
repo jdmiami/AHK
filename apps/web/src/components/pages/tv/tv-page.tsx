@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useScopedI18n, useCurrentLocale } from '@/locales/client';
+import { useScopedI18n } from '@/locales/client';
 import { useYouTubeStore } from '@/store/youtubeStore';
 import { useCountdownStore } from '@/store/countdownTimersStore';
 import { useWebSocketStore } from '@/store/websocketStore';
@@ -34,10 +34,6 @@ const TvPlayerChrome = dynamic(
     () => import('./tv-player-chrome').then((m) => ({ default: m.TvPlayerChrome })),
     { ssr: false },
 );
-const TvPlayerFixedQr = dynamic(
-    () => import('./tv-player-fixed-qr').then((m) => ({ default: m.TvPlayerFixedQr })),
-    { ssr: false },
-);
 const TvSettingsPanel = dynamic(
     () => import('./tv-settings-panel').then((m) => ({ default: m.TvSettingsPanel })),
     { ssr: false },
@@ -49,20 +45,15 @@ export default function TvPage() {
     usePlaybackPositionSync();
 
     const tToast = useScopedI18n('toast');
-    const locale = useCurrentLocale();
     const {
         roomId,
-        roomPassword,
         playingNow,
-        showQRInPlayer,
         videoQueueLength,
         tvSuppressAutoCreate,
     } = useYouTubeStore(
         useShallow((s) => ({
             roomId: s.room?.id,
-            roomPassword: s.room?.password,
             playingNow: s.room?.playingNow,
-            showQRInPlayer: s.room?.showQRInPlayer ?? true,
             videoQueueLength: s.room?.videoQueue?.length ?? 0,
             tvSuppressAutoCreate: s.tvSuppressAutoCreate,
         })),
@@ -169,15 +160,7 @@ export default function TvPage() {
 
                             {isPlayerActive ? <TvNextUpGate /> : null}
 
-                            {playingNow && showQRInPlayer && roomId && !nextUpVisible ? (
-                                <TvPlayerFixedQr
-                                    roomId={roomId}
-                                    roomPassword={roomPassword}
-                                    locale={locale}
-                                    expanded={controlsVisible && !settingsOpen}
-                                    onOpenSettingsAction={openSettings}
-                                />
-                            ) : null}
+                            {/* The room QR lives in the big screen's side panel (never on the video). */}
 
                             {chromeMounted ? (
                                 <TvPlayerChrome
@@ -192,13 +175,6 @@ export default function TvPage() {
                                 />
                             ) : settingsOpen ? (
                                 <TvSettingsPanel onCloseAction={closeSettings} />
-                            ) : null}
-
-                            {!controlsVisible && playingNow ? (
-                                <div
-                                    className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-28 bg-gradient-to-t from-black/60 to-transparent"
-                                    aria-hidden
-                                />
                             ) : null}
                         </>
                     )}

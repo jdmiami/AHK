@@ -1,5 +1,6 @@
+import { BRAND } from '@/lib/brand';
 import { buildCreatorPerson } from '@/lib/creator';
-import { APP_LOCALES, getLocalePublicPath, type AppLocale } from '@/lib/locale-path';
+import { APP_LOCALES, getLocalePublicPath, localeToBcp47, type AppLocale } from '@/lib/locale-path';
 import { getSiteUrl } from '@/lib/site-url';
 
 type StructuredDataInput = {
@@ -20,7 +21,7 @@ export function buildStructuredData({ locale, title, description, siteName }: St
         headline: title,
         description,
         url: pageUrl,
-        inLanguage: locale === 'vi' ? 'vi-VN' : 'en-US',
+        inLanguage: localeToBcp47(locale),
         applicationCategory: 'MultimediaApplication',
         operatingSystem: 'Web',
         browserRequirements: 'Requires JavaScript. Requires HTML5.',
@@ -30,7 +31,18 @@ export function buildStructuredData({ locale, title, description, siteName }: St
             priceCurrency: 'USD',
         },
         image: `${siteUrl}/og-image.png`,
-        creator: buildCreatorPerson(),
+        creator: {
+            '@type': 'Organization',
+            name: BRAND.full,
+            alternateName: BRAND.short,
+            url: BRAND.repoUrl,
+        },
+        isBasedOn: {
+            '@type': 'SoftwareSourceCode',
+            name: BRAND.basedOn.name,
+            url: BRAND.basedOn.url,
+            author: buildCreatorPerson(),
+        },
     };
 
     const webSite = {
@@ -39,7 +51,7 @@ export function buildStructuredData({ locale, title, description, siteName }: St
         name: siteName,
         description,
         url: siteUrl,
-        inLanguage: APP_LOCALES.map((appLocale) => (appLocale === 'vi' ? 'vi-VN' : 'en-US')),
+        inLanguage: APP_LOCALES.map((appLocale) => localeToBcp47(appLocale)),
         potentialAction: {
             '@type': 'SearchAction',
             target: {

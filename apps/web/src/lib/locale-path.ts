@@ -1,9 +1,16 @@
-export const APP_LOCALES = ['vi', 'en'] as const;
+export const APP_LOCALES = ['en', 'es'] as const;
 export type AppLocale = (typeof APP_LOCALES)[number];
-export const DEFAULT_APP_LOCALE: AppLocale = 'vi';
+export const DEFAULT_APP_LOCALE: AppLocale = 'en';
 export const LOCALE_COOKIE_NAME = 'Next-Locale';
 
-/** Public URL for a locale. Default locale (vi) has no prefix. */
+const BCP47: Record<AppLocale, string> = { en: 'en-US', es: 'es-US' };
+
+/** BCP 47 tag for `lang`, Open Graph, and schema.org `inLanguage`. */
+export function localeToBcp47(locale: AppLocale): string {
+    return BCP47[locale];
+}
+
+/** Public URL for a locale. Default locale (en) has no prefix. */
 export function getLocalePublicPath(locale: AppLocale): string {
     return locale === DEFAULT_APP_LOCALE ? '/' : `/${locale}`;
 }
@@ -13,14 +20,14 @@ export function isAppLocale(segment: string): segment is AppLocale {
 }
 
 /**
- * Recover locale from malformed paths like `/vien` (vi + en glued, no slash).
- * Single-segment paths (`/vi`, `/en`) are handled by the normal stripper.
+ * Recover locale from malformed paths like `/enes` (en + es glued, no slash).
+ * Single-segment paths (`/en`, `/es`) are handled by the normal stripper.
  */
 function parseConcatenatedLocalePrefix(pathname: string): {
     locale: AppLocale | null;
     cleanPath: string;
 } | null {
-    const match = pathname.match(/^\/((?:vi|en)+)(\/.*)?$/);
+    const match = pathname.match(/^\/((?:en|es)+)(\/.*)?$/);
     if (!match) {
         return null;
     }
@@ -30,13 +37,13 @@ function parseConcatenatedLocalePrefix(pathname: string): {
     const segments: AppLocale[] = [];
 
     for (let i = 0; i < blob.length; ) {
-        if (blob.startsWith('vi', i)) {
-            segments.push('vi');
+        if (blob.startsWith('en', i)) {
+            segments.push('en');
             i += 2;
             continue;
         }
-        if (blob.startsWith('en', i)) {
-            segments.push('en');
+        if (blob.startsWith('es', i)) {
+            segments.push('es');
             i += 2;
             continue;
         }
@@ -98,7 +105,7 @@ export function stripLocaleFromPath(pathname: string): {
     return { locale: detectedLocale, cleanPath: path };
 }
 
-/** Visible path when switching locale. Vi uses `/`, en uses `/en`. */
+/** Visible path when switching locale. English uses `/`, Spanish uses `/es`. */
 export function buildLocalePrefixedPath(pathname: string, locale: AppLocale): string {
     const { cleanPath } = stripLocaleFromPath(pathname);
     const localeRoot = getLocalePublicPath(locale);

@@ -23,9 +23,7 @@ describe('resolveSentryEnvironment', () => {
     it('maps Vercel production and vkara.vercel.app to production', () => {
         expect(resolveSentryEnvironment({ vercelEnv: 'production' })).toBe('production');
         expect(resolveSentryEnvironment({ vercelUrl: 'vkara.vercel.app' })).toBe('production');
-        expect(
-            resolveSentryEnvironment({ appUrl: 'https://vkara.vercel.app' }),
-        ).toBe('production');
+        expect(resolveSentryEnvironment({ appUrl: 'https://vkara.vercel.app' })).toBe('production');
         expect(resolveSentryEnvironment({ runtimeHost: 'vkara.vercel.app' })).toBe('production');
         expect(resolveSentryEnvironment({ runtimeHost: 'www.vkara.vercel.app' })).toBe(
             'production',
@@ -80,20 +78,13 @@ describe('isSentryEnabled', () => {
     it('requires a DSN', () => {
         expect(isSentryEnabled(undefined)).toBe(false);
         expect(isSentryEnabled('')).toBe(false);
-        expect(
-            isSentryEnabled(
-                'https://9486059e287181cacf72326c9bac8a43@o4511749689901056.ingest.us.sentry.io/4511749707792384',
-            ),
-        ).toBe(true);
+        expect(isSentryEnabled('https://examplePublicKey@o0.ingest.sentry.io/0')).toBe(true);
     });
 
     it('allows explicit opt-out', () => {
-        expect(
-            isSentryEnabled(
-                'https://9486059e287181cacf72326c9bac8a43@o4511749689901056.ingest.us.sentry.io/4511749707792384',
-                'false',
-            ),
-        ).toBe(false);
+        expect(isSentryEnabled('https://examplePublicKey@o0.ingest.sentry.io/0', 'false')).toBe(
+            false,
+        );
     });
 });
 
@@ -104,7 +95,10 @@ describe('resolveSentryLogLevels', () => {
     });
 
     it('parses an explicit allow-list', () => {
-        expect(resolveSentryLogLevels('error, warn, nope', 'production')).toEqual(['error', 'warn']);
+        expect(resolveSentryLogLevels('error, warn, nope', 'production')).toEqual([
+            'error',
+            'warn',
+        ]);
     });
 });
 
@@ -112,9 +106,9 @@ describe('resolveSentryCronMonitorSlugs', () => {
     it('defaults to the free-plan-safe room-cleanup slug', () => {
         expect(resolveSentryCronMonitorSlugs(undefined)).toEqual(new Set(['room-cleanup']));
         expect(isSentryCronMonitorAllowed('room-cleanup', new Set(['room-cleanup']))).toBe(true);
-        expect(isSentryCronMonitorAllowed('search-instance-cleanup', new Set(['room-cleanup']))).toBe(
-            false,
-        );
+        expect(
+            isSentryCronMonitorAllowed('search-instance-cleanup', new Set(['room-cleanup'])),
+        ).toBe(false);
     });
 
     it('supports all / none / explicit lists', () => {

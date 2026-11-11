@@ -172,5 +172,4 @@ function writeFloorFixture(root: string, options: { bunImage: string }): void {
     const requirements =
         '**Requirements:** [Bun](https://bun.sh) ≥ 1.4.4, Redis, Node.js 22.23.4 for production web builds (24.22.1 on Node 24, 26.12.1 on Node 26).\n';
     write('README.md', requirements);
-    write('docs/vi/README.md', requirements);
 }

@@ -1,12 +1,21 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { Clock3, ListVideo, MoreHorizontal, Search, Settings, SlidersVertical } from 'lucide-react';
+import {
+    Clock3,
+    ListVideo,
+    MoreHorizontal,
+    PartyPopper,
+    Search,
+    Settings,
+    SlidersVertical,
+} from 'lucide-react';
 
 import { useI18n, useScopedI18n } from '@/locales/client';
 import { prefetchPlayerControlsTabs } from '@/lib/layout-chunk-prefetch';
 import { REMOTE_CHROME_Z_INDEX, REMOTE_NAV_POPOVER_SIDE_OFFSET } from '@/lib/remote-chrome';
 import { useYouTubeStore } from '@/store/youtubeStore';
+import { useUnreadChatCount } from '@/hooks/use-party';
 import { cn } from '@/lib/utils';
 
 import {
@@ -16,7 +25,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const PRIMARY_TABS = ['search', 'queue', 'controls'] as const;
+const PRIMARY_TABS = ['search', 'queue', 'controls', 'party'] as const;
 
 type PrimaryTab = (typeof PRIMARY_TABS)[number];
 
@@ -36,75 +45,101 @@ export const MobileBottomNav = forwardRef<HTMLElement, MobileBottomNavProps>(
         const currentTab = useYouTubeStore((state) => state.currentTab);
         const setCurrentTab = useYouTubeStore((state) => state.setCurrentTab);
         const queueCount = useYouTubeStore((state) => state.room?.videoQueue?.length ?? 0);
+        const unreadChat = useUnreadChatCount();
 
         const isPrimary = (tab: string): tab is PrimaryTab =>
             PRIMARY_TABS.includes(tab as PrimaryTab);
 
         const activePrimary = isPrimary(currentTab) ? currentTab : null;
+        const activeIndex = activePrimary
+            ? PRIMARY_TABS.indexOf(activePrimary)
+            : PRIMARY_TABS.length;
 
         return (
             <nav
                 ref={ref}
                 className={cn(
-                    'grid grid-cols-4 items-stretch border-t bg-background px-page-gutter pb-safe-offset pt-1',
+                    'border-t bg-background px-page-gutter pb-safe-offset pt-1',
                     className,
                 )}
                 aria-label={t('mainNavigation')}
             >
-                <NavItem
-                    active={activePrimary === 'search'}
-                    icon={<Search className="h-6 w-6" />}
-                    label={t('search')}
-                    onClick={() => setCurrentTab('search')}
-                />
-                <NavItem
-                    active={activePrimary === 'queue'}
-                    icon={<ListVideo className="h-6 w-6" />}
-                    label={t('queue')}
-                    badge={queueCount}
-                    ariaLabel={tGlobal('youtubePage.queueBadgeLabel', { count: queueCount })}
-                    onClick={() => setCurrentTab('queue')}
-                />
-                <NavItem
-                    active={activePrimary === 'controls'}
-                    icon={<SlidersVertical className="h-6 w-6" />}
-                    label={t('controls')}
-                    onClick={() => setCurrentTab('controls')}
-                    onPrefetch={prefetchPlayerControlsTabs}
-                />
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <button
-                            type="button"
-                            className={cn(
-                                'flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
-                                !isPrimary(currentTab)
-                                    ? 'text-primary'
-                                    : 'text-muted-foreground hover:text-foreground',
-                            )}
-                        >
-                            <MoreHorizontal className="h-6 w-6" />
-                            <span>{t('more')}</span>
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        side="top"
-                        align="center"
-                        sideOffset={REMOTE_NAV_POPOVER_SIDE_OFFSET}
-                        collisionPadding={REMOTE_NAV_POPOVER_SIDE_OFFSET}
-                        className="w-64"
-                        style={{ zIndex: REMOTE_CHROME_Z_INDEX.transientChrome }}
+                <div className="relative grid grid-cols-5 items-stretch">
+                    {/* One pill slides between tabs (transform only). */}
+                    <span
+                        aria-hidden
+                        className="ahk-nav-indicator pointer-events-none absolute inset-y-1 left-0 flex w-1/5 justify-center"
+                        style={{ transform: `translate3d(${activeIndex * 100}%, 0, 0)` }}
                     >
-                        <DropdownMenuItem onClick={() => setCurrentTab('history')}>
-                            <Clock3 className="mr-2 h-4 w-4" />
-                            {t('history')}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setCurrentTab('settings')}>
-                            <Settings className="mr-2 h-4 w-4" />
-                            {t('settings')}
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        <span className="h-full w-[72%] rounded-xl bg-primary/10 shadow-[var(--ahk-glow-primary)] dark:bg-primary/15" />
+                    </span>
+                    <NavItem
+                        active={activePrimary === 'search'}
+                        icon={<Search className="h-6 w-6" />}
+                        label={t('search')}
+                        onClick={() => setCurrentTab('search')}
+                    />
+                    <NavItem
+                        active={activePrimary === 'queue'}
+                        icon={<ListVideo className="h-6 w-6" />}
+                        label={t('queue')}
+                        badge={queueCount}
+                        ariaLabel={tGlobal('youtubePage.queueBadgeLabel', { count: queueCount })}
+                        onClick={() => setCurrentTab('queue')}
+                    />
+                    <NavItem
+                        active={activePrimary === 'controls'}
+                        icon={<SlidersVertical className="h-6 w-6" />}
+                        label={t('controls')}
+                        onClick={() => setCurrentTab('controls')}
+                        onPrefetch={prefetchPlayerControlsTabs}
+                    />
+                    <NavItem
+                        active={activePrimary === 'party'}
+                        icon={<PartyPopper className="h-6 w-6" />}
+                        label={t('party')}
+                        badge={unreadChat > 0 && activePrimary !== 'party' ? unreadChat : undefined}
+                        ariaLabel={
+                            unreadChat > 0
+                                ? tGlobal('youtubePage.partyUnreadLabel', { count: unreadChat })
+                                : undefined
+                        }
+                        onClick={() => setCurrentTab('party')}
+                    />
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button
+                                type="button"
+                                className={cn(
+                                    'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
+                                    !isPrimary(currentTab)
+                                        ? 'text-primary'
+                                        : 'text-muted-foreground hover:text-foreground',
+                                )}
+                            >
+                                <MoreHorizontal className="h-6 w-6" />
+                                <span>{t('more')}</span>
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            side="top"
+                            align="center"
+                            sideOffset={REMOTE_NAV_POPOVER_SIDE_OFFSET}
+                            collisionPadding={REMOTE_NAV_POPOVER_SIDE_OFFSET}
+                            className="w-64"
+                            style={{ zIndex: REMOTE_CHROME_Z_INDEX.transientChrome }}
+                        >
+                            <DropdownMenuItem onClick={() => setCurrentTab('history')}>
+                                <Clock3 className="mr-2 h-4 w-4" />
+                                {t('history')}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setCurrentTab('settings')}>
+                                <Settings className="mr-2 h-4 w-4" />
+                                {t('settings')}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </nav>
         );
     },
@@ -153,13 +188,15 @@ function NavItem({
             onPointerEnter={onPrefetch}
             onFocus={onPrefetch}
             className={cn(
-                'flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
-                active ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
+                'relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-lg py-2 text-[0.65rem] font-medium transition-colors',
+                active
+                    ? 'text-primary [&>span>svg]:drop-shadow-[var(--ahk-glow-drop)]'
+                    : 'text-muted-foreground hover:text-foreground',
             )}
             aria-current={active ? 'page' : undefined}
             aria-label={ariaLabel ?? label}
         >
-            <span className="relative inline-flex">
+            <span className={cn('relative inline-flex', active && 'ahk-nav-pop')}>
                 {icon}
                 {badge != null ? <NavIconBadge count={badge} /> : null}
             </span>

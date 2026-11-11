@@ -19,6 +19,7 @@ export const PERSIST_STORE_KEYS = {
     search: 'search-store',
     appSettings: 'vkara-app-settings',
     rejoinSecrets: 'vkara-room-rejoin-secrets',
+    singer: 'ahk-singer',
 } as const;
 
 function normalizePersistedYouTubeVideo(video: unknown): YouTubeVideo | null {

@@ -1,5 +1,9 @@
 'use client';
 
+import { TvCheerRace, TvStageArea, TvStageRail } from '@/components/stage-rail/tv-stage-rail';
+import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
+import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
+import { useApplySongTempo } from '@/hooks/use-apply-song-tempo';
 import dynamic from 'next/dynamic';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
@@ -44,6 +48,7 @@ type TvPlayerHostProps = {
 };
 
 function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
+    useApplySongTempo();
     useTikTokHiddenPlayGuard();
     useTikTokPhotoIndexSync();
 
@@ -136,23 +141,20 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
         });
     }, [roomId, playingNowId, roomIsPlaying, isTikTokNow, playingNow]);
 
-    const syncCaptionTracksFromPlayer = useCallback(
-        (player: YT.Player) => {
-            const currentRoom = useYouTubeStore.getState().room;
-            const videoId = currentRoom?.playingNow?.id;
-            if (!currentRoom?.id || !videoId) {
-                return;
-            }
+    const syncCaptionTracksFromPlayer = useCallback((player: YT.Player) => {
+        const currentRoom = useYouTubeStore.getState().room;
+        const videoId = currentRoom?.playingNow?.id;
+        if (!currentRoom?.id || !videoId) {
+            return;
+        }
 
-            const tracks = listYoutubeCaptionTracks(player);
-            ensureConnectedAndSend({
-                type: 'syncCaptionTracks',
-                videoId,
-                tracks,
-            });
-        },
-        [],
-    );
+        const tracks = listYoutubeCaptionTracks(player);
+        ensureConnectedAndSend({
+            type: 'syncCaptionTracks',
+            videoId,
+            tracks,
+        });
+    }, []);
 
     const applyTrackToPlayer = useCallback(
         (player: YT.Player, videoId: string) => {
@@ -366,47 +368,54 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
 
     return (
         <div className="tv-fill bg-black">
-            {playingNowId ? (
-                <PlayerEmbedSurfaceMemo
-                    playingNowId={playingNowId}
-                    isPhotoPost={isTikTokPhotoPost({ video: playingNow })}
-                    isLive={isVideoLive({ video: playingNow })}
-                    effectiveLayoutMode="player"
-                    roomId={roomId}
-                    roomIsPlaying={roomIsPlaying}
-                    currentTime={tiktokCurrentTime}
-                    volume={volume}
-                    captionsEnabled={captionsEnabled}
-                    youtubeEmbedMounted={youtubeEmbedMounted}
-                    embedSeedVideoId={embedSeedVideoIdRef.current}
-                    isTikTokNow={isTikTokNow}
-                    onYoutubeReadyAction={onPlayerReady}
-                    onYoutubeStateChangeAction={onPlayerStateChange}
-                    onYoutubeErrorAction={onPlayerError}
-                    onEndedAction={handleEmbedEnded}
-                    onSkipUnplayableAction={handleSkipUnplayable}
-                    setIsPlaying={setIsPlaying}
-                    ensureConnectedAndSend={ensureConnectedAndSend}
-                    embedVariant="tv"
-                />
-            ) : (
-                <div className="tv-fill bg-[#0f0f0f]" aria-hidden />
-            )}
+            <TvStageArea>
+                {playingNowId ? (
+                    <PlayerEmbedSurfaceMemo
+                        playingNowId={playingNowId}
+                        isPhotoPost={isTikTokPhotoPost({ video: playingNow })}
+                        isLive={isVideoLive({ video: playingNow })}
+                        effectiveLayoutMode="player"
+                        roomId={roomId}
+                        roomIsPlaying={roomIsPlaying}
+                        currentTime={tiktokCurrentTime}
+                        volume={volume}
+                        captionsEnabled={captionsEnabled}
+                        youtubeEmbedMounted={youtubeEmbedMounted}
+                        embedSeedVideoId={embedSeedVideoIdRef.current}
+                        isTikTokNow={isTikTokNow}
+                        onYoutubeReadyAction={onPlayerReady}
+                        onYoutubeStateChangeAction={onPlayerStateChange}
+                        onYoutubeErrorAction={onPlayerError}
+                        onEndedAction={handleEmbedEnded}
+                        onSkipUnplayableAction={handleSkipUnplayable}
+                        setIsPlaying={setIsPlaying}
+                        ensureConnectedAndSend={ensureConnectedAndSend}
+                        embedVariant="tv"
+                    />
+                ) : (
+                    <div className="tv-fill bg-[#07060b]" aria-hidden />
+                )}
 
-            {isTvIdle && roomId ? (
-                <TvPlayerQrZone
-                    roomId={roomId}
-                    roomPassword={roomPassword}
-                    locale={locale}
-                    showQR={showQRInPlayer}
-                    isIdle
-                    disableLayoutMorph
-                    spatialFocusKey={TV_FOCUS_KEYS.idleQr}
-                    spatialFocusOnMount
-                    onOpenSettingsAction={onOpenSettingsAction}
-                />
-            ) : null}
+                {isTvIdle && roomId ? (
+                    <TvPlayerQrZone
+                        roomId={roomId}
+                        roomPassword={roomPassword}
+                        locale={locale}
+                        showQR={showQRInPlayer}
+                        isIdle
+                        disableLayoutMorph
+                        spatialFocusKey={TV_FOCUS_KEYS.idleQr}
+                        spatialFocusOnMount
+                        onOpenSettingsAction={onOpenSettingsAction}
+                    />
+                ) : null}
+            </TvStageArea>
 
+            {/* Nothing sits on the video: lineup, chat, cheers and the announcer live in the side panel. */}
+            <TvCheerRace />
+            <TvStageRail />
+            <KeyEngineLauncher />
+            <TvPlaybackUnlock />
         </div>
     );
 }
