@@ -1,7 +1,6 @@
 'use client';
 
-import { TvSingerBadge } from '@/components/singer/tv-singer-badge';
-import { TvPartyOverlay } from '@/components/party/tv-party-overlay';
+import { TvStageArea, TvStageRail } from '@/components/stage-rail/tv-stage-rail';
 import { TvHostShow } from '@/components/host-show/tv-host-show';
 import { KeyEngineLauncher } from '@/components/player/key-engine-launcher';
 import { TvPlaybackUnlock } from '@/components/player/tv-playback-unlock';
@@ -370,52 +369,54 @@ function TvPlayerHostInner({ onOpenSettingsAction }: TvPlayerHostProps) {
 
     return (
         <div className="tv-fill bg-black">
-            {playingNowId ? (
-                <PlayerEmbedSurfaceMemo
-                    playingNowId={playingNowId}
-                    isPhotoPost={isTikTokPhotoPost({ video: playingNow })}
-                    isLive={isVideoLive({ video: playingNow })}
-                    effectiveLayoutMode="player"
-                    roomId={roomId}
-                    roomIsPlaying={roomIsPlaying}
-                    currentTime={tiktokCurrentTime}
-                    volume={volume}
-                    captionsEnabled={captionsEnabled}
-                    youtubeEmbedMounted={youtubeEmbedMounted}
-                    embedSeedVideoId={embedSeedVideoIdRef.current}
-                    isTikTokNow={isTikTokNow}
-                    onYoutubeReadyAction={onPlayerReady}
-                    onYoutubeStateChangeAction={onPlayerStateChange}
-                    onYoutubeErrorAction={onPlayerError}
-                    onEndedAction={handleEmbedEnded}
-                    onSkipUnplayableAction={handleSkipUnplayable}
-                    setIsPlaying={setIsPlaying}
-                    ensureConnectedAndSend={ensureConnectedAndSend}
-                    embedVariant="tv"
-                />
-            ) : (
-                <div className="tv-fill bg-[#07060b]" aria-hidden />
-            )}
+            <TvStageArea>
+                {playingNowId ? (
+                    <PlayerEmbedSurfaceMemo
+                        playingNowId={playingNowId}
+                        isPhotoPost={isTikTokPhotoPost({ video: playingNow })}
+                        isLive={isVideoLive({ video: playingNow })}
+                        effectiveLayoutMode="player"
+                        roomId={roomId}
+                        roomIsPlaying={roomIsPlaying}
+                        currentTime={tiktokCurrentTime}
+                        volume={volume}
+                        captionsEnabled={captionsEnabled}
+                        youtubeEmbedMounted={youtubeEmbedMounted}
+                        embedSeedVideoId={embedSeedVideoIdRef.current}
+                        isTikTokNow={isTikTokNow}
+                        onYoutubeReadyAction={onPlayerReady}
+                        onYoutubeStateChangeAction={onPlayerStateChange}
+                        onYoutubeErrorAction={onPlayerError}
+                        onEndedAction={handleEmbedEnded}
+                        onSkipUnplayableAction={handleSkipUnplayable}
+                        setIsPlaying={setIsPlaying}
+                        ensureConnectedAndSend={ensureConnectedAndSend}
+                        embedVariant="tv"
+                    />
+                ) : (
+                    <div className="tv-fill bg-[#07060b]" aria-hidden />
+                )}
 
+                {isTvIdle && roomId ? (
+                    <TvPlayerQrZone
+                        roomId={roomId}
+                        roomPassword={roomPassword}
+                        locale={locale}
+                        showQR={showQRInPlayer}
+                        isIdle
+                        disableLayoutMorph
+                        spatialFocusKey={TV_FOCUS_KEYS.idleQr}
+                        spatialFocusOnMount
+                        onOpenSettingsAction={onOpenSettingsAction}
+                    />
+                ) : null}
+            </TvStageArea>
+
+            {/* Nothing sits on the video: lineup, chat, cheers and the announcer live in the side panel. */}
+            <TvStageRail />
             <KeyEngineLauncher />
             <TvPlaybackUnlock />
-            <TvSingerBadge />
-            <TvPartyOverlay />
             <TvHostShow />
-
-            {isTvIdle && roomId ? (
-                <TvPlayerQrZone
-                    roomId={roomId}
-                    roomPassword={roomPassword}
-                    locale={locale}
-                    showQR={showQRInPlayer}
-                    isIdle
-                    disableLayoutMorph
-                    spatialFocusKey={TV_FOCUS_KEYS.idleQr}
-                    spatialFocusOnMount
-                    onOpenSettingsAction={onOpenSettingsAction}
-                />
-            ) : null}
         </div>
     );
 }

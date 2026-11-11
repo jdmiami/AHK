@@ -646,3 +646,40 @@ body {
         animation: ahk-pop-fade 2.4s ease forwards;
     }
 }
+
+/* Big screen: the side panel slides in and the video shrinks beside it (nothing on top). */
+.ahk-stage-area {
+    transform-origin: 0% 50%;
+    transition: transform 0.7s var(--ahk-ease-out);
+    will-change: transform;
+}
+
+.ahk-stage-rail {
+    transition:
+        transform 0.7s var(--ahk-ease-out),
+        opacity 0.4s ease;
+}
+
+.ahk-stage-rail--closed {
+    transform: translate3d(100%, 0, 0);
+    opacity: 0;
+}
+
+.ahk-stage-rail--open {
+    transform: none;
+    opacity: 1;
+}
+
+/* The "Up next" screen stays left of the panel. */
+[data-tv-route] .tv-next-up-overlay.tv-next-up-overlay {
+    right: var(--ahk-stage-rail, 0px);
+    transition: right 0.7s var(--ahk-ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ahk-stage-area,
+    .ahk-stage-rail,
+    [data-tv-route] .tv-next-up-overlay.tv-next-up-overlay {
+        transition: none;
+    }
+}

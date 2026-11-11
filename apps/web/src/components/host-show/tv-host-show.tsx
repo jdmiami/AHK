@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Mic } from 'lucide-react';
 
 import {
     hostAudioReady,
@@ -30,7 +29,6 @@ export function TvHostShow() {
     const locale = toHostLocale(useCurrentLocale());
     const announcer = useHostShowStore((s) => s.announcer);
     const musicOn = useHostShowStore((s) => s.music);
-    const caption = useHostShowStore((s) => s.caption);
     const cancelSeq = useHostShowStore((s) => s.cancelSeq);
     const playingId = useYouTubeStore((s) => s.room?.playingNow?.id ?? null);
     const queueLength = useYouTubeStore((s) => s.room?.videoQueue?.length ?? 0);
@@ -235,18 +233,6 @@ export function TvHostShow() {
         [],
     );
 
-    if (!caption) return null;
-    return (
-        <div
-            className="pointer-events-none absolute inset-x-0 top-[6vh] z-[60] flex justify-center px-8"
-            role="status"
-            aria-live="polite"
-            aria-label="Announcer"
-        >
-            <p className="ahk-enter flex max-w-[min(64rem,90vw)] items-center gap-3 rounded-3xl border border-primary/40 bg-black/80 px-6 py-4 text-[min(4.2vh,2.25rem)] font-semibold leading-tight text-white shadow-[var(--ahk-glow-primary)] backdrop-blur">
-                <Mic className="h-[1.1em] w-[1.1em] shrink-0 text-primary" aria-hidden />
-                <span>{caption}</span>
-            </p>
-        </div>
-    );
+    // The caption is shown in the big screen's side panel (TvStageRail).
+    return null;
 }
